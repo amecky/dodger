@@ -22,6 +22,6 @@ public:
 private:
 	GameContext* _context;
 	EnergyBalls* _balls;
-	Stars* _stars;
+	
 };
 

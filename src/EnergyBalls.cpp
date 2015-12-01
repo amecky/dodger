@@ -2,15 +2,31 @@
 
 
 EnergyBalls::EnergyBalls(GameContext* context) : _context(context) {
-	createBall(v2(80,80));
-	createBall(v2(80, 160));
-	createBall(v2(80, 240));
+
+	_spawnData.count_x = 10;
+	_spawnData.count_y = 5;
+	_spawnData.border = v2(40, 40);
+	_spawnData.sides = 10;
+	_spawnData.delay = 0.5f;
+	_spawnData.type = SPT_PARTIAL_EDGES;
+	_spawnData.emitter_type = SET_DELAYED;
+
+	_emitter = new BallEmitter(_spawnData);
+
+	//createBall(v2(80,80));
+	//createBall(v2(80, 160));
+	//createBall(v2(80, 240));
 
 	createGate(v2(180, 600));
 	createGate(v2(680, 200), Gate::HORIZONTAL);
+
+	_stars = new Stars(_context);
 }
 
 EnergyBalls::~EnergyBalls() {
+	delete _stars;
+	delete _emitter;
+
 }
 
 // ---------------------------------------
@@ -22,7 +38,7 @@ void EnergyBalls::createBall(const v2& pos) {
 	ball.position = pos;
 	ball.velocity = v2(0, 0);
 	ball.state = Ball::BS_GROWING;
-	ball.timer = ds::math::random(0.0f,0.4f);
+	ball.timer = 0.0f;// ds::math::random(0.0f, 0.4f);
 }
 
 // ---------------------------------------
@@ -43,13 +59,17 @@ void EnergyBalls::createGate(const v2& pos, Gate::Orientation orientation) {
 	gate.state = Gate::ACTIVE;
 	gate.timer = 0.0f;
 	//if (orientation == Gate::HORIZONTAL) {
+	float step = PI / 10.0f;
 	if ( or == 0) {
 		gate.orientation = Gate::HORIZONTAL;
-		gate.aabBox = ds::AABBox(pos, v2(30, 100));
+		gate.aabBox = ds::AABBox(pos, v2(30, 100));		
 	}
 	else {
 		gate.orientation = Gate::VERTICAL;
 		gate.aabBox = ds::AABBox(pos, v2(100, 30));
+	}
+	for (int i = 0; i < 10; ++i) {
+		gate.cell_scales[i] = step * static_cast<float>(i);
 	}
 }
 
@@ -59,16 +79,40 @@ void EnergyBalls::createGate(const v2& pos, Gate::Orientation orientation) {
 void EnergyBalls::render() {
 	for (int i = 0; i < _balls.numObjects; ++i) {
 		const Ball& b = _balls.objects[i];
-		ds::sprites::draw(b.position, ds::math::buildTexture(50, 40, 40, 48), 0.0f, b.scale.x, b.scale.y);
+		ds::sprites::draw(b.position, ds::math::buildTexture(0, 120, 24, 24), b.rotation, b.scale.x, b.scale.y);
 	}
+	_stars->render();
 	for (int i = 0; i < _gates.numObjects; ++i) {
 		const Gate& gate = _gates.objects[i];
 		if (gate.state == Gate::FLASHING || gate.state == Gate::ACTIVE) {
+			ds::sprites::draw(gate.position, ds::math::buildTexture(40, 40, 40, 40));
+			/*
+			v2 p = gate.position;
 			if (gate.orientation == Gate::VERTICAL) {
-				ds::sprites::draw(gate.position, ds::math::buildTexture(850, 0, 100, 30), 0.0f, gate.scale.x, gate.scale.y);
+				p.x -= 50.0f;
+				ds::sprites::draw(p, ds::math::buildTexture(460, 180, 20, 20));
+				p.x += 110.0f;
+				ds::sprites::draw(p, ds::math::buildTexture(440, 180, 20, 20));
+				p.x = gate.position.x - 45.0f;
+				for (int d = 0; d < 10; ++d) {
+					ds::sprites::draw(p, ds::math::buildTexture(440, 220, 10, 10));
+					p.x += 10.0f;
+				}
 			}
 			else {
-				ds::sprites::draw(gate.position, ds::math::buildTexture(850, 110, 30, 100), 0.0f, gate.scale.x, gate.scale.y);
+				p.y -= 60.0f;
+				ds::sprites::draw(p, ds::math::buildTexture(460, 200, 20, 20));
+				p.y += 110.0f;
+				ds::sprites::draw(p, ds::math::buildTexture(440, 200, 20, 20));
+				p.y = gate.position.y - 45.0f;
+				for (int d = 0; d < 10; ++d) {
+					ds::sprites::draw(p, ds::math::buildTexture(440, 220, 10, 10));
+					p.y += 10.0f;
+				}
+			}
+			*/
+			if (gate.state == Gate::FLASHING) {
+				ds::sprites::draw(gate.position, ds::math::buildTexture(440, 0, 152, 152));
 			}
 		}
 	}
@@ -85,7 +129,7 @@ void EnergyBalls::scaleGrowingBalls(float dt) {
 			float norm = ball.timer / _context->settings->ballGrowTTL;
 			if (norm > 1.0f) {
 				norm = 1.0f;
-				ball.state = Ball::BS_STARTING;
+				ball.state = Ball::BS_MOVING;
 				ball.timer = 0.0f;
 			}
 			ball.scale = tweening::interpolate(tweening::easeInQuad, v2(0.1f, 0.1f), v2(1.0f, 1.0f), norm);
@@ -130,6 +174,9 @@ void EnergyBalls::moveBalls(float dt) {
 		Ball& b = _balls.objects[i];
 		// get velocity
 		b.position += b.velocity * dt;
+		v2 diff = _context->playerPosition - b.position;
+		v2 n = normalize(diff);
+		b.rotation = ds::vector::calculateRotation(n);
 	}
 }
 
@@ -146,10 +193,15 @@ void EnergyBalls::scaleGates(float dt) {
 				// explode gate / kill balls in radius
 				norm = 1.0f;
 				gate.state = Gate::INACTIVE;
+				killBalls(gate.position);
 			}
 			float s = 0.9f + sin(norm * 6.0f) * 0.1f;
 			gate.scale.x = s;
 			gate.scale.y = s;
+			if (gate.state == Gate::INACTIVE) {
+				_gates.remove(gate.id);
+				createGate(v2(0, 0), Gate::VERTICAL);
+			}
 		}
 	}
 }
@@ -164,12 +216,36 @@ void EnergyBalls::checkGateInterception() {
 	for (int i = 0; i < _gates.numObjects; ++i) {
 		Gate& gate = _gates.objects[i];
 		if (gate.state == Gate::ACTIVE) {
-			if (gate.aabBox.overlaps(sp)) {
+			if (ds::math::checkCircleIntersection(_context->playerPosition, PLAYER_RADIUS, gate.position, 20.0f)) {
+			//if (gate.aabBox.overlaps(sp)) {
 				gate.state = Gate::FLASHING;
 				gate.timer = 0.0f;
 			}
 		}
 	}
+}
+
+void EnergyBalls::checkBallsInterception() {
+	for (int i = 0; i < _balls.numObjects; ++i) {
+		Ball& b = _balls.objects[i];
+		if (ds::math::checkCircleIntersection(_context->playerPosition, PLAYER_RADIUS, b.position, 15.0f)) {
+			LOG << "PLAYER GOT KILLED";
+			// kill all balls
+		}
+	}
+}
+
+void EnergyBalls::killBalls(const v2& bombPos) {
+	int count = 0;
+	for (int i = 0; i < _balls.numObjects; ++i) {
+		Ball& b = _balls.objects[i];
+		if (ds::math::checkCircleIntersection(bombPos, 75.0f, b.position, 15.0f)) {
+			_stars->add(b.position);
+			_balls.remove(b.id);
+			++count;
+		}
+	}
+	LOG << "killed: " << count;
 }
 
 // ---------------------------------------
@@ -186,6 +262,57 @@ void EnergyBalls::move(float dt) {
 	checkGateInterception();
 	// scale gates
 	scaleGates(dt);
+	// player to balls interception
+	checkBallsInterception();
+	// tick stars
+	_stars->tick(dt);
+	_stars->pickup(_context->playerPosition, PLAYER_RADIUS);
+	_stars->move(_context->playerPosition, dt);
+}
+
+// ------------------------------------------------
+// tick and create new dodgers
+// ------------------------------------------------
+void EnergyBalls::tick(float dt) {
+	if (_spawnData.emitter_type == SET_DELAYED) {
+		_spawnTimer += dt;
+		if (_spawnTimer > _spawnData.delay) {
+			_spawnTimer = 0.0f;
+			if (_counter < _maxBalls){
+				StartPoint sp;
+				const SpawnPoint& spawn = _emitter->next();
+				sp.position = spawn.position;
+				sp.normal = spawn.normal;
+				sp.timer = 0.0f;
+				_startPoints.push_back(sp);
+				// FIXME: call back for emitt particles
+				//_context->particles.start(9, sp.position);
+				_context->particles->start(2, sp.position);
+				++_counter;
+			}
+		}
+	}
+	if (!_startPoints.empty()) {
+		StartPoints::iterator it = _startPoints.begin();
+		while (it != _startPoints.end()) {
+			it->timer += dt;
+			if (it->timer >= _context->settings->spawnDelay) {
+				createBall(it->position);
+				it = _startPoints.erase(it);
+			}
+			else {
+				++it;
+			}
+		}
+	}
+	move(dt);
+}
+
+void EnergyBalls::activate() {
+	_spawnTimer = 0.0f;
+	_counter = 0;
+	_maxBalls = 20;
+	_emitter->rebuild();
 }
 
 

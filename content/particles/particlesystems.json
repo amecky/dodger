@@ -1,0 +1,16 @@
+"player_trail" {
+	"file" : "player_trail" ,
+	"id" : "1"
+}
+"enemy_start_dots" {
+	"file" : "enemy_start_dots",
+	"id" : "2"
+}
+"dodger_trail" {
+	"file" : "dodger_trail",
+	"id" : "3"
+}
+"explosion" {
+	"file" : "explosion",
+	"id" : "4"
+}

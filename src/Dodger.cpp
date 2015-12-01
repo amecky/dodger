@@ -19,6 +19,7 @@ Dodger::Dodger() : ds::BaseApp() {
 	//_settings.showEditor = true;
 	_context = new GameContext;
 	_context->settings = new GameSettings;
+	_context->particles = particles;
 }
 
 Dodger::~Dodger() {
@@ -37,6 +38,14 @@ bool Dodger::loadContent() {
 	gui::initialize();
 	initializeGUI(font);
 	_context->hudDialog = gui.get("HUD");
+	// prepare particle system
+	ds::Descriptor desc;
+	desc.shader = ds::shader::createParticleShader();
+	assert(desc.shader != 0);
+	desc.texture = 0;
+	desc.blendState = ds::renderer::getDefaultBlendState();
+	_context->particles->init(desc);
+	ds::assets::loadParticleSystem("particlesystems", _context->particles);
 	stateMachine->add(new MainGameState(_context));
 	stateMachine->add(new GameOverState(&gui,_context));
 	stateMachine->add(new HighscoreState(&gui, _context));

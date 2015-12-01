@@ -76,6 +76,6 @@ void Stars::add(const v2& pos) {
 void Stars::render() {
 	for (int i = 0; i < _stars.numObjects; ++i) {
 		const Star& s = _stars.objects[i];
-		ds::sprites::draw(s.position, ds::math::buildTexture(50, 80, 40, 48), 0.0f, s.scale.x, s.scale.y);
+		ds::sprites::draw(s.position, ds::math::buildTexture(0, 40, 24, 24), 0.0f, s.scale.x, s.scale.y,ds::Color(255,180,0,255));
 	}
 }
