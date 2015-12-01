@@ -1,0 +1,84 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="src\Dodger.cpp" />
+    <ClCompile Include="src\gamestates\MainGameState.cpp">
+      <Filter>gamestates</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gamestates\GameOverState.cpp">
+      <Filter>gamestates</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gamestates\HighscoreState.cpp">
+      <Filter>gamestates</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gamestates\MainMenuState.cpp">
+      <Filter>gamestates</Filter>
+    </ClCompile>
+    <ClCompile Include="src\EnergyBalls.cpp" />
+    <ClCompile Include="src\Stars.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="src\Dodger.h" />
+    <ClInclude Include="src\Constants.h" />
+    <ClInclude Include="src\gamestates\MainGameState.h">
+      <Filter>gamestates</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gamestates\GameOverState.h">
+      <Filter>gamestates</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameContext.h" />
+    <ClInclude Include="src\gamestates\HighscoreState.h">
+      <Filter>gamestates</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gamestates\MainMenuState.h">
+      <Filter>gamestates</Filter>
+    </ClInclude>
+    <ClInclude Include="src\EnergyBalls.h" />
+    <ClInclude Include="src\GameSettings.h" />
+    <ClInclude Include="src\Stars.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Dodger.manifest" />
+    <None Include="README.md" />
+    <None Include="TODO.md" />
+    <None Include="content\resources\gui.json">
+      <Filter>content\resources</Filter>
+    </None>
+    <None Include="content\resources\xscale.json">
+      <Filter>content\resources</Filter>
+    </None>
+    <None Include="content\dialogs\credits.json">
+      <Filter>content\dialogs</Filter>
+    </None>
+    <None Include="content\dialogs\game_over.json">
+      <Filter>content\dialogs</Filter>
+    </None>
+    <None Include="content\dialogs\highscores.json">
+      <Filter>content\dialogs</Filter>
+    </None>
+    <None Include="content\dialogs\main_menu.json">
+      <Filter>content\dialogs</Filter>
+    </None>
+    <None Include="content\resources\hud.json">
+      <Filter>content\resources</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Dodger.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="content">
+      <UniqueIdentifier>{4a853b84-df3f-4e5a-a59f-89ca58cbcf13}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="content\resources">
+      <UniqueIdentifier>{95012cbc-fece-49e2-bad1-9224e063cb52}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gamestates">
+      <UniqueIdentifier>{ce1e6b82-5b7d-4f8b-ac80-8c3494d32b4f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="content\dialogs">
+      <UniqueIdentifier>{737affd4-15f5-4960-acb2-a51b81da8eef}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,75 @@
+#include "Dodger.h"
+#include "utils\Log.h"
+#include "Constants.h"
+#include <sprites\SpriteBatch.h>
+#include <base\GameStateMachine.h>
+#include "gamestates\MainGameState.h"
+#include "gamestates\GameOverState.h"
+#include "gamestates\MainMenuState.h"
+#include "gamestates\HighscoreState.h"
+#include "GameContext.h"
+#include "GameSettings.h"
+
+ds::BaseApp *app = new Dodger();
+
+Dodger::Dodger() : ds::BaseApp() {
+	_settings.screenWidth = 1200;
+	_settings.screenHeight = 720;
+	_settings.clearColor = ds::Color(0,0,0,255);	
+	//_settings.showEditor = true;
+	_context = new GameContext;
+	_context->settings = new GameSettings;
+}
+
+Dodger::~Dodger() {
+	delete _context->settings;
+	delete _context;
+}
+
+// -------------------------------------------------------
+// Load content and prepare game
+// -------------------------------------------------------
+bool Dodger::loadContent() {
+	int texture = ds::renderer::loadTexture("TextureArray");
+	assert(texture != -1);
+	ds::BitmapFont* font = ds::assets::loadFont("xscale", texture);
+	ds::sprites::initializeTextSystem(font);
+	gui::initialize();
+	initializeGUI(font);
+	_context->hudDialog = gui.get("HUD");
+	stateMachine->add(new MainGameState(_context));
+	stateMachine->add(new GameOverState(&gui,_context));
+	stateMachine->add(new HighscoreState(&gui, _context));
+	stateMachine->add(new MainMenuState(&gui, _context));
+	stateMachine->connect("GameOver", 1, "MainGame");
+	stateMachine->connect("GameOver", 2, "MainMenuState");
+	stateMachine->connect("MainGame", 1, "GameOver");
+	stateMachine->connect("MainMenuState", 3, "MainGame");
+	return true;
+}
+
+void Dodger::init() {
+	// for testing
+	stateMachine->activate("MainGame");
+}
+
+
+// -------------------------------------------------------
+// Update
+// -------------------------------------------------------
+void Dodger::update(float dt) {
+}
+
+// -------------------------------------------------------
+// Draw
+// -------------------------------------------------------
+void Dodger::draw() {
+	
+}
+
+void Dodger::onGUIButton(ds::DialogID dlgID, int button) {
+	LOG << "dialog: " << dlgID << " button:" << button;
+	if (dlgID == 4 && button == 1) {
+		shutdown();
+	}
+}

@@ -1,0 +1,32 @@
+"text" { 
+    "id" : "0" , 
+    "pos" : "512,684" , 
+    "color" : "255,255,255,255" , 
+    "centered" : "false" , 
+    "scale" : "1.00" , 
+    "label" : "Hello"    
+}
+"numbers" { 
+    "id" : "1" , 
+    "pos" : "112,684" , 
+    "color" : "255,255,255,255" , 
+    "centered" : "false" , 
+    "scale" : "1.00" , 
+    "value" : "0" , 
+    "length" : "3"    
+}
+"timer" { 
+    "id" : "2" , 
+    "pos" : "512,44" , 
+    "color" : "255,255,255,255" , 
+    "centered" : "true" , 
+    "scale" : "1.00"    
+}
+"text" { 
+    "id" : "3" , 
+    "pos" : "512,384" , 
+    "color" : "255,255,255,255" , 
+    "centered" : "true" , 
+    "scale" : "1.00" , 
+    "label" : "Textereee"    
+}

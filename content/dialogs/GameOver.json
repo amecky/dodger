@@ -1,0 +1,109 @@
+"image" { 
+    "id" : "0" , 
+    "pos" : "140,700" , 
+    "color" : "255,255,255,255" , 
+    "centered" : "true" , 
+    "scale" : "1.00" , 
+    "rect" : "440,0,1024,145"    
+}
+"button" { 
+    "id" : "1" , 
+    "pos" : "100,200" , 
+    "color" : "255,255,255,255" , 
+    "centered" : "true" , 
+    "scale" : "1.00" , 
+    "rect" : "370,0,340,60" , 
+    "text" : "Restart"    
+}
+"button" { 
+    "id" : "2" , 
+    "pos" : "100,100" , 
+    "color" : "255,255,255,255" , 
+    "centered" : "true" , 
+    "scale" : "1.00" , 
+    "rect" : "300,0,340,60" , 
+    "text" : "Main Menu"    
+}
+"image" { 
+    "id" : "3" , 
+    "pos" : "512,440" , 
+    "color" : "255,255,255,255" , 
+    "centered" : "false" , 
+    "scale" : "1.00" , 
+    "rect" : "440,0,400,300"    
+}
+"image" { 
+    "id" : "4" , 
+    "pos" : "430,350" , 
+    "color" : "255,255,255,255" , 
+    "centered" : "false" , 
+    "scale" : "1.00" , 
+    "rect" : "470,0,190,190"    
+}
+"image" { 
+    "id" : "5" , 
+    "pos" : "620,520" , 
+    "color" : "255,255,255,255" , 
+    "centered" : "false" , 
+    "scale" : "1.00" , 
+    "rect" : "440,0,190,150"    
+}
+"numbers" { 
+    "id" : "8" , 
+    "pos" : "512,440" , 
+    "color" : "255,255,255,255" , 
+    "centered" : "true" , 
+    "scale" : "1.50" , 
+    "value" : "1" , 
+    "length" : "2"    
+}
+"numbers" { 
+    "id" : "9" , 
+    "pos" : "560,360" , 
+    "color" : "255,255,255,255" , 
+    "centered" : "true" , 
+    "scale" : "1.50" , 
+    "value" : "0" , 
+    "length" : "3"    
+}
+"text" { 
+    "id" : "10" , 
+    "pos" : "380,560" , 
+    "color" : "255,255,255,255" , 
+    "centered" : "true" , 
+    "scale" : "1.00" , 
+    "text" : "Collected:"    
+}
+"text" { 
+    "id" : "11" , 
+    "pos" : "512,480" , 
+    "color" : "255,255,255,255" , 
+    "centered" : "true" , 
+    "scale" : "1.00" , 
+    "text" : "Level:"    
+}
+"text" { 
+    "id" : "12" , 
+    "pos" : "512,400" , 
+    "color" : "255,255,255,255" , 
+    "centered" : "true" , 
+    "scale" : "1.00" , 
+    "text" : "Bombs removed:"    
+}
+"text" { 
+    "id" : "13" , 
+    "pos" : "512,320" , 
+    "color" : "255,255,255,255" , 
+    "centered" : "true" , 
+    "scale" : "1.00" , 
+    "text" : "Points:"    
+}
+"numbers" { 
+    "id" : "14" , 
+    "pos" : "512,280" , 
+    "color" : "255,255,255,255" , 
+    "centered" : "false" , 
+    "scale" : "1.50" , 
+    "value" : "0" , 
+    "length" : "7"    
+}
