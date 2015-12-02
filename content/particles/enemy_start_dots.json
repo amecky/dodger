@@ -1,7 +1,7 @@
 "particlesystem" {
 	"max" : "2048" ,
 	"id" : "1" ,
-	"texture_rect" : "0, 0, 20, 20" ,
+	"texture_rect" : "40, 120, 20, 20" ,
 	"texture_id" : "0" ,
 	"emitter" {
 		"count" : "12" ,	
@@ -46,8 +46,8 @@
 			"max_scale" : "0.8,0.8"
 		}
 		"linear_color_modifier" {
-			"start_color" : "255,255,255,255" ,			
-			"end_color" : "255,255,255,0" 
+			"start_color" : "255,0,0,255" ,			
+			"end_color" : "64,0,0,0" 
 		}
 	}
 }

@@ -22,64 +22,26 @@ struct Ball {
 	v2 scale;
 	float rotation;
 	BallState state;
+	int behaviors;
 	float timer;
 
 };
 
-// ----------------------------------------
-// Gate
-// ----------------------------------------
-struct Gate {
+namespace behavior {
 
-	enum Orientation {
-		VERTICAL,
-		HORIZONTAL
-	};
+	void seek(Ball* balls, int count, const v2& target, float dt);
 
-	enum State {
-		ACTIVE,
-		INACTIVE,
-		FLASHING
-	};
-	ID id;
-	v2 position;
-	Orientation orientation;
-	State state;
-	float timer;
-	ds::AABBox aabBox;
-	v2 scale;
-	float cell_scales[10];
+	void separate(Ball* balls, int count, const v2& target, float dt);
 
-	Gate() : position(512, 384), orientation(Gate::VERTICAL), state(Gate::INACTIVE), timer(0.0f) , scale(1,1) {}
+	void align(Ball* balls, int count, const v2& target, float dt);
+}
 
-};
-
-
-class Behavior {
-
-public:
-	virtual void tick(Ball* balls, int count, const v2& target,float dt) = 0;
-};
-
-class SeekBehavior : public Behavior {
-
-public:
-	void tick(Ball* balls, int count, const v2& target, float dt);
-
-};
-
-class SeparationBehavior : public Behavior {
-
-public:
-	void tick(Ball* balls, int count, const v2& target, float dt);
-
-};
-
-class AlignBehavior : public Behavior {
-
-public:
-	void tick(Ball* balls, int count, const v2& target, float dt);
-
+struct LevelData {
+	int totalBalls;
+	int emittBalls;
+	int minBalls;
+	int spawnBalls;
+	int emitted;
 };
 
 class EnergyBalls {
@@ -90,31 +52,27 @@ public:
 	void activate();
 	void render();
 	void tick(float dt);
-
+	int killBalls(const v2& bombPos);
 private:
 	void move(float dt);
-	void createGate(const v2& pos,Gate::Orientation orientation = Gate::VERTICAL);
 	void createBall(const v2& pos);
 	void scaleGrowingBalls(float dt);
 	void moveStartingBalls(float dt);
 	void moveBalls(float dt);
-	void scaleGates(float dt);
-	void checkGateInterception();
 	void checkBallsInterception();
-	void killBalls(const v2& bombPos);
+	
 	GameContext* _context;
 	ds::DataArray<Ball,256> _balls;
-	ds::DataArray<Gate,16> _gates;
+	v2 _spawner_position;
+
 	SpawnerData _spawnData;
-	float _spawnTimer;
+	float _spawn_timer;
+	float _spawn_delay;
 	StartPoints _startPoints;
 	BallEmitter* _emitter;
 	int _counter;
 	int _maxBalls;
 	Stars* _stars;
-
-	SeekBehavior _seek;
-	SeparationBehavior _separation;
-	AlignBehavior _align;
+	LevelData _level_data;
 };
 

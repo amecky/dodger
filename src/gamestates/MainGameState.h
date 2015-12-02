@@ -6,6 +6,8 @@
 #include <vector>
 #include "..\EnergyBalls.h"
 #include "..\Stars.h"
+#include "..\Bombs.h"
+#include "..\EventBuffer.h"
 
 class MainGameState : public ds::GameState {
 
@@ -22,6 +24,9 @@ public:
 private:
 	GameContext* _context;
 	EnergyBalls* _balls;
+	Bombs* _bombs;
+	EventBuffer _buffer;
+	v2 _cursor_pos;
 	
 };
 

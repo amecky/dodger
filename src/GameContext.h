@@ -9,6 +9,7 @@ struct GameContext {
 	GameSettings* settings;
 	ds::GUIDialog* hudDialog;
 	v2 playerPosition;
+	float playerAngle;
 	ds::ParticleManager* particles;
 };
 

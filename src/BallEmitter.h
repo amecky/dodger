@@ -60,6 +60,8 @@ struct SpawnerData {
 
 	SpawnerData() : count_x(0), count_y(0), border(0, 0), random_offset(0, 0), sides(0), type(SPT_EOL), emitter_type(SET_DELAYED), delay(0.0f) {}
 };
+
+
 // --------------------------------------
 // enemy spawner
 // --------------------------------------
@@ -96,4 +98,5 @@ protected:
 	SpawnPoint* _points;
 	int _total;
 	SpawnerData _data;
+	
 };
