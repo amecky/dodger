@@ -16,7 +16,7 @@ Dodger::Dodger() : ds::BaseApp() {
 	_settings.screenWidth = 1200;
 	_settings.screenHeight = 720;
 	_settings.clearColor = ds::Color(0,0,0,255);	
-	//_settings.showEditor = true;
+	_settings.initializeEditor = true;
 	_context = new GameContext;
 	_context->settings = new GameSettings;
 	_context->particles = particles;

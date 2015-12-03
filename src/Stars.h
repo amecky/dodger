@@ -20,6 +20,7 @@ public:
 	void tick(float dt);
 	void move(const v2& target, float dt);
 	int pickup(const v2& target, float radius);
+	void clear();
 private:
 	ds::DataArray<Star, 128> _stars;
 	GameContext* _context;

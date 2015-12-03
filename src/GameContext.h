@@ -11,5 +11,7 @@ struct GameContext {
 	v2 playerPosition;
 	float playerAngle;
 	ds::ParticleManager* particles;
+
+	int points;
 };
 

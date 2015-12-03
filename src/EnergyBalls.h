@@ -4,6 +4,7 @@
 #include <lib\DataArray.h>
 #include "BallEmitter.h"
 #include "Stars.h"
+#include "Behaviors.h"
 
 // ----------------------------------------
 // Ball
@@ -27,15 +28,6 @@ struct Ball {
 
 };
 
-namespace behavior {
-
-	void seek(Ball* balls, int count, const v2& target, float dt);
-
-	void separate(Ball* balls, int count, const v2& target, float dt);
-
-	void align(Ball* balls, int count, const v2& target, float dt);
-}
-
 struct LevelData {
 	int totalBalls;
 	int emittBalls;
@@ -52,7 +44,7 @@ public:
 	void activate();
 	void render();
 	void tick(float dt);
-	int killBalls(const v2& bombPos);
+	int killBalls(const v2& bombPos,v2* positions);
 private:
 	void move(float dt);
 	void createBall(const v2& pos);
@@ -62,7 +54,7 @@ private:
 	void checkBallsInterception();
 	
 	GameContext* _context;
-	ds::DataArray<Ball,256> _balls;
+	ds::DataArray<Ball, MAX_BALLS> _balls;
 	v2 _spawner_position;
 
 	SpawnerData _spawnData;
@@ -72,7 +64,6 @@ private:
 	BallEmitter* _emitter;
 	int _counter;
 	int _maxBalls;
-	Stars* _stars;
 	LevelData _level_data;
 };
 

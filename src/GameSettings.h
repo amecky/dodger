@@ -19,7 +19,7 @@ struct GameSettings : public ds::DynamicGameSettings {
 
 	GameSettings() {
 		addFloat("ballGrowTTL", &ballGrowTTL, 1.2f);
-		addFloat("gateFlashingTTL", &gateFlashingTTL, 1.5f);
+		addFloat("gateFlashingTTL", &gateFlashingTTL, 0.8f);
 		addFloat("starTTL", &starTTL, 3.0f);
 		addFloat("starMagnetRadius", &starMagnetRadius, 250.0f);
 		addFloat("starBaseScale", &starBaseScale, 0.9f);

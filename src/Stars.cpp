@@ -8,6 +8,9 @@ Stars::Stars(GameContext* context) : _context(context) {
 Stars::~Stars() {
 }
 
+void Stars::clear() {
+	_stars.clear();
+}
 // ---------------------------------------
 // tick
 // ---------------------------------------
