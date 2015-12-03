@@ -45,13 +45,14 @@ public:
 	void render();
 	void tick(float dt);
 	int killBalls(const v2& bombPos,v2* positions);
+	bool checkBallsInterception() const;
 private:
 	void move(float dt);
 	void createBall(const v2& pos);
 	void scaleGrowingBalls(float dt);
 	void moveStartingBalls(float dt);
 	void moveBalls(float dt);
-	void checkBallsInterception();
+	
 	
 	GameContext* _context;
 	ds::DataArray<Ball, MAX_BALLS> _balls;

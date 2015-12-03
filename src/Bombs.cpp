@@ -29,13 +29,60 @@ void Bombs::create() {
 	b.color = ds::Color(192, 128, 0, 255);
 }
 
+bool Bombs::grab(const v2& pos, float radius, ID* id) {
+	for (int i = 0; i < _bombs.numObjects; ++i) {
+		Bomb& bomb = _bombs.objects[i];
+		if (bomb.state == Bomb::BS_ACTIVE) {
+			if (ds::math::checkCircleIntersection(_context->playerPosition, radius, bomb.position, 20.0f)) {
+				bomb.state = Bomb::BS_FOLLOWING;
+				*id = bomb.id;
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+bool Bombs::contains(ID id) const {
+	return _bombs.contains(id);
+}
+
+void Bombs::follow(ID id, const v2& target) {
+	if (_bombs.contains(id)) {
+		Bomb& bomb = _bombs.get(id);
+		float angle = 0.0f;
+		ds::math::followRelative(target, bomb.position, &angle, 60.0f, 0.02f);
+	}
+}
+
+void Bombs::burst(ID id, float direction) {
+	if (_bombs.contains(id)) {
+		Bomb& bomb = _bombs.get(id);
+		v2 diff = _context->playerPosition - bomb.position;
+		v2 n = normalize(diff);
+		float angle = ds::vector::calculateRotation(n);
+		angle += PI;
+		bomb.velocity = ds::vector::getRadialVelocity(angle, 100.0f);
+		bomb.state = Bomb::BS_TICKING;
+		bomb.color = ds::Color(128, 0, 0, 255);
+	}
+}
+
+const v2& Bombs::getPosition(ID id) const {
+	const Bomb& b = _bombs.get(id);
+	return b.position;
+}
+
+void Bombs::clear() {
+	_bombs.clear();
+}
 // ---------------------------------------
 // render
 // ---------------------------------------
 void Bombs::render() {
 	for (int i = 0; i < _bombs.numObjects; ++i) {
 		const Bomb& bomb = _bombs.objects[i];
-		ds::sprites::draw(bomb.position, ds::math::buildTexture(40, 40, 40, 40), 0.0f, bomb.scale.x, bomb.scale.y, bomb.color);
+		ds::sprites::draw(bomb.position, ds::math::buildTexture(40, 360, 40, 40), 0.0f, bomb.scale.x, bomb.scale.y, bomb.color);
 		if (bomb.state == Bomb::BS_TICKING) {
 			float norm = bomb.timer / _context->settings->gateFlashingTTL;
 			drawRing(bomb.position,norm);
@@ -77,7 +124,6 @@ void Bombs::scaleBombs(EventBuffer* buffer, float dt) {
 			bomb.timer += dt;
 			float norm = bomb.timer / _context->settings->gateFlashingTTL;
 			if (norm > 1.0f) {
-				LOG << "removing bomb";
 				// explode gate / kill balls in radius
 				norm = 1.0f;
 				buffer->add(GameEvent::GE_BOMB_EXPLODED, bomb.position);
@@ -107,7 +153,7 @@ void Bombs::tick(EventBuffer* buffer, float dt) {
 	// move
 	for (int i = 0; i < _bombs.numObjects; ++i) {
 		Bomb& b = _bombs.objects[i];
-		if (b.state == Bomb::BS_ACTIVE) {
+		if (b.state == Bomb::BS_ACTIVE || b.state == Bomb::BS_TICKING) {
 			b.position += b.velocity * dt;
 			bool bouncing = false;
 			if (b.position.x < 20.0f || b.position.x > 1180.0f) {
@@ -123,7 +169,7 @@ void Bombs::tick(EventBuffer* buffer, float dt) {
 			}
 		}
 	}
-	checkInterception(buffer, _context->playerPosition, PLAYER_RADIUS);
+	//checkInterception(buffer, _context->playerPosition, PLAYER_RADIUS);
 
 	scaleBombs(buffer, dt);
 }

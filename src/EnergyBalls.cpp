@@ -12,11 +12,9 @@ EnergyBalls::EnergyBalls(GameContext* context) : _context(context) {
 	_spawnData.emitter_type = SET_DELAYED;
 
 	_emitter = new BallEmitter(_spawnData);
-	_stars = new Stars(_context);
 }
 
 EnergyBalls::~EnergyBalls() {
-	delete _stars;
 	delete _emitter;
 
 }
@@ -42,9 +40,8 @@ void EnergyBalls::createBall(const v2& pos) {
 void EnergyBalls::render() {
 	for (int i = 0; i < _balls.numObjects; ++i) {
 		const Ball& b = _balls.objects[i];
-		ds::sprites::draw(b.position, ds::math::buildTexture(0, 160, 20, 20), b.rotation, b.scale.x, b.scale.y);
+		ds::sprites::draw(b.position, ds::math::buildTexture(40, 280, 40, 40), b.rotation, b.scale.x, b.scale.y,ds::Color(90,184,196,255));
 	}
-	_stars->render();
 }
 
 // ---------------------------------------
@@ -89,9 +86,9 @@ void EnergyBalls::moveBalls(float dt) {
 		}
 	}
 	// apply behaviors
-	behavior::seek(_balls.objects, _balls.numObjects, _context->playerPosition, dt);
-	behavior::separate(_balls.objects, _balls.numObjects, _context->playerPosition, dt);
-	behavior::align(_balls.objects, _balls.numObjects, _context->playerPosition, dt);
+	behavior::seek(_balls.objects, _balls.numObjects, _context->playerPosition, 60.0f, dt);
+	behavior::separate(_balls.objects, _balls.numObjects, _context->playerPosition, 40.0f, 15.0f, dt);
+	behavior::align(_balls.objects, _balls.numObjects, _context->playerPosition, 40.0f, dt);
 	// move and rotate
 	for (int i = 0; i < _balls.numObjects; ++i) {
 		Ball& b = _balls.objects[i];
@@ -102,24 +99,23 @@ void EnergyBalls::moveBalls(float dt) {
 	}
 }
 
-void EnergyBalls::checkBallsInterception() {
+bool EnergyBalls::checkBallsInterception() const {
 	for (int i = 0; i < _balls.numObjects; ++i) {
-		Ball& b = _balls.objects[i];
+		const Ball& b = _balls.objects[i];
 		if (ds::math::checkCircleIntersection(_context->playerPosition, PLAYER_RADIUS, b.position, 15.0f)) {
-			LOG << "PLAYER GOT KILLED";
-			// kill all balls
+			return true;
 		}
 	}
+	return false;
 }
 
-int EnergyBalls::killBalls(const v2& bombPos) {
+int EnergyBalls::killBalls(const v2& bombPos,v2* positions) {
 	int count = 0;
 	for (int i = 0; i < _balls.numObjects; ++i) {
 		Ball& b = _balls.objects[i];
 		if (ds::math::checkCircleIntersection(bombPos, BOMB_EXPLOSION_RADIUS, b.position, 15.0f)) {
-			_stars->add(b.position);
+			positions[count++] = b.position;
 			_balls.remove(b.id);
-			++count;
 		}
 	}
 	return count;
@@ -135,12 +131,6 @@ void EnergyBalls::move(float dt) {
 	moveStartingBalls(dt);
 	// move
 	moveBalls(dt);
-	// player to balls interception
-	checkBallsInterception();
-	// tick stars
-	_stars->tick(dt);
-	_stars->pickup(_context->playerPosition, PLAYER_RADIUS);
-	_stars->move(_context->playerPosition, dt);
 }
 
 // ------------------------------------------------
@@ -200,6 +190,7 @@ void EnergyBalls::tick(float dt) {
 // activate
 // ------------------------------------------------
 void EnergyBalls::activate() {
+	_balls.clear();
 	_spawn_timer = 0.0f;
 	_spawn_delay = 2.0f;
 	_counter = 0;
@@ -210,89 +201,4 @@ void EnergyBalls::activate() {
 	_level_data.emittBalls = 20;
 	_level_data.minBalls = 10;
 	_level_data.spawnBalls = 5;
-}
-
-// ------------------------------------------------
-// behavior
-// ------------------------------------------------
-namespace behavior {
-
-	// ------------------------------------------------
-	// seek
-	// ------------------------------------------------
-	void seek(Ball* balls, int count, const v2& target, float dt) {
-		for (int i = 0; i < count; ++i) {
-			if (ds::bit::is_set(balls[i].behaviors, SEEK_BIT)) {
-				if (balls[i].state == Ball::BS_MOVING) {
-					v2 diff = target - balls[i].position;
-					v2 n = normalize(diff);
-					v2 desired = n * 150.0f;
-					balls[i].velocity += desired;
-				}
-			}
-		}
-	}
-
-	// ------------------------------------------------
-	// separate
-	// ------------------------------------------------
-	void separate(Ball* balls, int count, const v2& target, float dt) {
-		for (int i = 0; i < count; ++i) {
-			Ball& ball = balls[i];
-			if (ds::bit::is_set(ball.behaviors, SEPARATE_BIT)) {
-				if (ball.state == Ball::BS_MOVING) {
-					int cnt = 0;
-					v2 separationForce = v2(0, 0);
-					v2 averageDirection = v2(0, 0);
-					v2 distance = v2(0, 0);
-					for (int j = 0; j < count; j++) {
-						if (i != j) {
-							v2 dist = balls[j].position - ball.position;
-							if (sqr_length(dist) < 1600.0f) {
-								++cnt;
-								separationForce += dist;
-								separationForce = normalize(separationForce);
-								separationForce = separationForce * 20.0f;// / 0.9f;
-								averageDirection += separationForce;
-							}
-						}
-					}
-					if (cnt > 0) {
-						balls[i].velocity -= averageDirection;
-					}
-				}
-			}
-		}
-	}
-
-	// ------------------------------------------------
-	// align
-	// ------------------------------------------------
-	void align(Ball* balls, int count, const v2& target, float dt) {
-		for (int i = 0; i < count; ++i) {
-			Ball& ball = balls[i];
-			if (ds::bit::is_set(ball.behaviors, ALIGN_BIT)) {
-				if (ball.state == Ball::BS_MOVING) {
-					int cnt = 0;
-					v2 separationForce = v2(0, 0);
-					v2 averageDirection = v2(0, 0);
-					v2 distance = v2(0, 0);
-					for (int j = 0; j < count; j++) {
-						if (i != j) {
-							v2 dist = balls[j].position - ball.position;
-							if (sqr_length(dist) < 1600.0f) {
-								++cnt;
-								averageDirection += ball.velocity;
-							}
-						}
-					}
-					if (cnt > 0) {
-						averageDirection /= static_cast<float>(cnt);
-						balls[i].velocity += averageDirection;
-					}
-				}
-			}
-		}
-	}
-
 }

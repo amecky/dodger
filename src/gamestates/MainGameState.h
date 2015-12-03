@@ -47,7 +47,10 @@ public:
 	void deactivate();
 	int onChar(int ascii);
 	int onButtonUp(int button, int x, int y);
+	int onButtonDown(int button, int x, int y);
 private:
+	ID _bomb_id;
+	bool _grabbing;
 	GameContext* _context;
 	EnergyBalls* _balls;
 	Bombs* _bombs;

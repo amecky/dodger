@@ -9,7 +9,8 @@ struct Bomb {
 	enum BombState {
 		BS_STARTING,
 		BS_ACTIVE,
-		BS_TICKING
+		BS_TICKING,
+		BS_FOLLOWING
 	};
 
 	ID id;
@@ -33,7 +34,12 @@ public:
 	void tick(EventBuffer* buffer,float dt);
 	void render();
 	void killAll();
-	
+	bool grab(const v2& pos, float radius,ID* id);
+	bool contains(ID id) const;
+	void follow(ID id,const v2& target);
+	void burst(ID id, float direction);
+	const v2& getPosition(ID id) const;
+	void clear();
 private:
 	void checkInterception(EventBuffer* buffer, const v2& pos, float radius);
 	void create();
