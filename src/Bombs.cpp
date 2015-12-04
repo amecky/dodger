@@ -29,6 +29,9 @@ void Bombs::create() {
 	b.color = ds::Color(192, 128, 0, 255);
 }
 
+// ---------------------------------------
+// grab bomb
+// ---------------------------------------
 bool Bombs::grab(const v2& pos, float radius, ID* id) {
 	for (int i = 0; i < _bombs.numObjects; ++i) {
 		Bomb& bomb = _bombs.objects[i];
@@ -43,10 +46,16 @@ bool Bombs::grab(const v2& pos, float radius, ID* id) {
 	return false;
 }
 
+// ---------------------------------------
+// contains
+// ---------------------------------------
 bool Bombs::contains(ID id) const {
 	return _bombs.contains(id);
 }
 
+// ---------------------------------------
+// follow target
+// ---------------------------------------
 void Bombs::follow(ID id, const v2& target) {
 	if (_bombs.contains(id)) {
 		Bomb& bomb = _bombs.get(id);
@@ -55,6 +64,9 @@ void Bombs::follow(ID id, const v2& target) {
 	}
 }
 
+// ---------------------------------------
+// burst
+// ---------------------------------------
 void Bombs::burst(ID id, float direction) {
 	if (_bombs.contains(id)) {
 		Bomb& bomb = _bombs.get(id);
@@ -68,14 +80,21 @@ void Bombs::burst(ID id, float direction) {
 	}
 }
 
+// ---------------------------------------
+// get position
+// ---------------------------------------
 const v2& Bombs::getPosition(ID id) const {
 	const Bomb& b = _bombs.get(id);
 	return b.position;
 }
 
+// ---------------------------------------
+// clear
+// ---------------------------------------
 void Bombs::clear() {
 	_bombs.clear();
 }
+
 // ---------------------------------------
 // render
 // ---------------------------------------
@@ -96,11 +115,13 @@ void Bombs::render() {
 void Bombs::drawRing(const v2& pos,float timer) {
 	float step = TWO_PI / 36.0f;
 	float angle = TWO_PI * timer * 0.2f;
+	ds::Color clr(230, 88, 31, 255);
+	clr.r = 0.9 + sin(timer * PI) * 0.1f;
 	for (int i = 0; i < 36; ++i) {
 		float x = pos.x + cos(angle) * BOMB_EXPLOSION_RADIUS * (1.0f + sin(timer * PI * 3.0f) * 0.1f);
 		float y = pos.y + sin(angle) * BOMB_EXPLOSION_RADIUS * (1.0f + sin(timer * PI * 3.0f) * 0.1f);
 		float d = _cells[i] + sin(timer * PI * 8.0f) * 0.4f;
-		ds::sprites::draw(v2(x,y), ds::math::buildTexture(40, 120, 6, 6), 0.0f, d, d);
+		ds::sprites::draw(v2(x,y), ds::math::buildTexture(40, 120, 6, 6), 0.0f, d, d, clr);
 		angle += step;
 	}
 }
@@ -124,7 +145,7 @@ void Bombs::scaleBombs(EventBuffer* buffer, float dt) {
 			bomb.timer += dt;
 			float norm = bomb.timer / _context->settings->gateFlashingTTL;
 			if (norm > 1.0f) {
-				// explode gate / kill balls in radius
+				_context->particles->start(BOMB_EXPLOSION, v3(bomb.position));
 				norm = 1.0f;
 				buffer->add(GameEvent::GE_BOMB_EXPLODED, bomb.position);
 				_bombs.remove(bomb.id);
@@ -169,8 +190,7 @@ void Bombs::tick(EventBuffer* buffer, float dt) {
 			}
 		}
 	}
-	//checkInterception(buffer, _context->playerPosition, PLAYER_RADIUS);
-
+	
 	scaleBombs(buffer, dt);
 }
 
@@ -184,7 +204,7 @@ void Bombs::checkInterception(EventBuffer* buffer, const v2& pos, float radius) 
 			if (ds::math::checkCircleIntersection(_context->playerPosition, PLAYER_RADIUS, bomb.position, 20.0f)) {
 				bomb.state = Bomb::BS_TICKING;
 				bomb.timer = 0.0f;
-				bomb.color = ds::Color(128, 0, 0, 255);				
+				bomb.color = ds::Color(230, 88, 31, 255);
 				buffer->add(GameEvent::GE_BOMB_ACTIVATED, bomb.position);
 			}
 		}
@@ -197,7 +217,7 @@ void Bombs::checkInterception(EventBuffer* buffer, const v2& pos, float radius) 
 void Bombs::killAll() {
 	for (int i = 0; i < _bombs.numObjects; ++i) {
 		Bomb& b = _bombs.objects[i];
-		// fire explosion
+		_context->particles->start(BOMB_EXPLOSION, v3(b.position));
 	}
 	_bombs.clear();
 }

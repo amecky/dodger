@@ -1,13 +1,20 @@
 # TODO
 
-- [ ] extract stuff from MainGameState into separate class
-- [ ] switch to game over state when player dies (but keep Game running)
 - [ ] different behaviors
 - [ ] each level means 100 + 50 * level balls
 - [ ] show flashing Level X message
 - [ ] add wandering behavior
-- [ ] gate explosion - remove balls and check player
-- [ ] when creating a gate -> short explosion and gate should grow
+- [ ] when creating a gate -> popup animation
+- [ ] ball emitter does not calculate emitt frequency correctly
+- [ ] fix game over dialog: Balls killed / Stars collected / Level / Time played
+- [ ] rotate bomb according to velocity
+- [ ] change color of bomb when grabbed
+
+4.12.2014
+- [x] gate explosion - remove balls and check player
+- [x] add played time timer
+- [x] WONTFIX: switch to game over state when player dies (but keep Game running)
+- [x] WONTFIX: extract stuff from MainGameState into separate class
 
 3.12.2015
 - [x] use huge numbers for scoring / timer / level but with high transparency

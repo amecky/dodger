@@ -14,6 +14,7 @@ struct GameTimer {
 
 	float timer;
 	int seconds;
+	int total_seconds;
 
 	GameTimer() : timer(0.0f), seconds(0) {}
 
@@ -22,6 +23,7 @@ struct GameTimer {
 		if (timer >= 1.0f) {
 			timer -= 1.0f;
 			--seconds;
+			++total_seconds;
 			if (seconds <= 0) {
 				return true;
 			}
@@ -32,6 +34,7 @@ struct GameTimer {
 	void reset(int sec) {
 		seconds = sec;
 		timer = 0.0f;
+		total_seconds = 0;
 	}
 };
 
@@ -49,6 +52,7 @@ public:
 	int onButtonUp(int button, int x, int y);
 	int onButtonDown(int button, int x, int y);
 private:
+	void killPlayer();
 	ID _bomb_id;
 	bool _grabbing;
 	GameContext* _context;
@@ -61,5 +65,7 @@ private:
 	v2 _dialog_pos;
 	GameTimer _game_timer;
 	v2 _positions[MAX_BALLS];
+	bool _dying;
+	float _dying_timer;
 };
 

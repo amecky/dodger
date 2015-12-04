@@ -20,6 +20,7 @@ struct Ball {
 	ID id;
 	v2 position;
 	v2 velocity;
+	v2 force;
 	v2 scale;
 	float rotation;
 	BallState state;
@@ -46,6 +47,7 @@ public:
 	void tick(float dt);
 	int killBalls(const v2& bombPos,v2* positions);
 	bool checkBallsInterception() const;
+	void killAll();
 private:
 	void move(float dt);
 	void createBall(const v2& pos);

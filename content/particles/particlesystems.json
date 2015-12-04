@@ -14,3 +14,12 @@
 	"file" : "explosion",
 	"id" : "4"
 }
+"bomb_explosion" {
+	"file" : "bomb_explosion",
+	"id" : "5"
+}
+"player_explosion" {
+	"file" : "player_explosion",
+	"id" : "6"
+}
+

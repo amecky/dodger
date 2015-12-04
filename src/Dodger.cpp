@@ -54,6 +54,14 @@ bool Dodger::loadContent() {
 	stateMachine->connect("GameOver", 2, "MainMenuState");
 	stateMachine->connect("MainGame", 1, "GameOver");
 	stateMachine->connect("MainMenuState", 3, "MainGame");
+
+	// TEST
+	Category root("root");
+	if (json::read_simplified_json("content\\resources\\test.json", &root)) {
+		int id = 0;
+		root.getInt("id", &id);
+		LOG << "---> ID: " << id;
+	}
 	return true;
 }
 

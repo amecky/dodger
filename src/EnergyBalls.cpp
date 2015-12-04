@@ -99,6 +99,9 @@ void EnergyBalls::moveBalls(float dt) {
 	}
 }
 
+// ---------------------------------------
+// check balls interception with player
+// ---------------------------------------
 bool EnergyBalls::checkBallsInterception() const {
 	for (int i = 0; i < _balls.numObjects; ++i) {
 		const Ball& b = _balls.objects[i];
@@ -109,6 +112,9 @@ bool EnergyBalls::checkBallsInterception() const {
 	return false;
 }
 
+// ---------------------------------------
+// kill balls in range
+// ---------------------------------------
 int EnergyBalls::killBalls(const v2& bombPos,v2* positions) {
 	int count = 0;
 	for (int i = 0; i < _balls.numObjects; ++i) {
@@ -131,6 +137,17 @@ void EnergyBalls::move(float dt) {
 	moveStartingBalls(dt);
 	// move
 	moveBalls(dt);
+}
+
+// ---------------------------------------
+// kill all
+// ---------------------------------------
+void EnergyBalls::killAll() {
+	for (int i = 0; i < _balls.numObjects; ++i) {
+		Ball& b = _balls.objects[i];
+		_context->particles->start(BALL_EXPLOSION, v3(b.position));
+	}
+	_balls.clear();
 }
 
 // ------------------------------------------------
