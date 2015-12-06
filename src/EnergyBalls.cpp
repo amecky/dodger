@@ -86,14 +86,14 @@ void EnergyBalls::moveBalls(float dt) {
 		}
 	}
 	// apply behaviors
-	behavior::seek(_balls.objects, _balls.numObjects, _context->playerPosition, 60.0f, dt);
-	behavior::separate(_balls.objects, _balls.numObjects, _context->playerPosition, 40.0f, 15.0f, dt);
-	behavior::align(_balls.objects, _balls.numObjects, _context->playerPosition, 40.0f, dt);
+	behavior::seek(_balls.objects, _balls.numObjects, _context->world_pos, 60.0f, dt);
+	behavior::separate(_balls.objects, _balls.numObjects, _context->world_pos, 40.0f, 15.0f, dt);
+	behavior::align(_balls.objects, _balls.numObjects, _context->world_pos, 40.0f, dt);
 	// move and rotate
 	for (int i = 0; i < _balls.numObjects; ++i) {
 		Ball& b = _balls.objects[i];
 		b.position += b.velocity * dt;
-		v2 diff = _context->playerPosition - b.position;
+		v2 diff = _context->world_pos - b.position;
 		v2 n = normalize(diff);
 		b.rotation = ds::vector::calculateRotation(n);
 	}
@@ -105,7 +105,7 @@ void EnergyBalls::moveBalls(float dt) {
 bool EnergyBalls::checkBallsInterception() const {
 	for (int i = 0; i < _balls.numObjects; ++i) {
 		const Ball& b = _balls.objects[i];
-		if (ds::math::checkCircleIntersection(_context->playerPosition, PLAYER_RADIUS, b.position, 15.0f)) {
+		if (ds::math::checkCircleIntersection(_context->world_pos, PLAYER_RADIUS, b.position, 15.0f)) {
 			return true;
 		}
 	}

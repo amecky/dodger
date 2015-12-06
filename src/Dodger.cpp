@@ -37,6 +37,7 @@ bool Dodger::loadContent() {
 	ds::sprites::initializeTextSystem(font);
 	gui::initialize();
 	initializeGUI(font);
+	ds::sprites::initializeTextSystem(font);
 	_context->hudDialog = gui.get("HUD");
 	// prepare particle system
 	ds::Descriptor desc;

@@ -52,6 +52,7 @@ public:
 	int onButtonUp(int button, int x, int y);
 	int onButtonDown(int button, int x, int y);
 private:
+	void drawBorder();
 	void killPlayer();
 	ID _bomb_id;
 	bool _grabbing;
@@ -67,5 +68,6 @@ private:
 	v2 _positions[MAX_BALLS];
 	bool _dying;
 	float _dying_timer;
+	int _viewport_id;
 };
 

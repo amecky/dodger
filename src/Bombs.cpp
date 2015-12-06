@@ -36,8 +36,9 @@ bool Bombs::grab(const v2& pos, float radius, ID* id) {
 	for (int i = 0; i < _bombs.numObjects; ++i) {
 		Bomb& bomb = _bombs.objects[i];
 		if (bomb.state == Bomb::BS_ACTIVE) {
-			if (ds::math::checkCircleIntersection(_context->playerPosition, radius, bomb.position, 20.0f)) {
+			if (ds::math::checkCircleIntersection(_context->world_pos, radius, bomb.position, 20.0f)) {
 				bomb.state = Bomb::BS_FOLLOWING;
+				bomb.color = ds::Color(0, 192, 32, 255);
 				*id = bomb.id;
 				return true;
 			}
@@ -70,7 +71,7 @@ void Bombs::follow(ID id, const v2& target) {
 void Bombs::burst(ID id, float direction) {
 	if (_bombs.contains(id)) {
 		Bomb& bomb = _bombs.get(id);
-		v2 diff = _context->playerPosition - bomb.position;
+		v2 diff = _context->world_pos - bomb.position;
 		v2 n = normalize(diff);
 		float angle = ds::vector::calculateRotation(n);
 		angle += PI;
@@ -177,11 +178,11 @@ void Bombs::tick(EventBuffer* buffer, float dt) {
 		if (b.state == Bomb::BS_ACTIVE || b.state == Bomb::BS_TICKING) {
 			b.position += b.velocity * dt;
 			bool bouncing = false;
-			if (b.position.x < 20.0f || b.position.x > 1180.0f) {
+			if (b.position.x < 20.0f || b.position.x > 1900.0f) {
 				b.velocity.x *= -1.0f;
 				bouncing = true;
 			}
-			if (b.position.y < 20.0f || b.position.y > 700.0f) {
+			if (b.position.y < 20.0f || b.position.y > 1060.0f) {
 				b.velocity.y *= -1.0f;
 				bouncing = true;
 			}
@@ -201,7 +202,7 @@ void Bombs::checkInterception(EventBuffer* buffer, const v2& pos, float radius) 
 	for (int i = 0; i < _bombs.numObjects; ++i) {
 		Bomb& bomb = _bombs.objects[i];
 		if (bomb.state == Bomb::BS_ACTIVE) {
-			if (ds::math::checkCircleIntersection(_context->playerPosition, PLAYER_RADIUS, bomb.position, 20.0f)) {
+			if (ds::math::checkCircleIntersection(_context->world_pos, PLAYER_RADIUS, bomb.position, 20.0f)) {
 				bomb.state = Bomb::BS_TICKING;
 				bomb.timer = 0.0f;
 				bomb.color = ds::Color(230, 88, 31, 255);

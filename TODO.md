@@ -8,7 +8,9 @@
 - [ ] ball emitter does not calculate emitt frequency correctly
 - [ ] fix game over dialog: Balls killed / Stars collected / Level / Time played
 - [ ] rotate bomb according to velocity
-- [ ] change color of bomb when grabbed
+
+5.12.2015
+- [x] change color of bomb when grabbed
 
 4.12.2014
 - [x] gate explosion - remove balls and check player
