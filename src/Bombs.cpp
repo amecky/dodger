@@ -18,15 +18,16 @@ Bombs::~Bombs() {
 void Bombs::create() {
 	ID id = _bombs.add();
 	Bomb& b = _bombs.get(id);
-	b.position.x = ds::math::random(100.0f, 1100.0f);
-	b.position.y = ds::math::random(100.0f, 620.0f);
+	b.position.x = ds::math::random(200.0f, 720.0f);
+	b.position.y = ds::math::random(200.0f, 680.0f);
 	float angle = ds::math::random(0.0f, TWO_PI);
 	float v = ds::math::random(30.0f, 50.0f);
 	b.velocity = ds::vector::getRadialVelocity(angle, v);
 	b.scale = v2(1, 1);
-	b.state = Bomb::BS_ACTIVE;
-	b.timer = 0.0f;
+	b.state = Bomb::BS_STARTING;
+	b.resetTimer();
 	b.color = ds::Color(192, 128, 0, 255);
+	_context->particles->start(BOMB_STARTUP, v3(b.position));
 }
 
 // ---------------------------------------
@@ -143,16 +144,13 @@ void Bombs::scaleBombs(EventBuffer* buffer, float dt) {
 	for (int i = 0; i < _bombs.numObjects; ++i) {
 		Bomb& bomb = _bombs.objects[i];
 		if (bomb.state == Bomb::BS_TICKING) {
-			bomb.timer += dt;
-			float norm = bomb.timer / _context->settings->gateFlashingTTL;
-			if (norm > 1.0f) {
+			if (bomb.tickTimer(dt, _context->settings->gateFlashingTTL)) {
 				_context->particles->start(BOMB_EXPLOSION, v3(bomb.position));
-				norm = 1.0f;
 				buffer->add(GameEvent::GE_BOMB_EXPLODED, bomb.position);
 				_bombs.remove(bomb.id);
 			}
 			else {
-				float s = 1.0f + sin(norm * PI * _context->settings->bombFlashAmplitude) * 0.2f;
+				float s = 1.0f + sin(bomb.normalizedTimer * PI * _context->settings->bombFlashAmplitude) * 0.2f;
 				bomb.scale.x = s;
 				bomb.scale.y = s;
 			}
@@ -190,6 +188,12 @@ void Bombs::tick(EventBuffer* buffer, float dt) {
 				b.position += b.velocity * dt;
 			}
 		}
+		if (b.state == Bomb::BS_STARTING) {
+			if (b.tickTimer(dt, _context->settings->bombStartTTL)) {
+				b.state = Bomb::BS_ACTIVE;
+			}
+			b.scale = tweening::interpolate(tweening::easeInQuad, v2(0.1f, 0.1f), v2(1.0f, 1.0f), b.normalizedTimer);
+		}
 	}
 	
 	scaleBombs(buffer, dt);
@@ -204,7 +208,7 @@ void Bombs::checkInterception(EventBuffer* buffer, const v2& pos, float radius) 
 		if (bomb.state == Bomb::BS_ACTIVE) {
 			if (ds::math::checkCircleIntersection(_context->world_pos, PLAYER_RADIUS, bomb.position, 20.0f)) {
 				bomb.state = Bomb::BS_TICKING;
-				bomb.timer = 0.0f;
+				bomb.resetTimer();
 				bomb.color = ds::Color(230, 88, 31, 255);
 				buffer->add(GameEvent::GE_BOMB_ACTIVATED, bomb.position);
 			}

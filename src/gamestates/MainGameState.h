@@ -69,5 +69,6 @@ private:
 	bool _dying;
 	float _dying_timer;
 	int _viewport_id;
+	ds::Color _border_color;
 };
 

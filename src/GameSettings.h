@@ -14,6 +14,7 @@ struct GameSettings : public ds::DynamicGameSettings {
 	float starSeekVelocity;
 	// bomb
 	float bombFlashAmplitude;
+	float bombStartTTL;
 
 	float spawnDelay;
 
@@ -28,6 +29,7 @@ struct GameSettings : public ds::DynamicGameSettings {
 		addFloat("starSeekVelocity", &starSeekVelocity, 400.0f);
 		addFloat("spawnDelay", &spawnDelay, 0.5f);
 		addFloat("bombFlashAmplitude", &bombFlashAmplitude, 6.0f);
+		addFloat("bombStartTTL", &bombStartTTL, 0.5f);
 	}
 
 };

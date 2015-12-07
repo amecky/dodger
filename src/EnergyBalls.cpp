@@ -167,6 +167,9 @@ void EnergyBalls::tick(float dt) {
 			++_level_data.emitted;
 		}
 	}
+	_context->debugPanel.add("Total", _level_data.totalBalls);
+	_context->debugPanel.add("Emitted", _level_data.emitted);
+	_context->debugPanel.add("Count", _level_data.emittBalls);
 	/*
 	if (_spawnData.emitter_type == SET_DELAYED) {
 		_spawn_timer += dt;
@@ -218,4 +221,5 @@ void EnergyBalls::activate() {
 	_level_data.emittBalls = 20;
 	_level_data.minBalls = 10;
 	_level_data.spawnBalls = 5;
+	_level_data.emitted = 0;
 }

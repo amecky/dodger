@@ -39,7 +39,6 @@ void MainGameState::activate() {
 	_context->points = 0;
 	_context->hudDialog->setNumber(HUD_POINTS, 0);
 	_context->hudDialog->setNumber(HUD_LEVEL, 1);
-	//_context->hudDialog->setNumber(HUD_LEVEL, 0);
 	_context->playerPosition = v2(640, 360);
 	_context->playerAngle = 0.0f;
 	_dying = false;
@@ -53,6 +52,7 @@ void MainGameState::activate() {
 	_context->hudDialog->setNumber(8, _game_timer.seconds);
 	_stars->clear();
 	_grabbing = false;
+	_border_color = ds::Color(192, 128, 0, 255);
 }
 
 // -------------------------------------------------------
@@ -95,10 +95,16 @@ void MainGameState::killPlayer() {
 // Update
 // -------------------------------------------------------
 int MainGameState::update(float dt) {
+	_context->debugPanel.reset();
+
+	_context->debugPanel.add("World Pos", _context->world_pos);
+	_context->debugPanel.add("Player Pos", _context->playerPosition);
+	_context->debugPanel.add("Player angle", RADTODEG(_context->playerAngle));
+
 	if (!_dying) {
 		_cursor_pos = ds::renderer::getMousePosition();
-		float angle = 0.0f;
-		ds::math::followRelative(_cursor_pos, _context->playerPosition, &_context->playerAngle, 5.0f, 5.0f * dt);
+		ds::math::followRelative(_cursor_pos, _context->playerPosition, &_context->playerAngle, 5.0f, 1.1f * dt);
+		//ds::math::move_towards(_cursor_pos, _context->playerPosition, &_context->playerAngle, 80.0f, dt);
 
 		_context->world_pos = _context->playerPosition * 1.5f;
 		ds::renderer::setViewportPosition(_viewport_id, _context->world_pos);
@@ -169,32 +175,33 @@ int MainGameState::update(float dt) {
 // draw border
 // -------------------------------------------------------
 void MainGameState::drawBorder() {
-	ds::sprites::draw(v2(80, 1040), ds::math::buildTexture(840, 0, 40, 60));
-	ds::sprites::draw(v2(80, 40), ds::math::buildTexture(940, 0, 40, 60));
-	ds::sprites::draw(v2(1840, 1040), ds::math::buildTexture(840, 280, 40, 60));
-	ds::sprites::draw(v2(1840, 40), ds::math::buildTexture(940, 280, 40, 60));
+	ds::sprites::draw(v2(80, 1040), ds::math::buildTexture(840, 0, 40, 60), 0.0f, 1.0f, 1.0f, _border_color);
+	ds::sprites::draw(v2(80, 40), ds::math::buildTexture(940, 0, 40, 60), 0.0f, 1.0f, 1.0f, _border_color);
+	ds::sprites::draw(v2(1840, 1040), ds::math::buildTexture(840, 280, 40, 60), 0.0f, 1.0f, 1.0f, _border_color);
+	ds::sprites::draw(v2(1840, 40), ds::math::buildTexture(940, 280, 40, 60), 0.0f, 1.0f, 1.0f, _border_color);
 	for (int i = 0; i < 12; ++i) {
-		ds::sprites::draw(v2(80, 110 + i * 80), ds::math::buildTexture(880, 0, 40, 80));
-		ds::sprites::draw(v2(1840, 110 + i * 80), ds::math::buildTexture(880, 280, 40, 80));
+		ds::sprites::draw(v2(80, 110 + i * 80), ds::math::buildTexture(880, 0, 40, 80), 0.0f, 1.0f, 1.0f, _border_color);
+		ds::sprites::draw(v2(1840, 110 + i * 80), ds::math::buildTexture(880, 280, 40, 80), 0.0f, 1.0f, 1.0f, _border_color);
 	}
 	for (int i = 0; i < 8; ++i) {
-		ds::sprites::draw(v2(200 + i * 200, 1050), ds::math::buildTexture(840, 40, 200, 40));
-		ds::sprites::draw(v2(200 + i * 200, 30), ds::math::buildTexture(960, 40, 200, 40));
+		ds::sprites::draw(v2(200 + i * 200, 1050), ds::math::buildTexture(840, 40, 200, 40), 0.0f, 1.0f, 1.0f, _border_color);
+		ds::sprites::draw(v2(200 + i * 200, 30), ds::math::buildTexture(960, 40, 200, 40), 0.0f, 1.0f, 1.0f, _border_color);
 	}
-	ds::sprites::draw(v2(1760, 1050), ds::math::buildTexture(840, 40, 120, 40));
-	ds::sprites::draw(v2(1760, 30), ds::math::buildTexture(960, 40, 120, 40));
+	ds::sprites::draw(v2(1760, 1050), ds::math::buildTexture(840, 40, 120, 40), 0.0f, 1.0f, 1.0f, _border_color);
+	ds::sprites::draw(v2(1760, 30), ds::math::buildTexture(960, 40, 120, 40), 0.0f, 1.0f, 1.0f, _border_color);
 }
 
 // -------------------------------------------------------
 // render
 // -------------------------------------------------------
 void MainGameState::render() {
-	ds::renderer::selectViewport(_viewport_id);
-	drawBorder();
-
 	if (_showSettings) {
 		_context->settings->showDialog(&_dialog_pos);
 	}
+
+	ds::renderer::selectViewport(_viewport_id);
+	drawBorder();
+
 	_context->particles->render();
 	_balls->render();
 	if (_grabbing) {
@@ -219,10 +226,9 @@ void MainGameState::render() {
 
 	ds::renderer::selectViewport(0);
 	ds::sprites::draw(_cursor_pos, ds::math::buildTexture(40, 160, 20, 20));
-
-	char text[64];
-	sprintf_s(text, 64, "World %3.2f %3.2f", _context->world_pos.x, _context->world_pos.y);
-	ds::sprites::drawText(20, 700, text);
+	if (!_showSettings) {
+		_context->debugPanel.render();
+	}
 }
 
 // -------------------------------------------------------

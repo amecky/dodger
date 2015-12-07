@@ -19,3 +19,4 @@ const int DODGER_EXPLOSION = 5;
 const int PLAYER_EXPLOSION = 5;
 const int BOMB_EXPLOSION   = 5;
 const int BALL_EXPLOSION   = 5;
+const int BOMB_STARTUP     = 5;

@@ -3,8 +3,9 @@
 #include "GameContext.h"
 #include <lib\DataArray.h>
 #include "EventBuffer.h"
+#include <utils\TimedObject.h>
 
-struct Bomb {
+struct Bomb : public ds::ObjectTimer {
 
 	enum BombState {
 		BS_STARTING,
@@ -17,7 +18,7 @@ struct Bomb {
 	v2 position;
 	v2 scale;
 	BombState state;
-	float timer;
+	//float timer;
 	v2 velocity;
 	ds::Color color;
 
