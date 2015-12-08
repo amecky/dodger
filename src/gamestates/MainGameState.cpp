@@ -2,6 +2,7 @@
 #include <sprites\SpriteBatch.h>
 #include "..\Constants.h"
 #include <Vector.h>
+#include <math\matrix.h>
 
 MainGameState::MainGameState(GameContext* context) : ds::GameState("MainGame"), _context(context) {
 	_balls = new EnergyBalls(_context);
@@ -97,16 +98,23 @@ void MainGameState::killPlayer() {
 int MainGameState::update(float dt) {
 	_context->debugPanel.reset();
 
-	_context->debugPanel.add("World Pos", _context->world_pos);
-	_context->debugPanel.add("Player Pos", _context->playerPosition);
-	_context->debugPanel.add("Player angle", RADTODEG(_context->playerAngle));
+	_context->debugPanel.show("World Pos", _context->world_pos);
+	_context->debugPanel.show("Player Pos", _context->playerPosition);
+	_context->debugPanel.show("Player angle", RADTODEG(_context->playerAngle));
 
 	if (!_dying) {
 		_cursor_pos = ds::renderer::getMousePosition();
-		ds::math::followRelative(_cursor_pos, _context->playerPosition, &_context->playerAngle, 5.0f, 1.1f * dt);
+		_context->debugPanel.show("Cursor", _cursor_pos);
+		ds::mat4 wt = ds::matrix::mat4Transform(v2(-_context->world_pos.x, -_context->world_pos.y));
+		ds::mat4 vw = ds::matrix::mat4Transform(v2(1920.0f / 2.0f, 1080.0f/ 2.0f));
+		ds::mat4 inv = ds::matrix::mat4Inverse(wt * vw);
+		//v2 cp = _cursor_pos * inv;
+		v2 cp = _cursor_pos * 1.5f;
+
+		ds::math::followRelative(cp, _context->playerPosition, &_context->playerAngle, 5.0f, 1.1f * dt);
 		//ds::math::move_towards(_cursor_pos, _context->playerPosition, &_context->playerAngle, 80.0f, dt);
 
-		_context->world_pos = _context->playerPosition * 1.5f;
+		_context->world_pos = _context->playerPosition;// *1.5f;
 		ds::renderer::setViewportPosition(_viewport_id, _context->world_pos);
 
 		if (_grabbing) {
@@ -119,7 +127,7 @@ int MainGameState::update(float dt) {
 
 		_buffer.reset();
 
-		_balls->tick(dt);
+		//_balls->tick(dt);
 
 		if (_balls->checkBallsInterception()) {
 			LOG << "player hit ball";
@@ -202,6 +210,14 @@ void MainGameState::render() {
 	ds::renderer::selectViewport(_viewport_id);
 	drawBorder();
 
+	ds::sprites::draw(v2(960, 540), ds::math::buildTexture(840, 360, 120, 120));
+	ds::sprites::draw(v2(60, 540), ds::math::buildTexture(840, 360, 120, 120));
+	ds::sprites::draw(v2(60, 60), ds::math::buildTexture(840, 360, 120, 120));
+	ds::sprites::draw(v2(60, 1020), ds::math::buildTexture(840, 360, 120, 120));
+	ds::sprites::draw(v2(1860, 540), ds::math::buildTexture(840, 360, 120, 120));
+	ds::sprites::draw(v2(1860, 60), ds::math::buildTexture(840, 360, 120, 120));
+	ds::sprites::draw(v2(1860, 1020), ds::math::buildTexture(840, 360, 120, 120));
+	/*
 	_context->particles->render();
 	_balls->render();
 	if (_grabbing) {
@@ -218,11 +234,20 @@ void MainGameState::render() {
 	_stars->render();
 
 	
-	
+	*/
 	if (!_dying) {
 		ds::sprites::draw(_context->world_pos, ds::math::buildTexture(40, 0, 40, 42), _context->playerAngle);
 		ds::sprites::draw(_context->world_pos, ds::math::buildTexture(440, 0, 152, 152));
 	}
+
+	ds::mat4 wt = ds::matrix::mat4Transform(v2(-_context->world_pos.x, -_context->world_pos.y));
+	ds::mat4 vw = ds::matrix::mat4Transform(v2(1280.0f / 2.0f, 720.0f / 2.0f));
+	ds::mat4 inv = ds::matrix::mat4Inverse(wt * vw);
+	v2 cp = ds::renderer::getMousePosition() * inv;
+	//v2 cp = ds::renderer::getMousePosition();
+	//v2 cp = v2(mcp.x, mcp.y);
+	_context->debugPanel.show("CM", cp);
+	ds::sprites::draw(cp, ds::math::buildTexture(40, 160, 20, 20));
 
 	ds::renderer::selectViewport(0);
 	ds::sprites::draw(_cursor_pos, ds::math::buildTexture(40, 160, 20, 20));

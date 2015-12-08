@@ -13,7 +13,7 @@
 ds::BaseApp *app = new Dodger();
 
 Dodger::Dodger() : ds::BaseApp() {
-	_settings.screenWidth = 1200;
+	_settings.screenWidth = 1280;
 	_settings.screenHeight = 720;
 	_settings.clearColor = ds::Color(0,0,0,255);	
 	_settings.initializeEditor = true;
