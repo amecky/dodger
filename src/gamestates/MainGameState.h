@@ -54,6 +54,7 @@ public:
 private:
 	void drawBorder();
 	void killPlayer();
+	void movePlayer(float dt);
 	ID _bomb_id;
 	bool _grabbing;
 	GameContext* _context;

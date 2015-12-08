@@ -92,6 +92,39 @@ void MainGameState::killPlayer() {
 	_stars->clear();
 	_context->particles->start(PLAYER_EXPLOSION, v3(_context->world_pos));
 }
+
+// -------------------------------------------------------
+// move player
+// -------------------------------------------------------
+void MainGameState::movePlayer(float dt) {
+	_cursor_pos = ds::renderer::getMousePosition();
+	_context->debugPanel.show("Cursor", _cursor_pos);
+	v2 wp;
+	float dx = _context->world_pos.x - 1280.0f / 2.0f;
+	if (dx < 0.0f) {
+		dx = 0.0f;
+	}
+	if (dx > 640.0f) {
+		dx = 640.0f;
+	}
+	wp.x = _cursor_pos.x + dx;
+
+	float dy = _context->world_pos.y - 720.0f / 2.0f;
+	if (dy < 0.0f) {
+		dy = 0.0f;
+	}
+	if (dy > 360.0f) {
+		dy = 360.0f;
+	}
+	wp.y = _cursor_pos.y + dy;
+	_context->debugPanel.show("WP", wp);
+
+	ds::math::followRelative(wp, _context->playerPosition, &_context->playerAngle, 5.0f, 1.1f * dt);
+	ds::vector::clamp(_context->playerPosition, v2(100, 50), v2(1820, 1030));
+	_context->world_pos = _context->playerPosition;
+	ds::renderer::setViewportPosition(_viewport_id, _context->world_pos);
+}
+
 // -------------------------------------------------------
 // Update
 // -------------------------------------------------------
@@ -103,19 +136,8 @@ int MainGameState::update(float dt) {
 	_context->debugPanel.show("Player angle", RADTODEG(_context->playerAngle));
 
 	if (!_dying) {
-		_cursor_pos = ds::renderer::getMousePosition();
-		_context->debugPanel.show("Cursor", _cursor_pos);
-		ds::mat4 wt = ds::matrix::mat4Transform(v2(-_context->world_pos.x, -_context->world_pos.y));
-		ds::mat4 vw = ds::matrix::mat4Transform(v2(1920.0f / 2.0f, 1080.0f/ 2.0f));
-		ds::mat4 inv = ds::matrix::mat4Inverse(wt * vw);
-		//v2 cp = _cursor_pos * inv;
-		v2 cp = _cursor_pos * 1.5f;
 
-		ds::math::followRelative(cp, _context->playerPosition, &_context->playerAngle, 5.0f, 1.1f * dt);
-		//ds::math::move_towards(_cursor_pos, _context->playerPosition, &_context->playerAngle, 80.0f, dt);
-
-		_context->world_pos = _context->playerPosition;// *1.5f;
-		ds::renderer::setViewportPosition(_viewport_id, _context->world_pos);
+		movePlayer(dt);
 
 		if (_grabbing) {
 			_bombs->follow(_bomb_id, _context->world_pos);
@@ -127,7 +149,7 @@ int MainGameState::update(float dt) {
 
 		_buffer.reset();
 
-		//_balls->tick(dt);
+		_balls->tick(dt);
 
 		if (_balls->checkBallsInterception()) {
 			LOG << "player hit ball";
@@ -183,6 +205,12 @@ int MainGameState::update(float dt) {
 // draw border
 // -------------------------------------------------------
 void MainGameState::drawBorder() {
+
+	ds::sprites::draw(v2(480, 270), ds::math::buildTexture(0, 512, 480, 270),0.0f,2.0f,2.0f);
+	ds::sprites::draw(v2(480, 810), ds::math::buildTexture(0, 512, 480, 270), 0.0f, 2.0f, 2.0f);
+	ds::sprites::draw(v2(1440, 270), ds::math::buildTexture(0, 512, 480, 270), 0.0f, 2.0f, 2.0f);
+	ds::sprites::draw(v2(1440, 810), ds::math::buildTexture(0, 512, 480, 270), 0.0f, 2.0f, 2.0f);
+
 	ds::sprites::draw(v2(80, 1040), ds::math::buildTexture(840, 0, 40, 60), 0.0f, 1.0f, 1.0f, _border_color);
 	ds::sprites::draw(v2(80, 40), ds::math::buildTexture(940, 0, 40, 60), 0.0f, 1.0f, 1.0f, _border_color);
 	ds::sprites::draw(v2(1840, 1040), ds::math::buildTexture(840, 280, 40, 60), 0.0f, 1.0f, 1.0f, _border_color);
@@ -197,6 +225,8 @@ void MainGameState::drawBorder() {
 	}
 	ds::sprites::draw(v2(1760, 1050), ds::math::buildTexture(840, 40, 120, 40), 0.0f, 1.0f, 1.0f, _border_color);
 	ds::sprites::draw(v2(1760, 30), ds::math::buildTexture(960, 40, 120, 40), 0.0f, 1.0f, 1.0f, _border_color);
+
+	
 }
 
 // -------------------------------------------------------
@@ -209,7 +239,7 @@ void MainGameState::render() {
 
 	ds::renderer::selectViewport(_viewport_id);
 	drawBorder();
-
+	/*
 	ds::sprites::draw(v2(960, 540), ds::math::buildTexture(840, 360, 120, 120));
 	ds::sprites::draw(v2(60, 540), ds::math::buildTexture(840, 360, 120, 120));
 	ds::sprites::draw(v2(60, 60), ds::math::buildTexture(840, 360, 120, 120));
@@ -217,7 +247,8 @@ void MainGameState::render() {
 	ds::sprites::draw(v2(1860, 540), ds::math::buildTexture(840, 360, 120, 120));
 	ds::sprites::draw(v2(1860, 60), ds::math::buildTexture(840, 360, 120, 120));
 	ds::sprites::draw(v2(1860, 1020), ds::math::buildTexture(840, 360, 120, 120));
-	/*
+	*/
+
 	_context->particles->render();
 	_balls->render();
 	if (_grabbing) {
@@ -232,28 +263,18 @@ void MainGameState::render() {
 	}
 	_bombs->render();
 	_stars->render();
-
 	
-	*/
 	if (!_dying) {
 		ds::sprites::draw(_context->world_pos, ds::math::buildTexture(40, 0, 40, 42), _context->playerAngle);
 		ds::sprites::draw(_context->world_pos, ds::math::buildTexture(440, 0, 152, 152));
 	}
 
-	ds::mat4 wt = ds::matrix::mat4Transform(v2(-_context->world_pos.x, -_context->world_pos.y));
-	ds::mat4 vw = ds::matrix::mat4Transform(v2(1280.0f / 2.0f, 720.0f / 2.0f));
-	ds::mat4 inv = ds::matrix::mat4Inverse(wt * vw);
-	v2 cp = ds::renderer::getMousePosition() * inv;
-	//v2 cp = ds::renderer::getMousePosition();
-	//v2 cp = v2(mcp.x, mcp.y);
-	_context->debugPanel.show("CM", cp);
-	ds::sprites::draw(cp, ds::math::buildTexture(40, 160, 20, 20));
 
 	ds::renderer::selectViewport(0);
 	ds::sprites::draw(_cursor_pos, ds::math::buildTexture(40, 160, 20, 20));
-	if (!_showSettings) {
-		_context->debugPanel.render();
-	}
+	//if (!_showSettings) {
+		//_context->debugPanel.render();
+	//}
 }
 
 // -------------------------------------------------------

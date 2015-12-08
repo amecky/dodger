@@ -5,7 +5,7 @@ EnergyBalls::EnergyBalls(GameContext* context) : _context(context) {
 
 	_spawnData.count_x = 10;
 	_spawnData.count_y = 5;
-	_spawnData.border = v2(40, 40);
+	_spawnData.border = v2(120, 120);
 	_spawnData.sides = 10;
 	_spawnData.delay = 0.5f;
 	_spawnData.type = SPT_PARTIAL_EDGES;

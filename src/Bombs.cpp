@@ -103,7 +103,7 @@ void Bombs::clear() {
 void Bombs::render() {
 	for (int i = 0; i < _bombs.numObjects; ++i) {
 		const Bomb& bomb = _bombs.objects[i];
-		ds::sprites::draw(bomb.position, ds::math::buildTexture(40, 360, 40, 40), 0.0f, bomb.scale.x, bomb.scale.y, bomb.color);
+		ds::sprites::draw(bomb.position, ds::math::buildTexture(220, 420, 82, 82), 0.0f, bomb.scale.x, bomb.scale.y, bomb.color);
 		if (bomb.state == Bomb::BS_TICKING) {
 			float norm = bomb.timer / _context->settings->gateFlashingTTL;
 			drawRing(bomb.position,norm);
