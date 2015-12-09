@@ -6,6 +6,13 @@
 // ------------------------------------------------
 namespace behavior {
 
+	void simple_move(Ball* balls, int count, float dt) {
+		for (int i = 0; i < count; ++i) {
+			if (ds::bit::is_set(balls[i].behaviors, SIMPLE_MOVE_BIT)) {
+				balls[i].force = balls[i].velocity;
+			}
+		}
+	}
 	// ------------------------------------------------
 	// seek
 	// ------------------------------------------------
@@ -16,7 +23,7 @@ namespace behavior {
 					v2 diff = target - balls[i].position;
 					v2 n = normalize(diff);
 					v2 desired = n * velocity;
-					balls[i].velocity += desired;
+					balls[i].force += desired;
 				}
 			}
 		}
@@ -48,7 +55,7 @@ namespace behavior {
 						}
 					}
 					if (cnt > 0) {
-						balls[i].velocity -= averageDirection;
+						balls[i].force -= averageDirection;
 					}
 				}
 			}
@@ -79,7 +86,7 @@ namespace behavior {
 					}
 					if (cnt > 0) {
 						averageDirection /= static_cast<float>(cnt);
-						balls[i].velocity += averageDirection;
+						balls[i].force += averageDirection;
 					}
 				}
 			}

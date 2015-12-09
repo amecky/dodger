@@ -10,7 +10,7 @@ EnergyBalls::EnergyBalls(GameContext* context) : _context(context) {
 	_spawnData.delay = 0.5f;
 	_spawnData.type = SPT_PARTIAL_EDGES;
 	_spawnData.emitter_type = SET_DELAYED;
-
+	_spawnData.world_size = v2(1920, 1080);
 	_emitter = new BallEmitter(_spawnData);
 }
 
@@ -19,6 +19,28 @@ EnergyBalls::~EnergyBalls() {
 
 }
 
+void EnergyBalls::createBall(const v2& pos, int current, int total, EnergyBallType type) {
+	ID id = _balls.add();
+	Ball& ball = _balls.get(id);
+	ball.position = pos;
+	float angle = ds::math::random(0.0f, TWO_PI);
+	ball.velocity = ds::vector::getRadialVelocity(angle, ds::math::random(10.0f, 20.0f));
+	ball.state = Ball::BS_GROWING;
+	ball.timer = 0.0f;
+	ds::bit::set(&ball.behaviors, SIMPLE_MOVE_BIT);
+	if (type == EBT_FOLLOWER) {
+		ball.texture = ds::math::buildTexture(80, 160, 25, 25);
+		ball.color = ds::Color(90, 184, 196, 255);
+		ball.size = 12.0f;
+	}
+	else {
+		ball.texture = ds::math::buildTexture(80, 40, 40, 40);
+		ball.color = ds::Color(200, 0, 120, 255);
+		ball.size = 20.0f;
+	}
+	ball.type = type;
+	ball.force = v2(0, 0);
+}
 // ---------------------------------------
 // create ball
 // ---------------------------------------
@@ -30,8 +52,11 @@ void EnergyBalls::createBall(const v2& pos) {
 	ball.velocity = ds::vector::getRadialVelocity(angle, ds::math::random(10.0f, 20.0f));
 	ball.state = Ball::BS_GROWING;
 	ball.timer = 0.0f;
-	ds::bit::set(&ball.behaviors, SEEK_BIT);
-	ds::bit::set(&ball.behaviors, SEPARATE_BIT);
+	ds::bit::set(&ball.behaviors, SIMPLE_MOVE_BIT);
+	ball.texture = ds::math::buildTexture(80, 160, 25, 25);
+	ball.color = ds::Color(90, 184, 196, 255);
+	ball.force = v2(0, 0);
+	ball.type = EBT_FOLLOWER;
 }
 
 // ---------------------------------------
@@ -40,7 +65,7 @@ void EnergyBalls::createBall(const v2& pos) {
 void EnergyBalls::render() {
 	for (int i = 0; i < _balls.numObjects; ++i) {
 		const Ball& b = _balls.objects[i];
-		ds::sprites::draw(b.position, ds::math::buildTexture(40, 280, 40, 40), b.rotation, b.scale.x, b.scale.y,ds::Color(90,184,196,255));
+		ds::sprites::draw(b.position, b.texture, b.rotation, b.scale.x, b.scale.y,b.color);
 	}
 }
 
@@ -56,21 +81,14 @@ void EnergyBalls::scaleGrowingBalls(float dt) {
 			if (norm > 1.0f) {
 				norm = 1.0f;
 				ball.state = Ball::BS_MOVING;
-				ball.timer = 0.0f;
+				ball.timer = 0.0f;				
+				if (ball.type == EBT_FOLLOWER) {
+					ball.behaviors = 0;
+					ds::bit::set(&ball.behaviors, SEEK_BIT);
+					ds::bit::set(&ball.behaviors, SEPARATE_BIT);
+				}
 			}
 			ball.scale = tweening::interpolate(tweening::easeInQuad, v2(0.1f, 0.1f), v2(1.0f, 1.0f), norm);
-		}
-	}
-}
-
-// ---------------------------------------
-// move starting balls
-// ---------------------------------------
-void EnergyBalls::moveStartingBalls(float dt) {
-	for (int i = 0; i < _balls.numObjects; ++i) {
-		Ball& ball = _balls.objects[i];
-		if (ball.state == Ball::BS_GROWING) {
-			ball.position += ball.velocity * dt;
 		}
 	}
 }
@@ -81,21 +99,21 @@ void EnergyBalls::moveStartingBalls(float dt) {
 void EnergyBalls::moveBalls(float dt) {
 	// reset velocity
 	for (int i = 0; i < _balls.numObjects; ++i) {
-		if (_balls.objects[i].state == Ball::BS_MOVING) {
-			_balls.objects[i].velocity = v2(0, 0);
-		}
+		_balls.objects[i].force = v2(0, 0);
 	}
 	// apply behaviors
 	behavior::seek(_balls.objects, _balls.numObjects, _context->world_pos, 60.0f, dt);
 	behavior::separate(_balls.objects, _balls.numObjects, _context->world_pos, 40.0f, 15.0f, dt);
 	behavior::align(_balls.objects, _balls.numObjects, _context->world_pos, 40.0f, dt);
+	behavior::simple_move(_balls.objects, _balls.numObjects, dt);
 	// move and rotate
 	for (int i = 0; i < _balls.numObjects; ++i) {
 		Ball& b = _balls.objects[i];
-		b.position += b.velocity * dt;
+		b.position += b.force * dt;
 		v2 diff = _context->world_pos - b.position;
 		v2 n = normalize(diff);
 		b.rotation = ds::vector::calculateRotation(n);
+		// FIXME: make sure we are inside the grid!
 	}
 }
 
@@ -133,8 +151,6 @@ int EnergyBalls::killBalls(const v2& bombPos,v2* positions) {
 void EnergyBalls::move(float dt) {
 	// growing
 	scaleGrowingBalls(dt);
-	// starting
-	moveStartingBalls(dt);
 	// move
 	moveBalls(dt);
 }
@@ -150,6 +166,13 @@ void EnergyBalls::killAll() {
 	_balls.clear();
 }
 
+void EnergyBalls::emitt(EnergyBallType type, int count) {
+	const SpawnPoint& spawn = _emitter->random();
+	// 
+	for (int i = 0; i < count; ++i) {
+		createBall(spawn.position, i, count, type);
+	}
+}
 // ------------------------------------------------
 // tick and create new dodgers
 // ------------------------------------------------

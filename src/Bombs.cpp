@@ -6,6 +6,8 @@ Bombs::Bombs(GameContext* context) : _context(context) {
 	for (int i = 0; i < 36; ++i) {
 		_cells[i] = 0.9f + sin(step * static_cast<float>(i) * 12.0f) * 0.4f;
 	}
+	_texture = ds::math::buildTexture(0, 440, 60, 60);
+	_ring_texture = ds::math::buildTexture(40, 120, 6, 6);
 }
 
 
@@ -26,7 +28,8 @@ void Bombs::create() {
 	b.scale = v2(1, 1);
 	b.state = Bomb::BS_STARTING;
 	b.resetTimer();
-	b.color = ds::Color(192, 128, 0, 255);
+	b.color = ds::Color(130, 0, 255, 255);
+	b.rotation = 0.0f;
 	_context->particles->start(BOMB_STARTUP, v3(b.position));
 }
 
@@ -63,6 +66,9 @@ void Bombs::follow(ID id, const v2& target) {
 		Bomb& bomb = _bombs.get(id);
 		float angle = 0.0f;
 		ds::math::followRelative(target, bomb.position, &angle, 60.0f, 0.02f);
+		v2 diff = _context->world_pos - bomb.position;
+		v2 n = normalize(diff);
+		bomb.rotation = ds::vector::calculateRotation(n);
 	}
 }
 
@@ -103,7 +109,7 @@ void Bombs::clear() {
 void Bombs::render() {
 	for (int i = 0; i < _bombs.numObjects; ++i) {
 		const Bomb& bomb = _bombs.objects[i];
-		ds::sprites::draw(bomb.position, ds::math::buildTexture(220, 420, 82, 82), 0.0f, bomb.scale.x, bomb.scale.y, bomb.color);
+		ds::sprites::draw(bomb.position, _texture, bomb.rotation, bomb.scale.x, bomb.scale.y, bomb.color);
 		if (bomb.state == Bomb::BS_TICKING) {
 			float norm = bomb.timer / _context->settings->gateFlashingTTL;
 			drawRing(bomb.position,norm);
@@ -123,7 +129,7 @@ void Bombs::drawRing(const v2& pos,float timer) {
 		float x = pos.x + cos(angle) * BOMB_EXPLOSION_RADIUS * (1.0f + sin(timer * PI * 3.0f) * 0.1f);
 		float y = pos.y + sin(angle) * BOMB_EXPLOSION_RADIUS * (1.0f + sin(timer * PI * 3.0f) * 0.1f);
 		float d = _cells[i] + sin(timer * PI * 8.0f) * 0.4f;
-		ds::sprites::draw(v2(x,y), ds::math::buildTexture(40, 120, 6, 6), 0.0f, d, d, clr);
+		ds::sprites::draw(v2(x,y), _ring_texture, 0.0f, d, d, clr);
 		angle += step;
 	}
 }
@@ -176,24 +182,29 @@ void Bombs::tick(EventBuffer* buffer, float dt) {
 		if (b.state == Bomb::BS_ACTIVE || b.state == Bomb::BS_TICKING) {
 			b.position += b.velocity * dt;
 			bool bouncing = false;
-			if (b.position.x < 20.0f || b.position.x > 1900.0f) {
+			if (b.position.x < 130.0f || b.position.x > 1790.0f) {
 				b.velocity.x *= -1.0f;
 				bouncing = true;
 			}
-			if (b.position.y < 20.0f || b.position.y > 1060.0f) {
+			if (b.position.y < 130.0f || b.position.y > 950.0f) {
 				b.velocity.y *= -1.0f;
 				bouncing = true;
 			}
 			if (bouncing) {
 				b.position += b.velocity * dt;
 			}
+			v2 n = normalize(b.velocity);
+			b.rotation = ds::vector::calculateRotation(n);
 		}
 		if (b.state == Bomb::BS_STARTING) {
 			if (b.tickTimer(dt, _context->settings->bombStartTTL)) {
 				b.state = Bomb::BS_ACTIVE;
 			}
 			b.scale = tweening::interpolate(tweening::easeInQuad, v2(0.1f, 0.1f), v2(1.0f, 1.0f), b.normalizedTimer);
+			v2 n = normalize(b.velocity);
+			b.rotation = ds::vector::calculateRotation(n);
 		}
+		
 	}
 	
 	scaleBombs(buffer, dt);

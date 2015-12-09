@@ -27,8 +27,8 @@ BallEmitter::BallEmitter(const SpawnerData& data) : _data(data) , _points(0), _t
 }
 
 void BallEmitter::rebuild() {
-	float stepX = (ds::renderer::getScreenWidth() - _data.border.x * 2.0f) / static_cast<float>(_data.count_x - 1);
-	float stepY = (ds::renderer::getScreenHeight() - _data.border.y * 2.0f) / static_cast<float>(_data.count_y + 1);
+	float stepX = (_data.world_size.x - _data.border.x * 2.0f) / static_cast<float>(_data.count_x - 1);
+	float stepY = (_data.world_size.y - _data.border.y * 2.0f) / static_cast<float>(_data.count_y + 1);
 	v2 steps(stepX, stepY);
 	int cnt = 0;
 	// bottom

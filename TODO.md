@@ -3,11 +3,13 @@
 - [ ] different behaviors
 - [ ] each level means 100 + 50 * level balls
 - [ ] show flashing Level X message
-- [ ] add wandering behavior
-- [ ] when creating a gate -> popup animation
 - [ ] ball emitter does not calculate emitt frequency correctly
 - [ ] fix game over dialog: Balls killed / Stars collected / Level / Time played
-- [ ] rotate bomb according to velocity
+
+8.12.2015
+- [x] rotate bomb according to velocity
+- [x] add wandering behavior - SIMPLE_MOVE_BIT
+- [x] when creating a gate -> popup animation
 
 5.12.2015
 - [x] change color of bomb when grabbed

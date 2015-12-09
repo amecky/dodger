@@ -290,6 +290,9 @@ int MainGameState::onChar(int ascii) {
 	if (ascii == 'w') {
 		_context->particles->start(5, v3(640,360,0));
 	}
+	if (ascii == '2') {
+		_balls->emitt(EBT_BIG_CUBE, 1);
+	}
 	return 0;
 }
 

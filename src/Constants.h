@@ -11,9 +11,10 @@ const int HUD_TIMER  = 8;
 const float PLAYER_RADIUS = 22.0f;
 const float BOMB_EXPLOSION_RADIUS = 100.0f;
 
-const int SEEK_BIT     = 1;
-const int SEPARATE_BIT = 2;
-const int ALIGN_BIT    = 3;
+const int SEEK_BIT        = 1;
+const int SEPARATE_BIT    = 2;
+const int ALIGN_BIT       = 3;
+const int SIMPLE_MOVE_BIT = 4;
 
 const int DODGER_EXPLOSION = 5;
 const int PLAYER_EXPLOSION = 5;

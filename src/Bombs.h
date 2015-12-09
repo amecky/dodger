@@ -18,7 +18,7 @@ struct Bomb : public ds::ObjectTimer {
 	v2 position;
 	v2 scale;
 	BombState state;
-	//float timer;
+	float rotation;
 	v2 velocity;
 	ds::Color color;
 
@@ -51,6 +51,8 @@ private:
 	float _spawn_timer;
 	ds::DataArray<Bomb, 32> _bombs;
 	float _cells[36];
+	ds::Texture _texture;
+	ds::Texture _ring_texture;
 
 };
 

@@ -6,6 +6,11 @@
 #include "Stars.h"
 #include "Behaviors.h"
 
+enum EnergyBallType {
+	EBT_FOLLOWER,
+	EBT_BIG_CUBE,
+	EBT_EOL
+};
 // ----------------------------------------
 // Ball
 // ----------------------------------------
@@ -22,10 +27,14 @@ struct Ball {
 	v2 velocity;
 	v2 force;
 	v2 scale;
+	ds::Texture texture;
+	float size;
 	float rotation;
 	BallState state;
 	int behaviors;
 	float timer;
+	ds::Color color;
+	EnergyBallType type;
 
 };
 
@@ -48,11 +57,12 @@ public:
 	int killBalls(const v2& bombPos,v2* positions);
 	bool checkBallsInterception() const;
 	void killAll();
+	void emitt(EnergyBallType type, int count);
 private:
 	void move(float dt);
 	void createBall(const v2& pos);
+	void createBall(const v2& pos,int current, int total, EnergyBallType type);
 	void scaleGrowingBalls(float dt);
-	void moveStartingBalls(float dt);
 	void moveBalls(float dt);
 	
 	
