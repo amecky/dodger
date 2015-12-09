@@ -226,6 +226,13 @@ void EnergyBalls::tick(float dt) {
 		}
 	}
 	*/
+
+	_big_ball_timer += dt;
+	if (_big_ball_timer >= _level_data.bigBallEmittTime) {
+		_big_ball_timer -= _level_data.bigBallEmittTime;
+		const SpawnPoint& spawn = _emitter->random();
+		createBall(spawn.position, 1, 1, EBT_BIG_CUBE);
+	}
 	move(dt);
 }
 
@@ -245,4 +252,6 @@ void EnergyBalls::activate() {
 	_level_data.minBalls = 10;
 	_level_data.spawnBalls = 5;
 	_level_data.emitted = 0;
+	_level_data.bigBallEmittTime = 1.2f;
+	_big_ball_timer = 0.0f;
 }

@@ -239,16 +239,6 @@ void MainGameState::render() {
 
 	ds::renderer::selectViewport(_viewport_id);
 	drawBorder();
-	/*
-	ds::sprites::draw(v2(960, 540), ds::math::buildTexture(840, 360, 120, 120));
-	ds::sprites::draw(v2(60, 540), ds::math::buildTexture(840, 360, 120, 120));
-	ds::sprites::draw(v2(60, 60), ds::math::buildTexture(840, 360, 120, 120));
-	ds::sprites::draw(v2(60, 1020), ds::math::buildTexture(840, 360, 120, 120));
-	ds::sprites::draw(v2(1860, 540), ds::math::buildTexture(840, 360, 120, 120));
-	ds::sprites::draw(v2(1860, 60), ds::math::buildTexture(840, 360, 120, 120));
-	ds::sprites::draw(v2(1860, 1020), ds::math::buildTexture(840, 360, 120, 120));
-	*/
-
 	_context->particles->render();
 	_balls->render();
 	if (_grabbing) {

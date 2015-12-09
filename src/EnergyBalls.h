@@ -44,6 +44,7 @@ struct LevelData {
 	int minBalls;
 	int spawnBalls;
 	int emitted;
+	float bigBallEmittTime;
 };
 
 class EnergyBalls {
@@ -73,6 +74,7 @@ private:
 	SpawnerData _spawnData;
 	float _spawn_timer;
 	float _spawn_delay;
+	float _big_ball_timer;
 	StartPoints _startPoints;
 	BallEmitter* _emitter;
 	int _counter;
