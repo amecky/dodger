@@ -22,6 +22,7 @@ EnergyBalls::~EnergyBalls() {
 void EnergyBalls::createBall(const v2& pos, int current, int total, EnergyBallType type) {
 	ID id = _balls.add();
 	Ball& ball = _balls.get(id);
+	// FIXME: spread out with radius
 	ball.position = pos;
 	float angle = ds::math::random(0.0f, TWO_PI);
 	ball.velocity = ds::vector::getRadialVelocity(angle, ds::math::random(10.0f, 20.0f));
@@ -33,10 +34,17 @@ void EnergyBalls::createBall(const v2& pos, int current, int total, EnergyBallTy
 		ball.color = ds::Color(90, 184, 196, 255);
 		ball.size = 12.0f;
 	}
-	else {
+	else if (type == EBT_BIG_CUBE) {
 		ball.texture = ds::math::buildTexture(80, 40, 40, 40);
 		ball.color = ds::Color(200, 0, 120, 255);
 		ball.size = 20.0f;
+		ball.velocity = ds::vector::getRadialVelocity(angle, ds::math::random(50.0f, 80.0f));
+	}
+	else {
+		ball.texture = ds::math::buildTexture(0, 200, 60, 60);
+		ball.color = ds::Color(253, 138, 81, 255);
+		ball.size = 30.0f;
+		ball.velocity = ds::vector::getRadialVelocity(angle, ds::math::random(20.0f, 50.0f));
 	}
 	ball.type = type;
 	ball.force = v2(0, 0);
@@ -110,6 +118,18 @@ void EnergyBalls::moveBalls(float dt) {
 	for (int i = 0; i < _balls.numObjects; ++i) {
 		Ball& b = _balls.objects[i];
 		b.position += b.force * dt;
+		bool changed = false;
+		if (b.position.x < 100.0f || b.position.x > 1820.0f) {
+			b.velocity.x *= -1.0f;
+			changed = true;
+		}
+		if (b.position.y < 50.0f || b.position.y > 1030.0f) {
+			b.velocity.y *= -1.0f;
+			changed = true;
+		}
+		if (changed) {
+			b.position += b.velocity * dt;
+		}
 		v2 diff = _context->world_pos - b.position;
 		v2 n = normalize(diff);
 		b.rotation = ds::vector::calculateRotation(n);
@@ -133,12 +153,18 @@ bool EnergyBalls::checkBallsInterception() const {
 // ---------------------------------------
 // kill balls in range
 // ---------------------------------------
-int EnergyBalls::killBalls(const v2& bombPos,v2* positions) {
+int EnergyBalls::killBalls(const v2& bombPos, KilledBall* killedBalls) {
 	int count = 0;
 	for (int i = 0; i < _balls.numObjects; ++i) {
 		Ball& b = _balls.objects[i];
-		if (ds::math::checkCircleIntersection(bombPos, BOMB_EXPLOSION_RADIUS, b.position, 15.0f)) {
-			positions[count++] = b.position;
+		if (ds::math::checkCircleIntersection(bombPos, BOMB_EXPLOSION_RADIUS, b.position, b.size)) {
+			if (b.type == EBT_FOLLOWER) {
+				// FIXME: count kills
+				//++_killed;
+			}
+			KilledBall& kb = killedBalls[count++];
+			kb.position = b.position;
+			kb.type = b.type;
 			_balls.remove(b.id);
 		}
 	}
@@ -177,6 +203,7 @@ void EnergyBalls::emitt(EnergyBallType type, int count) {
 // tick and create new dodgers
 // ------------------------------------------------
 void EnergyBalls::tick(float dt) {
+	/*
 	int delta = _balls.numObjects - _level_data.minBalls;
 	if (delta < 0) {
 		// pick start point
@@ -193,6 +220,7 @@ void EnergyBalls::tick(float dt) {
 	_context->debugPanel.show("Total", _level_data.totalBalls);
 	_context->debugPanel.show("Emitted", _level_data.emitted);
 	_context->debugPanel.show("Count", _level_data.emittBalls);
+	*/
 	/*
 	if (_spawnData.emitter_type == SET_DELAYED) {
 		_spawn_timer += dt;
@@ -226,12 +254,30 @@ void EnergyBalls::tick(float dt) {
 		}
 	}
 	*/
+	_ball_timer += dt;
+	if (_ball_timer >= _level_data.bigBallEmittTime) {
+		_ball_timer -= _level_data.bigBallEmittTime;
+		if (_level_data.emitted + _level_data.spawnBalls < _level_data.totalBalls) {
+			const SpawnPoint& spawn = _emitter->random();
+			for (int i = 0; i < _level_data.spawnBalls; ++i) {
+				createBall(spawn.position, i, _level_data.spawnBalls, EBT_FOLLOWER);
+				++_level_data.emitted;
+			}
+		}
+	}
 
 	_big_ball_timer += dt;
 	if (_big_ball_timer >= _level_data.bigBallEmittTime) {
 		_big_ball_timer -= _level_data.bigBallEmittTime;
 		const SpawnPoint& spawn = _emitter->random();
 		createBall(spawn.position, 1, 1, EBT_BIG_CUBE);
+	}
+
+	_huge_ball_timer += dt;
+	if (_huge_ball_timer >= _level_data.hugeBallEmittTime) {
+		_huge_ball_timer -= _level_data.hugeBallEmittTime;
+		const SpawnPoint& spawn = _emitter->random();
+		createBall(spawn.position, 1, 1, EBT_HUGE_CUBE);
 	}
 	move(dt);
 }
@@ -253,5 +299,8 @@ void EnergyBalls::activate() {
 	_level_data.spawnBalls = 5;
 	_level_data.emitted = 0;
 	_level_data.bigBallEmittTime = 1.2f;
+	_level_data.hugeBallEmittTime = 2.5f;
 	_big_ball_timer = 0.0f;
+	_huge_ball_timer = 0.0f;
+	_ball_timer = 0.0f;
 }

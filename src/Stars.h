@@ -15,7 +15,7 @@ struct Star {
 public:
 	Stars(GameContext* context);
 	~Stars();
-	void add(const v2& position);
+	void add(const v2& position,int count = 1);
 	void render();
 	void tick(float dt);
 	void move(const v2& target, float dt);

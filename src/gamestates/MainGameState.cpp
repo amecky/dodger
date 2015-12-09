@@ -15,10 +15,26 @@ MainGameState::MainGameState(GameContext* context) : ds::GameState("MainGame"), 
 	_dying_timer = 0.0f;
 	_viewport_id = ds::renderer::createViewport(1280, 720, 1920, 1080);
 	ds::renderer::setViewportPosition(_viewport_id, v2(960, 540));
+
+	_number_definitions.define(0, ds::Rect(300,   0, 49, 33));
+	_number_definitions.define(1, ds::Rect(300,  49, 21, 33));
+	_number_definitions.define(2, ds::Rect(300,  70, 46, 33));
+	_number_definitions.define(3, ds::Rect(300, 116, 46, 33));
+	_number_definitions.define(4, ds::Rect(300, 162, 48, 33));
+	_number_definitions.define(5, ds::Rect(300, 210, 45, 33));
+	_number_definitions.define(6, ds::Rect(300, 255, 49, 33));
+	_number_definitions.define(7, ds::Rect(300, 304, 48, 33));
+	_number_definitions.define(8, ds::Rect(300, 352, 49, 33));
+	_number_definitions.define(9, ds::Rect(300, 401, 49, 33));
+
+	_clock = new Numbers(_number_definitions, 2);
+	_points = new Numbers(_number_definitions, 6);
 }
 
 
 MainGameState::~MainGameState() {
+	delete _points;
+	delete _clock;
 	delete _stars;
 	delete _bombs;
 	delete _balls;
@@ -36,7 +52,7 @@ void MainGameState::init() {
 // -------------------------------------------------------
 void MainGameState::activate() {
 	
-	_context->hudDialog->activate();
+	//_context->hudDialog->activate();
 	_context->points = 0;
 	_context->hudDialog->setNumber(HUD_POINTS, 0);
 	_context->hudDialog->setNumber(HUD_LEVEL, 1);
@@ -46,7 +62,7 @@ void MainGameState::activate() {
 	_dying_timer = 0.0f;
 	_balls->activate();
 	_bombs->clear();
-	_bombs->activate(2);
+	_bombs->activate(4);
 	_cursor_pos = v2(640, 360);
 
 	_game_timer.reset(60);
@@ -54,6 +70,10 @@ void MainGameState::activate() {
 	_stars->clear();
 	_grabbing = false;
 	_border_color = ds::Color(192, 128, 0, 255);
+
+	_clock->set(v2(640,640), 60, ds::Color(64,64,64,255));
+	_points->set(v2(540, 60), 0, ds::Color(64, 64, 64, 255));
+
 }
 
 // -------------------------------------------------------
@@ -145,6 +165,7 @@ int MainGameState::update(float dt) {
 		if (_game_timer.tick(dt)) {
 			killPlayer();
 		}
+		_clock->set(v2(640, 640), _game_timer.seconds, ds::Color(64, 64, 64, 255));
 		_context->hudDialog->setNumber(8, _game_timer.seconds);
 
 		_buffer.reset();
@@ -162,13 +183,21 @@ int MainGameState::update(float dt) {
 			for (int i = 0; i < _buffer.num; ++i) {
 				const GameEvent& event = _buffer.events[i];
 				if (event.type == GameEvent::GE_BOMB_EXPLODED) {
-					int killed = _balls->killBalls(event.position, _positions);
+					int killed = _balls->killBalls(event.position, _killedBalls);
 					for (int j = 0; j < killed; ++j) {
-						_context->particles->start(BOMB_EXPLOSION, v3(_positions[j]));
-						_stars->add(_positions[j]);
+						_context->particles->start(BOMB_EXPLOSION, v3(_killedBalls[j].position));
+						int cnt = 0;
+						switch (_killedBalls[j].type) {
+							case EBT_FOLLOWER: cnt = 1; break;
+							case EBT_BIG_CUBE: cnt = 2; break;
+							case EBT_HUGE_CUBE: cnt = 4; break;
+							default: cnt = 1; break;
+						}
+						_stars->add(_killedBalls[j].position,cnt);
 					}
 					_context->points += killed;
 					_context->hudDialog->setNumber(HUD_POINTS, _context->points);
+					_points->set(v2(540, 60), _context->points, ds::Color(32, 32, 32, 255));
 					if (ds::math::checkCircleIntersection(_context->world_pos, PLAYER_RADIUS, event.position, 20.0f)) {
 						LOG << "player within bomb explosion";
 						killPlayer();
@@ -206,10 +235,10 @@ int MainGameState::update(float dt) {
 // -------------------------------------------------------
 void MainGameState::drawBorder() {
 
-	ds::sprites::draw(v2(480, 270), ds::math::buildTexture(0, 512, 480, 270),0.0f,2.0f,2.0f);
-	ds::sprites::draw(v2(480, 810), ds::math::buildTexture(0, 512, 480, 270), 0.0f, 2.0f, 2.0f);
-	ds::sprites::draw(v2(1440, 270), ds::math::buildTexture(0, 512, 480, 270), 0.0f, 2.0f, 2.0f);
-	ds::sprites::draw(v2(1440, 810), ds::math::buildTexture(0, 512, 480, 270), 0.0f, 2.0f, 2.0f);
+	ds::sprites::draw(v2(480, 268), ds::math::buildTexture(0, 512, 480, 272),0.0f,2.0f,2.0f);
+	ds::sprites::draw(v2(480, 812), ds::math::buildTexture(0, 512, 480, 272), 0.0f, 2.0f, 2.0f);
+	ds::sprites::draw(v2(1440, 268), ds::math::buildTexture(0, 512, 480, 272), 0.0f, 2.0f, 2.0f);
+	ds::sprites::draw(v2(1440, 812), ds::math::buildTexture(0, 512, 480, 272), 0.0f, 2.0f, 2.0f);
 
 	ds::sprites::draw(v2(80, 1040), ds::math::buildTexture(840, 0, 40, 60), 0.0f, 1.0f, 1.0f, _border_color);
 	ds::sprites::draw(v2(80, 40), ds::math::buildTexture(940, 0, 40, 60), 0.0f, 1.0f, 1.0f, _border_color);
@@ -239,6 +268,10 @@ void MainGameState::render() {
 
 	ds::renderer::selectViewport(_viewport_id);
 	drawBorder();
+	ds::renderer::selectViewport(0);
+	_clock->render();
+	_points->render();
+	ds::renderer::selectViewport(_viewport_id);
 	_context->particles->render();
 	_balls->render();
 	if (_grabbing) {
@@ -262,6 +295,7 @@ void MainGameState::render() {
 
 	ds::renderer::selectViewport(0);
 	ds::sprites::draw(_cursor_pos, ds::math::buildTexture(40, 160, 20, 20));
+	
 	//if (!_showSettings) {
 		//_context->debugPanel.render();
 	//}
@@ -282,6 +316,9 @@ int MainGameState::onChar(int ascii) {
 	}
 	if (ascii == '2') {
 		_balls->emitt(EBT_BIG_CUBE, 1);
+	}
+	if (ascii == '3') {
+		_balls->emitt(EBT_HUGE_CUBE, 1);
 	}
 	return 0;
 }

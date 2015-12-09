@@ -9,8 +9,17 @@
 enum EnergyBallType {
 	EBT_FOLLOWER,
 	EBT_BIG_CUBE,
+	EBT_HUGE_CUBE,
 	EBT_EOL
 };
+
+struct KilledBall {
+
+	v2 position;
+	EnergyBallType type;
+
+};
+
 // ----------------------------------------
 // Ball
 // ----------------------------------------
@@ -45,6 +54,7 @@ struct LevelData {
 	int spawnBalls;
 	int emitted;
 	float bigBallEmittTime;
+	float hugeBallEmittTime;
 };
 
 class EnergyBalls {
@@ -55,7 +65,7 @@ public:
 	void activate();
 	void render();
 	void tick(float dt);
-	int killBalls(const v2& bombPos,v2* positions);
+	int killBalls(const v2& bombPos, KilledBall* positions);
 	bool checkBallsInterception() const;
 	void killAll();
 	void emitt(EnergyBallType type, int count);
@@ -74,11 +84,14 @@ private:
 	SpawnerData _spawnData;
 	float _spawn_timer;
 	float _spawn_delay;
+	float _ball_timer;
 	float _big_ball_timer;
+	float _huge_ball_timer;
 	StartPoints _startPoints;
 	BallEmitter* _emitter;
 	int _counter;
 	int _maxBalls;
 	LevelData _level_data;
+	int _killed;
 };
 

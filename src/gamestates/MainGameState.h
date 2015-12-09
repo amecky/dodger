@@ -9,6 +9,7 @@
 #include "..\Bombs.h"
 #include "..\EventBuffer.h"
 #include "..\Stars.h"
+#include "..\utils\Numbers.h"
 
 struct GameTimer {
 
@@ -66,10 +67,13 @@ private:
 	bool _showSettings;
 	v2 _dialog_pos;
 	GameTimer _game_timer;
-	v2 _positions[MAX_BALLS];
+	KilledBall _killedBalls[MAX_BALLS];
 	bool _dying;
 	float _dying_timer;
 	int _viewport_id;
 	ds::Color _border_color;
+	NumberDefinitions _number_definitions;
+	Numbers* _clock;
+	Numbers* _points;
 };
 

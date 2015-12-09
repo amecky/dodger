@@ -63,13 +63,27 @@ int Stars::pickup(const v2& target, float radius) {
 // ---------------------------------------
 // add new star
 // ---------------------------------------
-void Stars::add(const v2& pos) {
-	if (_stars.numObjects + 1 < 128) {
-		ID id = _stars.add();
-		Star& s = _stars.get(id);
-		s.position = pos;
-		s.timer = 0.0f;
-		s.scale = v2(1, 1);
+void Stars::add(const v2& pos,int count) {
+	if (_stars.numObjects + count < 128) {
+		if (count == 1) {
+			ID id = _stars.add();
+			Star& s = _stars.get(id);
+			s.position = pos;
+			s.timer = 0.0f;
+			s.scale = v2(1, 1);
+		}
+		else {
+			// spread out with radius = 20
+			float step = TWO_PI / static_cast<float>(count);
+			for (int i = 0; i < count; ++i) {
+				ID id = _stars.add();
+				Star& s = _stars.get(id);
+				s.position.x = pos.x + 20.0f * cos(step * static_cast<float>(i));
+				s.position.y = pos.y + 20.0f * sin(step * static_cast<float>(i));
+				s.timer = 0.0f;
+				s.scale = v2(1, 1);
+			}
+		}
 	}
 }
 
