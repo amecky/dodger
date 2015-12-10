@@ -47,6 +47,7 @@ bool Dodger::loadContent() {
 	desc.blendState = ds::renderer::getDefaultBlendState();
 	_context->particles->init(desc);
 	ds::assets::loadParticleSystem("particlesystems", _context->particles);
+	ds::assets::loadSpriteTemplates();
 	stateMachine->add(new MainGameState(_context));
 	stateMachine->add(new GameOverState(&gui,_context));
 	stateMachine->add(new HighscoreState(&gui, _context));

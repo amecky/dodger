@@ -55,6 +55,7 @@ struct LevelData {
 	int emitted;
 	float bigBallEmittTime;
 	float hugeBallEmittTime;
+	float ballEmittTime;
 };
 
 class EnergyBalls {
@@ -71,11 +72,10 @@ public:
 	void emitt(EnergyBallType type, int count);
 private:
 	void move(float dt);
-	void createBall(const v2& pos);
 	void createBall(const v2& pos,int current, int total, EnergyBallType type);
 	void scaleGrowingBalls(float dt);
 	void moveBalls(float dt);
-	
+	bool buildFromTemplate(Ball* ball, const char* name);
 	
 	GameContext* _context;
 	ds::DataArray<Ball, MAX_BALLS> _balls;

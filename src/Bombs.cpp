@@ -20,8 +20,8 @@ Bombs::~Bombs() {
 void Bombs::create() {
 	ID id = _bombs.add();
 	Bomb& b = _bombs.get(id);
-	b.position.x = ds::math::random(200.0f, 720.0f);
-	b.position.y = ds::math::random(200.0f, 680.0f);
+	b.position.x = ds::math::random(200.0f, 1720.0f);
+	b.position.y = ds::math::random(200.0f, 880.0f);
 	float angle = ds::math::random(0.0f, TWO_PI);
 	float v = ds::math::random(30.0f, 50.0f);
 	b.velocity = ds::vector::getRadialVelocity(angle, v);
