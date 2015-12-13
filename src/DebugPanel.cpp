@@ -51,7 +51,7 @@ void DebugPanel::render() {
 				case DebugEntry::DT_VEC2: sprintf_s(buffer, 128, "%s : %3.2f , %3.2f", entry.name, entry.values[0], entry.values[1]); break;
 				case DebugEntry::DT_INT: sprintf_s(buffer, 128, "%s : %d", entry.name, static_cast<int>(entry.values[0])); break;
 			}
-			gui::Label(2 + i, buffer);
+			gui::Label(buffer);
 		}
 	}
 	gui::end();
