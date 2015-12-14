@@ -7,55 +7,55 @@
 		"count" : "64" ,	
 		"ejection_period" : "0",
 		"ejection_variance" : "0",
-		"ejection_counter" : "0",
-
-		"ring_position_generator" {
+		"ejection_counter" : "0"
+	}
+	"generators" {
+		"ring_position" {
 			"radius" : "8" ,
 			"variance" : "7" ,
 			"angle_variance" : "30" ,
 			"step" : "0.0"
 		}
-		"random_generator" {
+		"random" {
 			"min_random" : "0.2" ,
 			"max_random" : "1.0"
 		}
-		"radial_velocity_generator" {
+		"radial_velocity" {
 			"velocity" : "40" ,
 			"variance" : "20"
 		}
-		"lifecycle_generator" {
+		"lifecycle" {
 			"ttl" : "1.0" ,
 			"variance" : "0.8"
 		}
-		"size_generator" {
+		"size" {
 			"size" : "0.4,0.4" ,
 			"variance" : "0.0,0.0"
 		}
-		"color_generator" {
+		"hsv_color" {
 			"color" : "249,246,194,255" ,
 			"hue_variance" : "10"
-		}
-	}	
-
+		}	
+	}
 	"modifiers" {
-		"lifecycle_modifier" {
+		"lifecycle" {
 		}
-		"position_modifier" {
+		"position" {
 		}
 
-		"color_path_modifier" {
+		"color_path" {
 			"0.0" : "249,246,194,255" ,			
 			"0.4" : "230,88,31,255" ,
 			"0.8" : "64,0,0,255" ,
 			"1.0" : "0,0,0,0"
 		}
-		"damping_velocity_modifier" {
+		"damping_velocity" {
 			"damping" : "5"
 		}
-		"velocity_rotation_modifier" {
+		"velocity_rotation" {
 
 		}
-		"linear_size_modifier" {
+		"linear_size" {
 			"min_scale" : "0.8,0.8" ,
 			"max_scale" : "0.1,0.1"
 		}
