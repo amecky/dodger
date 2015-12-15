@@ -184,13 +184,12 @@ int MainGameState::update(float dt) {
 				const GameEvent& event = _buffer.events[i];
 				if (event.type == GameEvent::GE_BOMB_EXPLODED) {
 					int killed = _balls->killBalls(event.position, _killedBalls);
-					for (int j = 0; j < killed; ++j) {
-						_context->particles->start(BOMB_EXPLOSION, v3(_killedBalls[j].position));
+					for (int j = 0; j < killed; ++j) {						
 						int cnt = 0;
 						switch (_killedBalls[j].type) {
-							case EBT_FOLLOWER: cnt = 1; break;
-							case EBT_BIG_CUBE: cnt = 2; break;
-							case EBT_HUGE_CUBE: cnt = 4; break;
+							case EBT_FOLLOWER: cnt = 1; _context->particles->start(BALL_EXPLOSION, v3(_killedBalls[j].position)); break;
+							case EBT_BIG_CUBE: cnt = 2; _context->particles->start(BIG_CUBE_EXPLOSION, v3(_killedBalls[j].position)); break;
+							case EBT_HUGE_CUBE: cnt = 4; _context->particles->start(HUGE_CUBE_EXPLOSION, v3(_killedBalls[j].position)); break;
 							default: cnt = 1; break;
 						}
 						_stars->add(_killedBalls[j].position,cnt);
