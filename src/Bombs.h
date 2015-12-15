@@ -53,6 +53,7 @@ private:
 	float _cells[36];
 	ds::Texture _texture;
 	ds::Texture _ring_texture;
+	ds::FloatPath _scale_path;
 
 };
 

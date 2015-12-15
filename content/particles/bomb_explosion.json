@@ -29,8 +29,10 @@
 			"variance" : "0.0,0.0"
 		}
 		"hsv_color" {
-			"color" : "249,246,194,255" ,
-			"hue_variance" : "10"
+			"hsv" : "271,100,100" ,
+			"saturation_variance" : "30" ,
+			"value_variance" : "20" ,
+			"alpha" : "255"
 		}
 	}	
 	"modifiers" {
@@ -45,11 +47,9 @@
 			"min_scale" : "0.8,0.8" ,
 			"max_scale" : "0.1,0.1"
 		}
-		"color_path" {
-			"0.0" : "249,246,194,255" ,			
-			"0.4" : "230,88,31,255" ,
-			"0.8" : "64,0,0,255" ,
-			"1.0" : "0,0,0,0"
+		"linear_alpha" {
+			"start_alpha" : "1.0" ,
+			"end_alpha" : "0.0"
 		}
 	}
 }

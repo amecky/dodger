@@ -8,6 +8,10 @@ Bombs::Bombs(GameContext* context) : _context(context) {
 	}
 	_texture = ds::math::buildTexture(0, 440, 60, 60);
 	_ring_texture = ds::math::buildTexture(40, 120, 6, 6);
+	_scale_path.add(0.0f, 0.1f);
+	_scale_path.add(0.5f, 1.5f);
+	_scale_path.add(0.75f, 0.75f);
+	_scale_path.add(1.0f, 1.0f);
 }
 
 
@@ -156,7 +160,8 @@ void Bombs::scaleBombs(EventBuffer* buffer, float dt) {
 				_bombs.remove(bomb.id);
 			}
 			else {
-				float s = 1.0f + sin(bomb.normalizedTimer * PI * _context->settings->bombFlashAmplitude) * 0.2f;
+				float s = 1.0f;
+				_scale_path.get(bomb.normalizedTimer, &s);
 				bomb.scale.x = s;
 				bomb.scale.y = s;
 			}
@@ -200,7 +205,8 @@ void Bombs::tick(EventBuffer* buffer, float dt) {
 			if (b.tickTimer(dt, _context->settings->bombStartTTL)) {
 				b.state = Bomb::BS_ACTIVE;
 			}
-			b.scale = tweening::interpolate(tweening::easeInQuad, v2(0.1f, 0.1f), v2(1.0f, 1.0f), b.normalizedTimer);
+			float scale = _scale_path.get(b.normalizedTimer);
+			b.scale = v2(scale, scale);
 			v2 n = normalize(b.velocity);
 			b.rotation = ds::vector::calculateRotation(n);
 		}
