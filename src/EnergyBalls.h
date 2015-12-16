@@ -23,7 +23,7 @@ struct KilledBall {
 // ----------------------------------------
 // Ball
 // ----------------------------------------
-struct Ball {
+struct Ball : ds::BasicSprite {
 
 	enum BallState {
 		BS_GROWING,
@@ -31,32 +31,19 @@ struct Ball {
 		BS_MOVING,
 		BS_EOL
 	};
-	ID id;
-	v2 position;
 	v2 velocity;
 	v2 force;
-	v2 scale;
-	ds::Texture texture;
 	float size;
-	float rotation;
 	BallState state;
 	int behaviors;
 	float timer;
-	ds::Color color;
 	EnergyBallType type;
 
+	Ball() : ds::BasicSprite(), velocity(0, 0), force(0, 0), size(1.0f), state(BS_EOL), behaviors(0), timer(0.0f), type(EBT_EOL) {}
+
 };
 
-struct LevelData {
-	int totalBalls;
-	int emittBalls;
-	int minBalls;
-	int spawnBalls;
-	int emitted;
-	float bigBallEmittTime;
-	float hugeBallEmittTime;
-	float ballEmittTime;
-};
+
 
 class EnergyBalls {
 
@@ -80,6 +67,7 @@ private:
 	GameContext* _context;
 	ds::DataArray<Ball, MAX_BALLS> _balls;
 	v2 _spawner_position;
+	int _active_balls;
 
 	SpawnerData _spawnData;
 	float _spawn_timer;
@@ -91,7 +79,7 @@ private:
 	BallEmitter* _emitter;
 	int _counter;
 	int _maxBalls;
-	LevelData _level_data;
 	int _killed;
+	int _emitted;
 };
 

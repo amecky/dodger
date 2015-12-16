@@ -9,7 +9,9 @@ MainGameState::MainGameState(GameContext* context) : ds::GameState("MainGame"), 
 	_bombs = new Bombs(_context);
 	_stars = new Stars(_context);
 	_showSettings = false;
-	_dialog_pos = v2(740, 710);
+	_showPlaySettings = false;
+	_showDebug = false;
+	_dialog_pos = v2(10, 710);
 	_grabbing = false;
 	_dying = false;
 	_dying_timer = 0.0f;
@@ -260,14 +262,19 @@ void MainGameState::drawBorder() {
 // -------------------------------------------------------
 // render
 // -------------------------------------------------------
-void MainGameState::render() {
-	if (_showSettings) {
-		_context->settings->showDialog(&_dialog_pos);
-	}
-
+void MainGameState::render() {	
 	ds::renderer::selectViewport(_viewport_id);
 	drawBorder();
 	ds::renderer::selectViewport(0);
+	if (_showSettings) {
+		_context->settings->showDialog(&_dialog_pos);
+	}
+	if (_showPlaySettings) {
+		_context->playSettings->showCompleteDialog(&_dialog_pos);
+	}
+	if (_showDebug) {
+		_context->debugPanel.showDialog(&_dialog_pos);
+	}
 	_clock->render();
 	_points->render();
 	ds::renderer::selectViewport(_viewport_id);
@@ -295,9 +302,7 @@ void MainGameState::render() {
 	ds::renderer::selectViewport(0);
 	ds::sprites::draw(_cursor_pos, ds::math::buildTexture(40, 160, 20, 20));
 	
-	//if (!_showSettings) {
-		//_context->debugPanel.render();
-	//}
+	
 }
 
 // -------------------------------------------------------
@@ -310,8 +315,11 @@ int MainGameState::onChar(int ascii) {
 	if (ascii == 'q') {
 		_showSettings = !_showSettings;
 	}
-	if (ascii == 'w') {
-		_context->particles->start(5, v3(640,360,0));
+	if (ascii == 'p') {
+		_showPlaySettings = !_showPlaySettings;
+	}
+	if (ascii == 'd') {
+		_showDebug = !_showDebug;
 	}
 	if (ascii == '2') {
 		_balls->emitt(EBT_BIG_CUBE, 1);

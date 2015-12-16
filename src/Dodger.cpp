@@ -20,6 +20,7 @@ Dodger::Dodger() : ds::BaseApp() {
 	_context = new GameContext;
 	_context->settings = new GameSettings;
 	_context->particles = particles;
+	_context->playSettings = new GamePlaySettings;
 }
 
 Dodger::~Dodger() {

@@ -5,7 +5,7 @@
 #include "EventBuffer.h"
 #include <utils\TimedObject.h>
 
-struct Bomb : public ds::ObjectTimer {
+struct Bomb : public ds::ObjectTimer , ds::BasicSprite {
 
 	enum BombState {
 		BS_STARTING,
@@ -14,15 +14,10 @@ struct Bomb : public ds::ObjectTimer {
 		BS_FOLLOWING
 	};
 
-	ID id;
-	v2 position;
-	v2 scale;
 	BombState state;
-	float rotation;
 	v2 velocity;
-	ds::Color color;
 
-	Bomb() : position(640, 360), scale(1, 1), state(BS_ACTIVE) {}
+	Bomb() : BasicSprite() , state(BS_ACTIVE) , velocity(0,0) {}
 
 };
 

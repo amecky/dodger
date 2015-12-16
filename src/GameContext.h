@@ -3,7 +3,7 @@
 #include "Constants.h"
 #include "GameSettings.h"
 #include <particles\ParticleManager.h>
-#include "DebugPanel.h"
+#include <ui\DebugPanel.h>
 
 struct GameContext {
 
@@ -13,7 +13,8 @@ struct GameContext {
 	v2 world_pos;
 	float playerAngle;
 	ds::ParticleManager* particles;
-	DebugPanel debugPanel;
+	ds::DebugPanel debugPanel;
+	GamePlaySettings* playSettings;
 
 	int points;
 };

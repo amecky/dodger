@@ -65,6 +65,8 @@ private:
 	EventBuffer _buffer;
 	v2 _cursor_pos;
 	bool _showSettings;
+	bool _showPlaySettings;
+	bool _showDebug;
 	v2 _dialog_pos;
 	GameTimer _game_timer;
 	KilledBall _killedBalls[MAX_BALLS];

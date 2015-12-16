@@ -5,11 +5,11 @@
 
 class Stars {
 
-struct Star {
-	ID id;
-	v2 position;
-	v2 scale;
+struct Star : ds::BasicSprite {
+
 	float timer;
+
+	Star() : ds::BasicSprite(), timer(0.0f) {}
 };
 
 public:
@@ -24,5 +24,6 @@ public:
 private:
 	ds::DataArray<Star, 128> _stars;
 	GameContext* _context;
+	ds::FloatPath _scale_path;
 };
 

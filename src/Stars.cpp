@@ -2,6 +2,10 @@
 #include "Constants.h"
 
 Stars::Stars(GameContext* context) : _context(context) {
+	_scale_path.add(0.0f, 0.1f);
+	_scale_path.add(0.5f, 1.5f);
+	_scale_path.add(0.75f, 0.75f);
+	_scale_path.add(1.0f, 1.0f);
 }
 
 
@@ -22,7 +26,8 @@ void Stars::tick(float dt) {
 			_stars.remove(s.id);
 		}
 		else {
-			float scale = _context->settings->starBaseScale + sin(s.timer *  _context->settings->starScaleAmplitude) *  _context->settings->starScaleFactor;
+			float scale = 1.0f;
+			_scale_path.get(s.timer / _context->settings->starTTL, &scale);
 			s.scale.x = scale;
 			s.scale.y = scale;
 		}
@@ -71,6 +76,8 @@ void Stars::add(const v2& pos,int count) {
 			s.position = pos;
 			s.timer = 0.0f;
 			s.scale = v2(1, 1);
+			s.texture = ds::math::buildTexture(0, 40, 24, 24);
+			s.color = ds::Color(255, 180, 0, 255);
 		}
 		else {
 			// spread out with radius = 20
@@ -82,6 +89,8 @@ void Stars::add(const v2& pos,int count) {
 				s.position.y = pos.y + 20.0f * sin(step * static_cast<float>(i));
 				s.timer = 0.0f;
 				s.scale = v2(1, 1);
+				s.texture = ds::math::buildTexture(0, 40, 24, 24);
+				s.color = ds::Color(255, 180, 0, 255);
 			}
 		}
 	}
@@ -92,7 +101,6 @@ void Stars::add(const v2& pos,int count) {
 // ---------------------------------------
 void Stars::render() {
 	for (int i = 0; i < _stars.numObjects; ++i) {
-		const Star& s = _stars.objects[i];
-		ds::sprites::draw(s.position, ds::math::buildTexture(0, 40, 24, 24), 0.0f, s.scale.x, s.scale.y,ds::Color(255,180,0,255));
+		ds::sprites::draw(_stars.objects[i]);
 	}
 }

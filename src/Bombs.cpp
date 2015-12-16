@@ -34,6 +34,7 @@ void Bombs::create() {
 	b.resetTimer();
 	b.color = ds::Color(130, 0, 255, 255);
 	b.rotation = 0.0f;
+	b.texture = _texture;
 	_context->particles->start(BOMB_STARTUP, v3(b.position));
 }
 
@@ -113,9 +114,9 @@ void Bombs::clear() {
 void Bombs::render() {
 	for (int i = 0; i < _bombs.numObjects; ++i) {
 		const Bomb& bomb = _bombs.objects[i];
-		ds::sprites::draw(bomb.position, _texture, bomb.rotation, bomb.scale.x, bomb.scale.y, bomb.color);
+		ds::sprites::draw(bomb);
 		if (bomb.state == Bomb::BS_TICKING) {
-			float norm = bomb.timer / _context->settings->gateFlashingTTL;
+			float norm = bomb.timer / _context->settings->bombFlashingTTL;
 			drawRing(bomb.position,norm);
 		}
 	}
@@ -154,7 +155,7 @@ void Bombs::scaleBombs(EventBuffer* buffer, float dt) {
 	for (int i = 0; i < _bombs.numObjects; ++i) {
 		Bomb& bomb = _bombs.objects[i];
 		if (bomb.state == Bomb::BS_TICKING) {
-			if (bomb.tickTimer(dt, _context->settings->gateFlashingTTL)) {
+			if (bomb.tickTimer(dt, _context->settings->bombFlashingTTL)) {
 				_context->particles->start(BOMB_EXPLOSION, v3(bomb.position));
 				buffer->add(GameEvent::GE_BOMB_EXPLODED, bomb.position);
 				_bombs.remove(bomb.id);
@@ -206,6 +207,7 @@ void Bombs::tick(EventBuffer* buffer, float dt) {
 				b.state = Bomb::BS_ACTIVE;
 			}
 			float scale = _scale_path.get(b.normalizedTimer);
+			//float scale = tweening::interpolate(tweening::easeOutBack, 0.1f, 1.0f, b.normalizedTimer);
 			b.scale = v2(scale, scale);
 			v2 n = normalize(b.velocity);
 			b.rotation = ds::vector::calculateRotation(n);
