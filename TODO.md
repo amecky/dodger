@@ -1,10 +1,12 @@
 # TODO
 
-- [ ] different behaviors
-- [ ] each level means 100 + 50 * level balls
-- [ ] show flashing Level X message
-- [ ] ball emitter does not calculate emitt frequency correctly
 - [ ] fix game over dialog: Balls killed / Stars collected / Level / Time played
+
+16.12.2015
+- [x] different behaviors
+- [x] each level means 100 + 50 * level balls
+- [x] show flashing Level X message
+- [x] ball emitter does not calculate emitt frequency correctly
 
 8.12.2015
 - [x] rotate bomb according to velocity
