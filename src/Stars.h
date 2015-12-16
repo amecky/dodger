@@ -12,6 +12,8 @@ struct Star : ds::BasicSprite {
 	Star() : ds::BasicSprite(), timer(0.0f) {}
 };
 
+typedef ds::DataArray<Star, 128> StarArray;
+
 public:
 	Stars(GameContext* context);
 	~Stars();
@@ -22,8 +24,8 @@ public:
 	int pickup(const v2& target, float radius);
 	void clear();
 private:
-	ds::DataArray<Star, 128> _stars;
+	StarArray _stars;
 	GameContext* _context;
-	ds::FloatPath _scale_path;
+	ds::Vector2fPath _scale_path;
 };
 

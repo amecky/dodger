@@ -3,6 +3,7 @@
 #include "..\GameContext.h"
 #include <base\GameState.h>
 
+
 class MainMenuState : public ds::GameState {
 
 public:
@@ -16,5 +17,6 @@ public:
 private:
 	GameContext* _context;
 	ds::DialogManager* _gui;
+	
 };
 

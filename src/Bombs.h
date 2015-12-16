@@ -23,6 +23,8 @@ struct Bomb : public ds::ObjectTimer , ds::BasicSprite {
 
 class Bombs {
 
+typedef ds::DataArray<Bomb, 32> BombArray;
+
 public:
 	Bombs(GameContext* context);
 	~Bombs();
@@ -44,11 +46,11 @@ private:
 	GameContext* _context;
 	int _max_current;
 	float _spawn_timer;
-	ds::DataArray<Bomb, 32> _bombs;
+	BombArray _bombs;
 	float _cells[36];
 	ds::Texture _texture;
 	ds::Texture _ring_texture;
-	ds::FloatPath _scale_path;
+	ds::Vector2fPath _scale_path;
 
 };
 

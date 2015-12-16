@@ -10,6 +10,14 @@
 #include "..\EventBuffer.h"
 #include "..\Stars.h"
 #include "..\utils\Numbers.h"
+#include <lib\DataArray.h>
+
+struct MyStuff {
+	ID id;
+	int value;
+};
+
+typedef ds::DataArray<MyStuff, 32> StuffArray;
 
 struct GameTimer {
 
@@ -77,5 +85,7 @@ private:
 	NumberDefinitions _number_definitions;
 	Numbers* _clock;
 	Numbers* _points;
+
+	StuffArray _array;
 };
 

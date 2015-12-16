@@ -2,10 +2,10 @@
 #include "Constants.h"
 
 Stars::Stars(GameContext* context) : _context(context) {
-	_scale_path.add(0.0f, 0.1f);
-	_scale_path.add(0.5f, 1.5f);
-	_scale_path.add(0.75f, 0.75f);
-	_scale_path.add(1.0f, 1.0f);
+	_scale_path.add(0.0f, v2(0.1f));
+	_scale_path.add(0.5f, v2(1.5f));
+	_scale_path.add(0.75f, v2(0.75f));
+	_scale_path.add(1.0f, v2(1.0f));
 }
 
 
@@ -19,17 +19,15 @@ void Stars::clear() {
 // tick
 // ---------------------------------------
 void Stars::tick(float dt) {
-	for (int i = 0; i < _stars.numObjects; ++i) {
-		Star& s = _stars.objects[i];
-		s.timer += dt;
-		if (s.timer > _context->settings->starTTL) {
-			_stars.remove(s.id);
+	StarArray::iterator it = _stars.begin();
+	while (it != _stars.end()) {
+		it->timer += dt;
+		if (it->timer > _context->settings->starTTL) {
+			it = _stars.remove(it->id);
 		}
 		else {
-			float scale = 1.0f;
-			_scale_path.get(s.timer / _context->settings->starTTL, &scale);
-			s.scale.x = scale;
-			s.scale.y = scale;
+			_scale_path.get(it->timer / _context->settings->starTTL, &it->scale);
+			++it;
 		}
 	}
 }
@@ -38,14 +36,15 @@ void Stars::tick(float dt) {
 // move towards player if in range
 // ---------------------------------------
 void Stars::move(const v2& target, float dt) {
-	for (int i = 0; i < _stars.numObjects; ++i) {
-		Star& s = _stars.objects[i];
-		v2 diff = target - s.position;
+	StarArray::iterator it = _stars.begin();
+	while (it != _stars.end()) {
+		v2 diff = target - it->position;
 		if (sqr_length(diff) <  _context->settings->starMagnetRadius * _context->settings->starMagnetRadius) {
 			v2 n = normalize(diff);
 			n *= _context->settings->starSeekVelocity;
-			s.position += n * dt;
+			it->position += n * dt;
 		}
+		++it;
 	}
 }
 
@@ -54,12 +53,15 @@ void Stars::move(const v2& target, float dt) {
 // ---------------------------------------
 int Stars::pickup(const v2& target, float radius) {
 	int cnt = 0;
-	for (int i = 0; i < _stars.numObjects; ++i) {
-		Star& s = _stars.objects[i];
-		v2 diff = target - s.position;
+	StarArray::iterator it = _stars.begin();
+	while (it != _stars.end()) {
+		v2 diff = target - it->position;
 		if (sqr_length(diff) < PLAYER_RADIUS * PLAYER_RADIUS) {
 			++cnt;
-			_stars.remove(s.id);
+			it = _stars.remove(it->id);
+		}
+		else {
+			++it;
 		}
 	}
 	return cnt;
@@ -100,7 +102,9 @@ void Stars::add(const v2& pos,int count) {
 // render
 // ---------------------------------------
 void Stars::render() {
-	for (int i = 0; i < _stars.numObjects; ++i) {
-		ds::sprites::draw(_stars.objects[i]);
+	StarArray::iterator it = _stars.begin();
+	while (it != _stars.end()) {
+		ds::sprites::draw(*it);
+		++it;
 	}
 }
