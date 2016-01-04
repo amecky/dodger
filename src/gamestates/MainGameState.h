@@ -12,13 +12,6 @@
 #include "..\utils\Numbers.h"
 #include <lib\DataArray.h>
 
-struct MyStuff {
-	ID id;
-	int value;
-};
-
-typedef ds::DataArray<MyStuff, 32> StuffArray;
-
 struct GameTimer {
 
 	float timer;
@@ -86,6 +79,5 @@ private:
 	Numbers* _clock;
 	Numbers* _points;
 
-	StuffArray _array;
 };
 

@@ -1,21 +1,5 @@
-"text" { 
-    "id" : "0" , 
-    "pos" : "510,700" , 
-    "color" : "255,255,255,255" , 
-    "centered" : "false" , 
-    "scale" : "1.00" , 
-    "text" : "Bombs:"    
-}
-"text" { 
-    "id" : "1" , 
-    "pos" : "140,700" , 
-    "color" : "255,255,255,255" , 
-    "centered" : "false" , 
-    "scale" : "1.00" , 
-    "text" : "Collected:"    
-}
 "numbers" { 
-    "id" : "3" , 
+    "id" : "0" , 
     "pos" : "290,700" , 
     "color" : "255,255,255,255" , 
     "centered" : "false" , 
@@ -24,7 +8,7 @@
     "length" : "3"    
 }
 "numbers" { 
-    "id" : "4" , 
+    "id" : "1" , 
     "pos" : "620,700" , 
     "color" : "255,255,255,255" , 
     "centered" : "false" , 
@@ -32,20 +16,12 @@
     "value" : "0" , 
     "length" : "2"    
 }
-"numbers" { 
-    "id" : "5" , 
+"timer" { 
+    "id" : "2" , 
     "pos" : "920,700" , 
     "color" : "255,255,255,255" , 
     "centered" : "false" , 
     "scale" : "1.00" , 
     "value" : "0" , 
     "length" : "2"    
-}
-"text" { 
-    "id" : "6" , 
-    "pos" : "820,700" , 
-    "color" : "255,255,255,255" , 
-    "centered" : "false" , 
-    "scale" : "1.00" , 
-    "text" : "Level:"    
 }

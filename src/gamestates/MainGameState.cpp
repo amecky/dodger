@@ -31,12 +31,7 @@ MainGameState::MainGameState(GameContext* context) : ds::GameState("MainGame"), 
 
 	_clock = new Numbers(_number_definitions, 2);
 	_points = new Numbers(_number_definitions, 6);
-
-	for (int i = 0; i < 32; ++i) {
-		ID id = _array.add();
-		MyStuff& s = _array.get(id);
-		s.value = i;
-	}
+	
 }
 
 
@@ -74,41 +69,14 @@ void MainGameState::activate() {
 	_cursor_pos = v2(640, 360);
 
 	_game_timer.reset(60);
-	_context->hudDialog->setNumber(8, _game_timer.seconds);
+	_context->hudDialog->setNumber(HUD_TIMER, _game_timer.seconds);
 	_stars->clear();
 	_grabbing = false;
 	_border_color = ds::Color(192, 128, 0, 255);
 
 	_clock->set(v2(640,640), 60, ds::Color(64,64,64,255));
 	_points->set(v2(540, 60), 0, ds::Color(64, 64, 64, 255));
-
-	StuffArray::iterator it = _array.begin();
-	while (it != _array.end()) {
-		if (it->value > 5 && it->value < 10) {
-			it = _array.remove(it->id);
-		}
-		else {
-			++it;
-		}
-	}
-
-	it = _array.begin();
-	while (it != _array.end()) {
-		LOG << "id: " << it->id << " value: " << it->value;
-		++it;
-	}
-
-	StuffArray t;
-	ID id = t.add();
-	MyStuff& tmp = t.get(id);
-	tmp.value = 100;
-	StuffArray::iterator nit = t.begin();
-	while (nit != t.end()) {
-		if (it->value == 100) {
-			it = t.remove(it->id);
-		}
-		++nit;
-	}
+	
 }
 
 // -------------------------------------------------------
@@ -201,7 +169,7 @@ int MainGameState::update(float dt) {
 			killPlayer();
 		}
 		_clock->set(v2(640, 640), _game_timer.seconds, ds::Color(64, 64, 64, 255));
-		_context->hudDialog->setNumber(8, _game_timer.seconds);
+		_context->hudDialog->setNumber(HUD_TIMER, _game_timer.seconds);
 
 		_buffer.reset();
 

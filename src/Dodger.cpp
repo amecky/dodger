@@ -13,14 +13,6 @@
 ds::BaseApp *app = new Dodger();
 
 Dodger::Dodger() : ds::BaseApp() {
-	_settings.screenWidth = 1280;
-	_settings.screenHeight = 720;
-	_settings.clearColor = ds::Color(0,0,0,255);	
-	_settings.initializeEditor = true;
-	_context = new GameContext;
-	_context->settings = new GameSettings;
-	_context->particles = particles;
-	_context->playSettings = new GamePlaySettings;
 }
 
 Dodger::~Dodger() {
@@ -32,46 +24,26 @@ Dodger::~Dodger() {
 // Load content and prepare game
 // -------------------------------------------------------
 bool Dodger::loadContent() {
-	int texture = ds::renderer::loadTexture("TextureArray");
-	assert(texture != -1);
-	ds::BitmapFont* font = ds::assets::loadFont("xscale", texture);
-	ds::sprites::initializeTextSystem(font);
-	gui::initialize();
-	initializeGUI(font);
-	ds::sprites::initializeTextSystem(font);
+	_context = new GameContext;
+	_context->settings = new GameSettings;
+	_context->particles = particles;
+	_context->playSettings = new GamePlaySettings;
 	_context->hudDialog = gui.get("HUD");
-	// prepare particle system
-	ds::Descriptor desc;
-	desc.shader = ds::shader::createParticleShader();
-	assert(desc.shader != 0);
-	desc.texture = 0;
-	desc.blendState = ds::renderer::getDefaultBlendState();
-	_context->particles->init(desc);
-	_context->particles->load();
-	//ds::assets::loadParticleSystem("particlesystems", _context->particles);
-	ds::assets::loadSpriteTemplates();
-	stateMachine->add(new MainGameState(_context));
-	stateMachine->add(new GameOverState(&gui,_context));
-	stateMachine->add(new HighscoreState(&gui, _context));
-	stateMachine->add(new MainMenuState(&gui, _context));
-	stateMachine->connect("GameOver", 1, "MainGame");
-	stateMachine->connect("GameOver", 2, "MainMenuState");
-	stateMachine->connect("MainGame", 1, "GameOver");
-	stateMachine->connect("MainMenuState", 3, "MainGame");
-
-	// TEST
-	Category root("root");
-	if (json::read_simplified_json("content\\resources\\test.json", &root)) {
-		int id = 0;
-		root.getInt("id", &id);
-		LOG << "---> ID: " << id;
-	}
+	assert(_context->hudDialog != 0);
+	addGameState(new MainGameState(_context));
+	addGameState(new GameOverState(&gui, _context));
+	addGameState(new HighscoreState(&gui, _context));
+	addGameState(new MainMenuState(&gui, _context));
+	connectGameStates("GameOver", 1, "MainGame");
+	connectGameStates("GameOver", 2, "MainMenuState");
+	connectGameStates("MainGame", 1, "GameOver");
+	connectGameStates("MainMenuState", 3, "MainGame");
 	return true;
 }
 
 void Dodger::init() {
 	// for testing
-	stateMachine->activate("MainGame");
+	activate("MainGame");
 }
 
 

@@ -4,9 +4,9 @@
 
 const int MAX_BALLS = 256;
 
-const int HUD_POINTS = 6;
-const int HUD_LEVEL  = 7;
-const int HUD_TIMER  = 8;
+const int HUD_POINTS = 0;
+const int HUD_LEVEL  = 1;
+const int HUD_TIMER  = 2;
 
 const float PLAYER_RADIUS = 22.0f;
 const float BOMB_EXPLOSION_RADIUS = 100.0f;

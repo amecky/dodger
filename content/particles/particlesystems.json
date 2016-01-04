@@ -18,8 +18,16 @@
 	"file" : "bomb_explosion",
 	"id" : "5"
 }
-"player_explosion" {
-	"file" : "player_explosion",
+"ball_explosion" {
+	"file" : "ball_explosion",
 	"id" : "6"
+}
+"big_cube_explosion" {
+	"file" : "big_cube_explosion",
+	"id" : "7"
+}
+"huge_cube_explosion" {
+	"file" : "huge_cube_explosion",
+	"id" : "8"
 }
 

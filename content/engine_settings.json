@@ -1,0 +1,32 @@
+basic_settings {
+	name = "Dodger"
+	screen_width = 1280
+	screen_height = 720
+	clear_color = 0,0,0,255
+	initialize_editor = true 
+	full_screen = false
+	synched = true 
+	mode = 1
+}		
+
+init_actions {
+	textures = "TextureArray" 
+	fonts {
+		xscale {
+			file = "xscale"
+			texture = "TextureArray"
+		}
+	}
+	use_text_system {
+		font = "xscale"
+		texture = "TextureArray"
+	}
+	load_dialogs = true 
+	initialize_imgui {
+		font = "xscale"
+		texture = "TextureArray"
+	}
+	load_particles = true
+	load_sprite_templates = true
+	initialize_editor = true
+}

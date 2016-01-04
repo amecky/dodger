@@ -16,6 +16,12 @@
     </ClCompile>
     <ClCompile Include="src\EnergyBalls.cpp" />
     <ClCompile Include="src\Stars.cpp" />
+    <ClCompile Include="src\BallEmitter.cpp" />
+    <ClCompile Include="src\Bombs.cpp" />
+    <ClCompile Include="src\Behaviors.cpp" />
+    <ClCompile Include="src\utils\Numbers.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -37,6 +43,13 @@
     <ClInclude Include="src\EnergyBalls.h" />
     <ClInclude Include="src\GameSettings.h" />
     <ClInclude Include="src\Stars.h" />
+    <ClInclude Include="src\BallEmitter.h" />
+    <ClInclude Include="src\Bombs.h" />
+    <ClInclude Include="src\EventBuffer.h" />
+    <ClInclude Include="src\Behaviors.h" />
+    <ClInclude Include="src\utils\Numbers.h">
+      <Filter>utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Dodger.manifest" />
@@ -48,19 +61,55 @@
     <None Include="content\resources\xscale.json">
       <Filter>content\resources</Filter>
     </None>
+    <None Include="content\resources\hud.json">
+      <Filter>content\resources</Filter>
+    </None>
+    <None Include="content\engine_settings.json">
+      <Filter>content</Filter>
+    </None>
     <None Include="content\dialogs\credits.json">
       <Filter>content\dialogs</Filter>
     </None>
-    <None Include="content\dialogs\game_over.json">
+    <None Include="content\dialogs\GameOver.json">
       <Filter>content\dialogs</Filter>
     </None>
-    <None Include="content\dialogs\highscores.json">
+    <None Include="content\dialogs\Highscores.json">
       <Filter>content\dialogs</Filter>
     </None>
-    <None Include="content\dialogs\main_menu.json">
+    <None Include="content\dialogs\HUD.json">
       <Filter>content\dialogs</Filter>
     </None>
-    <None Include="content\resources\hud.json">
+    <None Include="content\dialogs\MainMenu.json">
+      <Filter>content\dialogs</Filter>
+    </None>
+    <None Include="content\particles\ball_explosion.json">
+      <Filter>content\particles</Filter>
+    </None>
+    <None Include="content\particles\big_cube_explosion.json">
+      <Filter>content\particles</Filter>
+    </None>
+    <None Include="content\particles\bomb_explosion.json">
+      <Filter>content\particles</Filter>
+    </None>
+    <None Include="content\particles\enemy_start_dots.json">
+      <Filter>content\particles</Filter>
+    </None>
+    <None Include="content\particles\explosion.json">
+      <Filter>content\particles</Filter>
+    </None>
+    <None Include="content\particles\huge_cube_explosion.json">
+      <Filter>content\particles</Filter>
+    </None>
+    <None Include="content\particles\particlesystems.json">
+      <Filter>content\particles</Filter>
+    </None>
+    <None Include="content\particles\player_explosion.json">
+      <Filter>content\particles</Filter>
+    </None>
+    <None Include="content\particles\player_trail.json">
+      <Filter>content\particles</Filter>
+    </None>
+    <None Include="content\resources\sprite_templates.json">
       <Filter>content\resources</Filter>
     </None>
   </ItemGroup>
@@ -79,6 +128,12 @@
     </Filter>
     <Filter Include="content\dialogs">
       <UniqueIdentifier>{737affd4-15f5-4960-acb2-a51b81da8eef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="utils">
+      <UniqueIdentifier>{2b47d801-95d7-4908-8099-c65ffae203b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="content\particles">
+      <UniqueIdentifier>{14b057e9-2797-4cc1-ad83-f4a130ff52b0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

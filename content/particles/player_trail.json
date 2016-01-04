@@ -8,33 +8,34 @@
 		"ejection_period" : "0",
 		"ejection_variance" : "0",
 		"ejection_counter" : "0",
-
-		"ring_position_generator" {
+	}
+	"generators" {
+		"ring_position" {
 			"radius" : "10" ,
 			"variance" : "8" ,
 			"angle_variance" : "180"
 		}
-		"random_generator" {
+		"random" {
 			"min_random" : "0.2" ,
 			"max_random" : "1.0"
 		}		
-		"lifecycle_generator" {
+		"lifecycle" {
 			"ttl" : "3.0" ,
 			"variance" : "0.2"
 		}
-		"size_generator" {
+		"size" {
 			"size" : "0.3,0.3" ,
 			"variance" : "0.0,0.0"
 		}		
 	}	
 	"modifiers" {
-		"lifecycle_modifier" {
+		"lifecycle" {
 		}				
-		"color_path_modifier" {
+		"color_path" {
 			"0.0" : "255,204,68,255" ,			
 			"1.0" : "255,204,68,32"
 		}		
-		"linear_size_modifier" {
+		"linear_size" {
 			"min_scale" : "0.4,0.4" ,
 			"max_scale" : "0.2,0.2"
 		}

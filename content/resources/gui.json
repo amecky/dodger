@@ -1,14 +1,10 @@
-"gui" {
-	"texture_id" : "0" ,
-	"font" : "xscale"
-}
 "GameOver" {
 	"id" : "0" ,
-	"file" : "game_over" 
+	"file" : "GameOver" 
 }
 "MainMenu" {
 	"id" : "1" ,
-	"file" : "main_menu" 
+	"file" : "MainMenu" 
 }
 "Credits" {
 	"id" : "2" ,
@@ -16,5 +12,9 @@
 }
 "Highscores" {
 	"id" : "3" ,
-	"file" : "highscores" 
+	"file" : "Highscores" 
+}
+"HUD" {
+	"id" : "4" ,
+	"file" : "HUD" 
 }
