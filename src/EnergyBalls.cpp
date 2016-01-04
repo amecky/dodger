@@ -12,7 +12,7 @@ EnergyBalls::EnergyBalls(GameContext* context) : _context(context) {
 	_spawnData.delay = 0.5f;
 	_spawnData.type = SPT_PARTIAL_EDGES;
 	_spawnData.emitter_type = SET_DELAYED;
-	_spawnData.world_size = v2(1920, 1080);
+	_spawnData.world_size = v2(1600, 900);
 	_emitter = new BallEmitter(_spawnData);
 }
 
@@ -113,11 +113,11 @@ void EnergyBalls::moveBalls(float dt) {
 		Ball& b = _balls.objects[i];
 		b.position += b.force * dt;
 		bool changed = false;
-		if (b.position.x < 100.0f || b.position.x > 1820.0f) {
+		if (b.position.x < 100.0f || b.position.x > 1500.0f) {
 			b.velocity.x *= -1.0f;
 			changed = true;
 		}
-		if (b.position.y < 50.0f || b.position.y > 1030.0f) {
+		if (b.position.y < 50.0f || b.position.y > 850.0f) {
 			b.velocity.y *= -1.0f;
 			changed = true;
 		}

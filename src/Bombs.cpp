@@ -24,8 +24,8 @@ Bombs::~Bombs() {
 void Bombs::create() {
 	ID id = _bombs.add();
 	Bomb& b = _bombs.get(id);
-	b.position.x = ds::math::random(200.0f, 1720.0f);
-	b.position.y = ds::math::random(200.0f, 880.0f);
+	b.position.x = ds::math::random(200.0f, 1400.0f);
+	b.position.y = ds::math::random(200.0f, 700.0f);
 	float angle = ds::math::random(0.0f, TWO_PI);
 	float v = ds::math::random(30.0f, 50.0f);
 	b.velocity = ds::vector::getRadialVelocity(angle, v);
@@ -160,13 +160,16 @@ void Bombs::scaleBombs(EventBuffer* buffer, float dt) {
 			if (it->tickTimer(dt, _context->settings->bombFlashingTTL)) {
 				_context->particles->start(BOMB_EXPLOSION, v3(it->position));
 				buffer->add(GameEvent::GE_BOMB_EXPLODED, it->position);
-				_bombs.remove(it->id);
+				it = _bombs.remove(it->id);
 			}
 			else {
 				_scale_path.get(it->normalizedTimer, &it->scale);
+				++it;
 			}
 		}
-		++it;
+		else {
+			++it;
+		}
 	}
 }
 
@@ -188,11 +191,11 @@ void Bombs::tick(EventBuffer* buffer, float dt) {
 		if (it->state == Bomb::BS_ACTIVE || it->state == Bomb::BS_TICKING) {
 			it->position += it->velocity * dt;
 			bool bouncing = false;
-			if (it->position.x < 130.0f || it->position.x > 1790.0f) {
+			if (it->position.x < 130.0f || it->position.x > 1470.0f) {
 				it->velocity.x *= -1.0f;
 				bouncing = true;
 			}
-			if (it->position.y < 130.0f || it->position.y > 950.0f) {
+			if (it->position.y < 130.0f || it->position.y > 770.0f) {
 				it->velocity.y *= -1.0f;
 				bouncing = true;
 			}

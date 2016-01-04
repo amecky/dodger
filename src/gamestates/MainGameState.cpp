@@ -15,8 +15,8 @@ MainGameState::MainGameState(GameContext* context) : ds::GameState("MainGame"), 
 	_grabbing = false;
 	_dying = false;
 	_dying_timer = 0.0f;
-	_viewport_id = ds::renderer::createViewport(1280, 720, 1920, 1080);
-	ds::renderer::setViewportPosition(_viewport_id, v2(960, 540));
+	_viewport_id = ds::renderer::createViewport(1280, 720, 1600, 900);
+	ds::renderer::setViewportPosition(_viewport_id, v2(800, 450));
 
 	_number_definitions.define(0, ds::Rect(300,   0, 49, 33));
 	_number_definitions.define(1, ds::Rect(300,  49, 21, 33));
@@ -127,8 +127,8 @@ void MainGameState::movePlayer(float dt) {
 	if (dx < 0.0f) {
 		dx = 0.0f;
 	}
-	if (dx > 640.0f) {
-		dx = 640.0f;
+	if (dx > 320.0f) {
+		dx = 320.0f;
 	}
 	wp.x = _cursor_pos.x + dx;
 
@@ -136,14 +136,14 @@ void MainGameState::movePlayer(float dt) {
 	if (dy < 0.0f) {
 		dy = 0.0f;
 	}
-	if (dy > 360.0f) {
-		dy = 360.0f;
+	if (dy > 180.0f) {
+		dy = 180.0f;
 	}
 	wp.y = _cursor_pos.y + dy;
 	_context->debugPanel.show("WP", wp);
 
 	ds::math::followRelative(wp, _context->playerPosition, &_context->playerAngle, 5.0f, 1.1f * dt);
-	ds::vector::clamp(_context->playerPosition, v2(100, 50), v2(1820, 1030));
+	ds::vector::clamp(_context->playerPosition, v2(60, 60), v2(1540, 840));
 	_context->world_pos = _context->playerPosition;
 	ds::renderer::setViewportPosition(_viewport_id, _context->world_pos);
 }
@@ -161,7 +161,6 @@ int MainGameState::update(float dt) {
 	if (!_dying) {
 
 		movePlayer(dt);
-
 		if (_grabbing) {
 			_bombs->follow(_bomb_id, _context->world_pos);
 		}
@@ -236,28 +235,27 @@ int MainGameState::update(float dt) {
 // draw border
 // -------------------------------------------------------
 void MainGameState::drawBorder() {
-
-	ds::sprites::draw(v2(480, 268), ds::math::buildTexture(0, 512, 480, 272),0.0f,2.0f,2.0f);
-	ds::sprites::draw(v2(480, 812), ds::math::buildTexture(0, 512, 480, 272), 0.0f, 2.0f, 2.0f);
-	ds::sprites::draw(v2(1440, 268), ds::math::buildTexture(0, 512, 480, 272), 0.0f, 2.0f, 2.0f);
-	ds::sprites::draw(v2(1440, 812), ds::math::buildTexture(0, 512, 480, 272), 0.0f, 2.0f, 2.0f);
-
-	ds::sprites::draw(v2(80, 1040), ds::math::buildTexture(840, 0, 40, 60), 0.0f, 1.0f, 1.0f, _border_color);
-	ds::sprites::draw(v2(80, 40), ds::math::buildTexture(940, 0, 40, 60), 0.0f, 1.0f, 1.0f, _border_color);
-	ds::sprites::draw(v2(1840, 1040), ds::math::buildTexture(840, 280, 40, 60), 0.0f, 1.0f, 1.0f, _border_color);
-	ds::sprites::draw(v2(1840, 40), ds::math::buildTexture(940, 280, 40, 60), 0.0f, 1.0f, 1.0f, _border_color);
-	for (int i = 0; i < 12; ++i) {
-		ds::sprites::draw(v2(80, 110 + i * 80), ds::math::buildTexture(880, 0, 40, 80), 0.0f, 1.0f, 1.0f, _border_color);
-		ds::sprites::draw(v2(1840, 110 + i * 80), ds::math::buildTexture(880, 280, 40, 80), 0.0f, 1.0f, 1.0f, _border_color);
+	// 4 corners
+	ds::sprites::draw(v2(40, 860), ds::math::buildTexture(840, 0, 40, 60), 0.0f, 1.0f, 1.0f, _border_color);
+	ds::sprites::draw(v2(40, 40), ds::math::buildTexture(940, 0, 40, 60), 0.0f, 1.0f, 1.0f, _border_color);
+	ds::sprites::draw(v2(1560, 860), ds::math::buildTexture(840, 280, 40, 60), 0.0f, 1.0f, 1.0f, _border_color);
+	ds::sprites::draw(v2(1560, 40), ds::math::buildTexture(940, 280, 40, 60), 0.0f, 1.0f, 1.0f, _border_color);
+	// left and right wall
+	for (int i = 0; i < 9; ++i) {
+		ds::sprites::draw(v2(40, 110 + i * 80), ds::math::buildTexture(880, 0, 40, 80), 0.0f, 1.0f, 1.0f, _border_color);
+		ds::sprites::draw(v2(1560, 110 + i * 80), ds::math::buildTexture(880, 280, 40, 80), 0.0f, 1.0f, 1.0f, _border_color);
 	}
-	for (int i = 0; i < 8; ++i) {
-		ds::sprites::draw(v2(200 + i * 200, 1050), ds::math::buildTexture(840, 40, 200, 40), 0.0f, 1.0f, 1.0f, _border_color);
-		ds::sprites::draw(v2(200 + i * 200, 30), ds::math::buildTexture(960, 40, 200, 40), 0.0f, 1.0f, 1.0f, _border_color);
+	// bottom and top wall
+	for (int i = 0; i < 7; ++i) {
+		ds::sprites::draw(v2(160 + i * 200, 870), ds::math::buildTexture(840, 40, 200, 40), 0.0f, 1.0f, 1.0f, _border_color);
+		ds::sprites::draw(v2(160 + i * 200, 30), ds::math::buildTexture(960, 40, 200, 40), 0.0f, 1.0f, 1.0f, _border_color);
 	}
-	ds::sprites::draw(v2(1760, 1050), ds::math::buildTexture(840, 40, 120, 40), 0.0f, 1.0f, 1.0f, _border_color);
-	ds::sprites::draw(v2(1760, 30), ds::math::buildTexture(960, 40, 120, 40), 0.0f, 1.0f, 1.0f, _border_color);
-
-	
+	// missing left and right pieces
+	ds::sprites::draw(v2(40, 810), ds::math::buildTexture(880, 0, 40, 40), 0.0f, 1.0f, 1.0f, _border_color);
+	ds::sprites::draw(v2(1560, 810), ds::math::buildTexture(880, 280, 40, 40), 0.0f, 1.0f, 1.0f, _border_color);
+	// missing top and bottom pieces
+	ds::sprites::draw(v2(1505, 870), ds::math::buildTexture(840, 40, 90, 40), 0.0f, 1.0f, 1.0f, _border_color);
+	ds::sprites::draw(v2(1505, 30), ds::math::buildTexture(960, 40, 90, 40), 0.0f, 1.0f, 1.0f, _border_color);
 }
 
 // -------------------------------------------------------
