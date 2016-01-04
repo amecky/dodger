@@ -14,6 +14,8 @@ EnergyBalls::EnergyBalls(GameContext* context) : _context(context) {
 	_spawnData.emitter_type = SET_DELAYED;
 	_spawnData.world_size = v2(1600, 900);
 	_emitter = new BallEmitter(_spawnData);
+
+	_cubeDefintions.load();
 }
 
 EnergyBalls::~EnergyBalls() {
@@ -21,6 +23,9 @@ EnergyBalls::~EnergyBalls() {
 
 }
 
+// ---------------------------------------
+// build from template
+// ---------------------------------------
 bool EnergyBalls::buildFromTemplate(Ball* ball, const char* name) {
 	ds::Sprite sprite;
 	if (ds::renderer::getSpriteTemplate(name, &sprite)) {
@@ -36,13 +41,21 @@ bool EnergyBalls::buildFromTemplate(Ball* ball, const char* name) {
 	return false;
 }
 
+// ---------------------------------------
+// create ball
+// ---------------------------------------
 void EnergyBalls::createBall(const v2& pos, int current, int total, EnergyBallType type) {
 	ID id = _balls.add();
 	Ball& ball = _balls.get(id);
-	// FIXME: spread out with radius
 	ball.position = pos;
+	if (total > 1) {
+		float ra = static_cast<float>(current) / static_cast<float>(total)* TWO_PI;
+		float rd = ds::math::random(10.0f, 25.0f);
+		v2 pp = v2(rd * cos(ra), rd * sin(ra));
+		ball.position += pp;
+	}
 	float angle = ds::math::random(0.0f, TWO_PI);
-	ball.velocity = ds::vector::getRadialVelocity(angle, ds::math::random(10.0f, 20.0f));
+	ball.velocity = ds::vector::getRadialVelocity(angle, ds::math::random(20.0f, 40.0f));
 	ball.state = Ball::BS_GROWING;
 	ball.timer = 0.0f;
 	ds::bit::set(&ball.behaviors, SIMPLE_MOVE_BIT);
@@ -88,6 +101,7 @@ void EnergyBalls::scaleGrowingBalls(float dt) {
 					ds::bit::set(&ball.behaviors, SEPARATE_BIT);
 				}
 			}
+			ball.color.a = norm;
 			ball.scale = tweening::interpolate(tweening::easeInQuad, v2(0.1f, 0.1f), v2(1.0f, 1.0f), norm);
 		}
 	}
@@ -102,7 +116,7 @@ void EnergyBalls::moveBalls(float dt) {
 		_balls.objects[i].force = v2(0, 0);
 	}
 	// apply behaviors
-	behavior::seek(_balls.objects, _balls.numObjects, _context->world_pos, 60.0f, dt);
+	behavior::seek(_balls.objects, _balls.numObjects, _context->world_pos, 120.0f, dt);
 	behavior::separate(_balls.objects, _balls.numObjects, _context->world_pos, 40.0f, 15.0f, dt);
 	behavior::align(_balls.objects, _balls.numObjects, _context->world_pos, 40.0f, dt);
 	behavior::simple_move(_balls.objects, _balls.numObjects, dt);
@@ -150,6 +164,7 @@ int EnergyBalls::killBalls(const v2& bombPos, KilledBall* killedBalls) {
 	for (uint32 i = 0; i < _balls.numObjects; ++i) {
 		Ball& b = _balls.objects[i];
 		if (ds::math::checkCircleIntersection(bombPos, BOMB_EXPLOSION_RADIUS, b.position, b.size)) {
+			--_definitions[b.type].current;
 			if (b.type == EBT_FOLLOWER) {
 				// FIXME: count kills
 				//++_killed;
@@ -264,15 +279,16 @@ void EnergyBalls::activate() {
 
 	_definitions[0].current = 0;
 	_definitions[0].maxConcurrent = 100;
-	_definitions[0].timer = 0.0f;
+	_definitions[0].timer = 1000.0f;
 	_definitions[0].total = 0;
-	_definitions[0].num_spawn = 10;
+
+	_definitions[0].num_spawn = 18;
 	_definitions[0].spawnTTL = _context->playSettings->ballEmittTime;
 	_definitions[0].type = EBT_FOLLOWER;
 
 	_definitions[1].current = 0;
 	_definitions[1].maxConcurrent = 80;
-	_definitions[1].timer = 0.0f;
+	_definitions[1].timer = 1000.0f;
 	_definitions[1].total = 0;
 	_definitions[1].num_spawn = 1;
 	_definitions[1].spawnTTL = _context->playSettings->bigBallEmittTime;
@@ -280,7 +296,7 @@ void EnergyBalls::activate() {
 
 	_definitions[2].current = 0;
 	_definitions[2].maxConcurrent = 60;
-	_definitions[2].timer = 0.0f;
+	_definitions[2].timer = 1000.0f;
 	_definitions[2].total = 0;
 	_definitions[2].num_spawn = 1;
 	_definitions[2].spawnTTL = _context->playSettings->hugeBallEmittTime;

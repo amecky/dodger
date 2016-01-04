@@ -17,6 +17,7 @@ Dodger::Dodger() : ds::BaseApp() {
 
 Dodger::~Dodger() {
 	delete _context->settings;
+	delete _context->playSettings;
 	delete _context;
 }
 
@@ -62,7 +63,7 @@ void Dodger::draw() {
 
 void Dodger::onGUIButton(ds::DialogID dlgID, int button) {
 	LOG << "dialog: " << dlgID << " button:" << button;
-	if (dlgID == 4 && button == 1) {
+	if (dlgID == 10 && button == 1) {
 		shutdown();
 	}
 }

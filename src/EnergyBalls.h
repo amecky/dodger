@@ -5,6 +5,7 @@
 #include "BallEmitter.h"
 #include "Stars.h"
 #include "Behaviors.h"
+#include "Cubes.h"
 
 enum EnergyBallType {
 	EBT_FOLLOWER,
@@ -85,6 +86,8 @@ private:
 	SpawnerData _spawnData;
 	float _spawn_timer;
 	float _spawn_delay;
+
+	CubeDefinitions _cubeDefintions;
 
 	BallDefinition _definitions[3];
 

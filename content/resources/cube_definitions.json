@@ -1,0 +1,24 @@
+"cube" {
+	"name" : "Follower" ,
+	"velocity" : "40" ,
+	"velocity_variance" : "20" ,
+	"num_stars" : "1" ,
+	"behavior_bits" : "7" ,
+	"grow_ttl" : "0.2"
+}
+"cube" {
+	"name" : "BigCube" ,
+	"velocity" : "40" ,
+	"velocity_variance" : "20" ,
+	"num_stars" : "2" ,
+	"behavior_bits" : "1" ,
+	"grow_ttl" : "0.4"
+}
+"cube" {
+	"name" : "HugeCube" ,
+	"velocity" : "40" ,
+	"velocity_variance" : "20" ,
+	"num_stars" : "4" ,
+	"behavior_bits" : "1" ,
+	"grow_ttl" : "0.6"
+}

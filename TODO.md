@@ -1,5 +1,17 @@
 # TODO
+- [ ] Game over: 
+Energy Cubes killed: 32 / 4 / 0
+Stars collected: 5
+Total time: 0:32
+Points: 124500
 
+CubeType {
+ const char* name;
+ int num_stars;
+ float min_vel;
+ float max_val;
+ float grow_ttl;
+}
 - [ ] fix game over dialog: Balls killed / Stars collected / Level / Time played
 
 16.12.2015
