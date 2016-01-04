@@ -48,13 +48,13 @@ void EnergyBalls::createBall(const v2& pos, int current, int total, EnergyBallTy
 	ds::bit::set(&ball.behaviors, SIMPLE_MOVE_BIT);
 	ball.type = type;
 	ball.force = v2(0, 0);
-	ds::Sprite sprite;
+	//ds::Sprite sprite;
 	bool ret = buildFromTemplate(&ball, TEMPLATE_NAMES[type]);
 	assert(ret);
 	if (type == EBT_BIG_CUBE) {
 		ball.velocity = ds::vector::getRadialVelocity(angle, ds::math::random(50.0f, 80.0f));
 	}
-	else if (type == EBT_BIG_CUBE){
+	else if (type == EBT_HUGE_CUBE){
 		ball.velocity = ds::vector::getRadialVelocity(angle, ds::math::random(20.0f, 50.0f));
 	}
 	
@@ -65,9 +65,7 @@ void EnergyBalls::createBall(const v2& pos, int current, int total, EnergyBallTy
 // ---------------------------------------
 void EnergyBalls::render() {
 	for (uint32 i = 0; i < _balls.numObjects; ++i) {
-		const Ball& b = _balls.objects[i];
-		//ds::sprites::draw(b.position, b.texture, b.rotation, b.scale.x, b.scale.y,b.color);
-		ds::sprites::draw(b);
+		ds::sprites::draw(_balls.objects[i]);
 	}
 }
 
@@ -194,11 +192,31 @@ void EnergyBalls::emitt(EnergyBallType type, int count) {
 		createBall(spawn.position, i, count, type);
 	}
 }
+
+void EnergyBalls::tick(BallDefinition& definition, float dt) {
+	definition.timer += dt;
+	if (definition.timer >= definition.spawnTTL) {
+		definition.timer = 0.0f;
+		int delta = definition.maxConcurrent - definition.current;
+		if (delta > 0) {
+			const SpawnPoint& spawn = _emitter->random();
+			for (int i = 0; i < definition.num_spawn; ++i) {
+				createBall(spawn.position, i, definition.num_spawn, definition.type);
+				++definition.total;
+				++definition.current;
+			}
+		}
+	}
+}
 // ------------------------------------------------
 // tick and create new dodgers
 // ------------------------------------------------
 void EnergyBalls::tick(float dt) {
-	
+
+	for (int i = 0; i < 3; ++i) {
+		tick(_definitions[i], dt);
+	}
+	/*
 	_ball_timer += dt;
 	if (_ball_timer >= _context->playSettings->ballEmittTime) {		
 		if (_context->playSettings->maxConcurrentBalls - _active_balls  > _context->playSettings->spawnBalls) {
@@ -211,7 +229,8 @@ void EnergyBalls::tick(float dt) {
 			}
 		}
 	}
-
+	*/
+	/*
 	_big_ball_timer += dt;
 	if (_big_ball_timer >= _context->playSettings->bigBallEmittTime) {
 		_big_ball_timer = 0.0f;// -= _level_data.bigBallEmittTime;
@@ -225,6 +244,7 @@ void EnergyBalls::tick(float dt) {
 		const SpawnPoint& spawn = _emitter->random();
 		createBall(spawn.position, 1, 1, EBT_HUGE_CUBE);
 	}
+	*/
 	move(dt);
 }
 
@@ -241,6 +261,30 @@ void EnergyBalls::activate() {
 	_maxBalls = 20;
 	_emitter->rebuild();
 	_spawner_position = v2(200, 200);
+
+	_definitions[0].current = 0;
+	_definitions[0].maxConcurrent = 100;
+	_definitions[0].timer = 0.0f;
+	_definitions[0].total = 0;
+	_definitions[0].num_spawn = 10;
+	_definitions[0].spawnTTL = _context->playSettings->ballEmittTime;
+	_definitions[0].type = EBT_FOLLOWER;
+
+	_definitions[1].current = 0;
+	_definitions[1].maxConcurrent = 80;
+	_definitions[1].timer = 0.0f;
+	_definitions[1].total = 0;
+	_definitions[1].num_spawn = 1;
+	_definitions[1].spawnTTL = _context->playSettings->bigBallEmittTime;
+	_definitions[1].type = EBT_BIG_CUBE;
+
+	_definitions[2].current = 0;
+	_definitions[2].maxConcurrent = 60;
+	_definitions[2].timer = 0.0f;
+	_definitions[2].total = 0;
+	_definitions[2].num_spawn = 1;
+	_definitions[2].spawnTTL = _context->playSettings->hugeBallEmittTime;
+	_definitions[2].type = EBT_HUGE_CUBE;
 	/*
 	_level_data.maxConcurrentBalls = 80;
 	_level_data.spawnBalls = 10;
@@ -251,4 +295,8 @@ void EnergyBalls::activate() {
 	_big_ball_timer = _context->playSettings->ballEmittTime;
 	_huge_ball_timer = 0.0f;
 	_ball_timer = _context->playSettings->ballEmittTime;
+
+	_timers[1] = _context->playSettings->ballEmittTime;
+	_timers[2] = 0.0f;
+	_timers[0] = _context->playSettings->ballEmittTime;
 }

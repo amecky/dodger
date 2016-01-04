@@ -1,35 +1,32 @@
 "image" { 
     "id" : "0" , 
-    "pos" : "256,192" , 
+    "pos" : "256.00,670.00" , 
     "color" : "255,255,255,255" , 
     "centered" : "true" , 
     "scale" : "1.00" , 
-    "rect" : "0,0,50,50"     
-}
-"button" { 
+    "rect" : "0,0,50,50"
+}"button" { 
     "id" : "1" , 
-    "pos" : "400,200" , 
-    "color" : "255,255,255,255" , 
-    "centered" : "false" , 
-    "scale" : "1.00" , 
-    "rect" : "300,0,340,60" , 
-    "text" : "Exit"    
-}
-"button" { 
-    "id" : "3" , 
-    "pos" : "256,500" , 
+    "pos" : "400.00,200.00" , 
     "color" : "255,255,255,255" , 
     "centered" : "true" , 
     "scale" : "1.00" , 
     "rect" : "370,0,340,60" , 
-    "text" : "Play"    
-}
-"button" { 
-    "id" : "4" , 
-    "pos" : "400,350" , 
+    "text" : "Exit"
+}"button" { 
+    "id" : "3" , 
+    "pos" : "256.00,500.00" , 
     "color" : "255,255,255,255" , 
-    "centered" : "false" , 
+    "centered" : "true" , 
     "scale" : "1.00" , 
     "rect" : "370,0,340,60" , 
-    "text" : "Highscores"    
+    "text" : "Play"
+}"button" { 
+    "id" : "4" , 
+    "pos" : "400.00,350.00" , 
+    "color" : "255,255,255,255" , 
+    "centered" : "true" , 
+    "scale" : "1.00" , 
+    "rect" : "370,0,340,60" , 
+    "text" : "Highscores"
 }

@@ -216,7 +216,6 @@ int MainGameState::update(float dt) {
 			}
 		}
 		_stars->move(_context->world_pos, dt);
-
 	}
 	else {
 		_dying_timer += dt;
@@ -235,6 +234,11 @@ int MainGameState::update(float dt) {
 // draw border
 // -------------------------------------------------------
 void MainGameState::drawBorder() {
+	// background
+	ds::sprites::draw(v2(480, 306), ds::math::buildTexture(0, 512, 480, 306), 0.0f, 2.0f, 2.0f);
+	ds::sprites::draw(v2(1280, 306), ds::math::buildTexture(0, 512, 320, 306), 0.0f, 2.0f, 2.0f);
+	ds::sprites::draw(v2(480, 756), ds::math::buildTexture(0, 512, 480, 144), 0.0f, 2.0f, 2.0f);
+	ds::sprites::draw(v2(1280, 756), ds::math::buildTexture(0, 512, 320, 144), 0.0f, 2.0f, 2.0f);
 	// 4 corners
 	ds::sprites::draw(v2(40, 860), ds::math::buildTexture(840, 0, 40, 60), 0.0f, 1.0f, 1.0f, _border_color);
 	ds::sprites::draw(v2(40, 40), ds::math::buildTexture(940, 0, 40, 60), 0.0f, 1.0f, 1.0f, _border_color);

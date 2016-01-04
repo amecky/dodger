@@ -43,6 +43,18 @@ struct Ball : ds::BasicSprite {
 
 };
 
+struct BallDefinition {
+	int current;
+	int total;
+	EnergyBallType type;
+	int maxConcurrent;
+	int num_spawn;
+	float timer;
+	float spawnTTL;
+
+	BallDefinition() : current(0), total(0), type(EBT_EOL), maxConcurrent(0), num_spawn(0), timer(0.0f) , spawnTTL(0.0f) {}
+};
+
 
 
 class EnergyBalls {
@@ -63,7 +75,8 @@ private:
 	void scaleGrowingBalls(float dt);
 	void moveBalls(float dt);
 	bool buildFromTemplate(Ball* ball, const char* name);
-	
+	void tick(BallDefinition& definition, float dt);
+
 	GameContext* _context;
 	ds::DataArray<Ball, MAX_BALLS> _balls;
 	v2 _spawner_position;
@@ -72,6 +85,12 @@ private:
 	SpawnerData _spawnData;
 	float _spawn_timer;
 	float _spawn_delay;
+
+	BallDefinition _definitions[3];
+
+	float _timers[3];
+	int _max_balls[3];
+
 	float _ball_timer;
 	float _big_ball_timer;
 	float _huge_ball_timer;
