@@ -7,17 +7,10 @@
 #include "Behaviors.h"
 #include "Cubes.h"
 
-enum EnergyBallType {
-	EBT_FOLLOWER,
-	EBT_BIG_CUBE,
-	EBT_HUGE_CUBE,
-	EBT_EOL
-};
-
 struct KilledBall {
 
 	v2 position;
-	EnergyBallType type;
+	int type;
 
 };
 
@@ -38,25 +31,20 @@ struct Ball : ds::BasicSprite {
 	BallState state;
 	int behaviors;
 	float timer;
-	EnergyBallType type;
+	int type;
 
-	Ball() : ds::BasicSprite(), velocity(0, 0), force(0, 0), size(1.0f), state(BS_EOL), behaviors(0), timer(0.0f), type(EBT_EOL) {}
+	Ball() : ds::BasicSprite(), velocity(0, 0), force(0, 0), size(1.0f), state(BS_EOL), behaviors(0), timer(0.0f), type(0) {}
 
 };
 
-struct BallDefinition {
+struct WaveRuntime {
+	int definitionIndex;
 	int current;
 	int total;
-	EnergyBallType type;
-	int maxConcurrent;
-	int num_spawn;
 	float timer;
-	float spawnTTL;
-
-	BallDefinition() : current(0), total(0), type(EBT_EOL), maxConcurrent(0), num_spawn(0), timer(0.0f) , spawnTTL(0.0f) {}
 };
 
-
+typedef std::vector<WaveRuntime> WaveRuntimes;
 
 class EnergyBalls {
 
@@ -69,38 +57,23 @@ public:
 	int killBalls(const v2& bombPos, KilledBall* positions);
 	bool checkBallsInterception() const;
 	void killAll();
-	void emitt(EnergyBallType type, int count);
+	void emitt(int type);
 private:
 	void move(float dt);
-	void createBall(const v2& pos,int current, int total, EnergyBallType type);
+	void createBall(const v2& pos, int current, int total,const CubeDefinition& cubeDefinition);
 	void scaleGrowingBalls(float dt);
 	void moveBalls(float dt);
 	bool buildFromTemplate(Ball* ball, const char* name);
-	void tick(BallDefinition& definition, float dt);
 
 	GameContext* _context;
 	ds::DataArray<Ball, MAX_BALLS> _balls;
 	v2 _spawner_position;
-	int _active_balls;
-
 	SpawnerData _spawnData;
-	float _spawn_timer;
-	float _spawn_delay;
-
 	CubeDefinitions _cubeDefintions;
-
-	BallDefinition _definitions[3];
-
-	float _timers[3];
-	int _max_balls[3];
-
-	float _ball_timer;
-	float _big_ball_timer;
-	float _huge_ball_timer;
+	WaveDefinitions _waveDefinitions;
+	WaveRuntimes _waveRuntimes;
 	StartPoints _startPoints;
 	BallEmitter* _emitter;
-	int _counter;
-	int _maxBalls;
 	int _killed;
 	int _emitted;
 };

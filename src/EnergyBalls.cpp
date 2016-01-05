@@ -1,8 +1,6 @@
 #include "EnergyBalls.h"
 #include <math\Bitset.h>
 
-const char* TEMPLATE_NAMES[] = { "Follower", "BigCube", "HugeCube" };
-
 EnergyBalls::EnergyBalls(GameContext* context) : _context(context) {
 
 	_spawnData.count_x = 10;
@@ -16,6 +14,16 @@ EnergyBalls::EnergyBalls(GameContext* context) : _context(context) {
 	_emitter = new BallEmitter(_spawnData);
 
 	_cubeDefintions.load();
+	_waveDefinitions.load();
+	for (size_t i = 0; i < _waveDefinitions.size(); ++i) {
+		WaveRuntime rt;
+		rt.current = 0;
+		rt.definitionIndex = i;
+		rt.timer = 0.0f;
+		rt.total = 0;
+		_waveRuntimes.push_back(rt);
+	}
+
 }
 
 EnergyBalls::~EnergyBalls() {
@@ -44,7 +52,7 @@ bool EnergyBalls::buildFromTemplate(Ball* ball, const char* name) {
 // ---------------------------------------
 // create ball
 // ---------------------------------------
-void EnergyBalls::createBall(const v2& pos, int current, int total, EnergyBallType type) {
+void EnergyBalls::createBall(const v2& pos, int current, int total, const CubeDefinition& cubeDefinition) {
 	ID id = _balls.add();
 	Ball& ball = _balls.get(id);
 	ball.position = pos;
@@ -55,22 +63,14 @@ void EnergyBalls::createBall(const v2& pos, int current, int total, EnergyBallTy
 		ball.position += pp;
 	}
 	float angle = ds::math::random(0.0f, TWO_PI);
-	ball.velocity = ds::vector::getRadialVelocity(angle, ds::math::random(20.0f, 40.0f));
+	ball.velocity = ds::vector::getRadialVelocity(angle, ds::math::random(cubeDefinition.velocity - cubeDefinition.velocityVariance, cubeDefinition.velocity + cubeDefinition.velocityVariance));
 	ball.state = Ball::BS_GROWING;
 	ball.timer = 0.0f;
 	ds::bit::set(&ball.behaviors, SIMPLE_MOVE_BIT);
-	ball.type = type;
+	ball.type = cubeDefinition.type;
 	ball.force = v2(0, 0);
-	//ds::Sprite sprite;
-	bool ret = buildFromTemplate(&ball, TEMPLATE_NAMES[type]);
+	bool ret = buildFromTemplate(&ball, cubeDefinition.name);
 	assert(ret);
-	if (type == EBT_BIG_CUBE) {
-		ball.velocity = ds::vector::getRadialVelocity(angle, ds::math::random(50.0f, 80.0f));
-	}
-	else if (type == EBT_HUGE_CUBE){
-		ball.velocity = ds::vector::getRadialVelocity(angle, ds::math::random(20.0f, 50.0f));
-	}
-	
 }
 
 // ---------------------------------------
@@ -89,17 +89,14 @@ void EnergyBalls::scaleGrowingBalls(float dt) {
 	for (uint32 i = 0; i < _balls.numObjects; ++i) {
 		Ball& ball = _balls.objects[i];
 		if (ball.state == Ball::BS_GROWING) {
+			const CubeDefinition& def = _cubeDefintions.get(ball.type);
 			ball.timer += dt;
-			float norm = ball.timer / _context->settings->ballGrowTTL;
+			float norm = ball.timer / def.growTTL;
 			if (norm > 1.0f) {
 				norm = 1.0f;
 				ball.state = Ball::BS_MOVING;
-				ball.timer = 0.0f;				
-				if (ball.type == EBT_FOLLOWER) {
-					ball.behaviors = 0;
-					ds::bit::set(&ball.behaviors, SEEK_BIT);
-					ds::bit::set(&ball.behaviors, SEPARATE_BIT);
-				}
+				ball.timer = 0.0f;		
+				ball.behaviors = def.behaviorBits;
 			}
 			ball.color.a = norm;
 			ball.scale = tweening::interpolate(tweening::easeInQuad, v2(0.1f, 0.1f), v2(1.0f, 1.0f), norm);
@@ -164,12 +161,8 @@ int EnergyBalls::killBalls(const v2& bombPos, KilledBall* killedBalls) {
 	for (uint32 i = 0; i < _balls.numObjects; ++i) {
 		Ball& b = _balls.objects[i];
 		if (ds::math::checkCircleIntersection(bombPos, BOMB_EXPLOSION_RADIUS, b.position, b.size)) {
-			--_definitions[b.type].current;
-			if (b.type == EBT_FOLLOWER) {
-				// FIXME: count kills
-				//++_killed;
-				--_active_balls;
-			}
+			WaveRuntime& runtime = _waveRuntimes[b.type];
+			--runtime.current;
 			KilledBall& kb = killedBalls[count++];
 			kb.position = b.position;
 			kb.type = b.type;
@@ -200,66 +193,41 @@ void EnergyBalls::killAll() {
 	_balls.clear();
 }
 
-void EnergyBalls::emitt(EnergyBallType type, int count) {
+// ------------------------------------------------
+// emitt
+// ------------------------------------------------
+void EnergyBalls::emitt(int type) {
 	const SpawnPoint& spawn = _emitter->random();
-	// 
-	for (int i = 0; i < count; ++i) {
-		createBall(spawn.position, i, count, type);
+	const CubeDefinition& def = _cubeDefintions.get(type);
+	const WaveDefinition& waveDef = _waveDefinitions.get(type);
+	for (int i = 0; i < waveDef.numSpawn; ++i) {
+		createBall(spawn.position, i, waveDef.numSpawn, def);
 	}
 }
 
-void EnergyBalls::tick(BallDefinition& definition, float dt) {
-	definition.timer += dt;
-	if (definition.timer >= definition.spawnTTL) {
-		definition.timer = 0.0f;
-		int delta = definition.maxConcurrent - definition.current;
-		if (delta > 0) {
-			const SpawnPoint& spawn = _emitter->random();
-			for (int i = 0; i < definition.num_spawn; ++i) {
-				createBall(spawn.position, i, definition.num_spawn, definition.type);
-				++definition.total;
-				++definition.current;
-			}
-		}
-	}
-}
 // ------------------------------------------------
 // tick and create new dodgers
 // ------------------------------------------------
 void EnergyBalls::tick(float dt) {
-
-	for (int i = 0; i < 3; ++i) {
-		tick(_definitions[i], dt);
-	}
-	/*
-	_ball_timer += dt;
-	if (_ball_timer >= _context->playSettings->ballEmittTime) {		
-		if (_context->playSettings->maxConcurrentBalls - _active_balls  > _context->playSettings->spawnBalls) {
-			_ball_timer = 0.0f;
-			const SpawnPoint& spawn = _emitter->random();
-			for (int i = 0; i < _context->playSettings->spawnBalls; ++i) {
-				createBall(spawn.position, i, _context->playSettings->spawnBalls, EBT_FOLLOWER);
-				++_emitted;
-				++_active_balls;
+	for (size_t i = 0; i < _waveDefinitions.size(); ++i) {
+		const WaveDefinition& waveDef = _waveDefinitions.get(i);
+		WaveRuntime& runtime = _waveRuntimes[i];
+		runtime.timer += dt;
+		if (runtime.timer >= waveDef.spawnTTL) {
+			runtime.timer = 0.0f;
+			int delta = waveDef.maxConcurrent - runtime.current;
+			if (delta > 0) {
+				const SpawnPoint& spawn = _emitter->random();
+				const CubeDefinition cubeDef = _cubeDefintions.get(waveDef.cubeType);
+				for (int i = 0; i < waveDef.numSpawn; ++i) {
+					createBall(spawn.position, i, waveDef.numSpawn, cubeDef);
+					++runtime.total;
+					++runtime.current;
+				}
 			}
 		}
-	}
-	*/
-	/*
-	_big_ball_timer += dt;
-	if (_big_ball_timer >= _context->playSettings->bigBallEmittTime) {
-		_big_ball_timer = 0.0f;// -= _level_data.bigBallEmittTime;
-		const SpawnPoint& spawn = _emitter->random();
-		createBall(spawn.position, 1, 1, EBT_BIG_CUBE);
-	}
 
-	_huge_ball_timer += dt;
-	if (_huge_ball_timer >= _context->playSettings->hugeBallEmittTime) {
-		_huge_ball_timer = 0.0f;// -= _level_data.hugeBallEmittTime;
-		const SpawnPoint& spawn = _emitter->random();
-		createBall(spawn.position, 1, 1, EBT_HUGE_CUBE);
 	}
-	*/
 	move(dt);
 }
 
@@ -267,52 +235,14 @@ void EnergyBalls::tick(float dt) {
 // activate
 // ------------------------------------------------
 void EnergyBalls::activate() {
-	_active_balls = 0;
 	_emitted = 0;
 	_balls.clear();
-	_spawn_timer = 0.0f;
-	_spawn_delay = 2.0f;
-	_counter = 0;
-	_maxBalls = 20;
 	_emitter->rebuild();
 	_spawner_position = v2(200, 200);
-
-	_definitions[0].current = 0;
-	_definitions[0].maxConcurrent = 100;
-	_definitions[0].timer = 1000.0f;
-	_definitions[0].total = 0;
-
-	_definitions[0].num_spawn = 18;
-	_definitions[0].spawnTTL = _context->playSettings->ballEmittTime;
-	_definitions[0].type = EBT_FOLLOWER;
-
-	_definitions[1].current = 0;
-	_definitions[1].maxConcurrent = 80;
-	_definitions[1].timer = 1000.0f;
-	_definitions[1].total = 0;
-	_definitions[1].num_spawn = 1;
-	_definitions[1].spawnTTL = _context->playSettings->bigBallEmittTime;
-	_definitions[1].type = EBT_BIG_CUBE;
-
-	_definitions[2].current = 0;
-	_definitions[2].maxConcurrent = 60;
-	_definitions[2].timer = 1000.0f;
-	_definitions[2].total = 0;
-	_definitions[2].num_spawn = 1;
-	_definitions[2].spawnTTL = _context->playSettings->hugeBallEmittTime;
-	_definitions[2].type = EBT_HUGE_CUBE;
-	/*
-	_level_data.maxConcurrentBalls = 80;
-	_level_data.spawnBalls = 10;
-	_level_data.ballEmittTime = 2.0f;
-	_level_data.bigBallEmittTime = 2.0f;
-	_level_data.hugeBallEmittTime = 4.0f;
-	*/
-	_big_ball_timer = _context->playSettings->ballEmittTime;
-	_huge_ball_timer = 0.0f;
-	_ball_timer = _context->playSettings->ballEmittTime;
-
-	_timers[1] = _context->playSettings->ballEmittTime;
-	_timers[2] = 0.0f;
-	_timers[0] = _context->playSettings->ballEmittTime;
+	for (size_t i = 0; i < _waveRuntimes.size(); ++i) {
+		WaveRuntime& rt = _waveRuntimes[i];
+		rt.current = 0;
+		rt.timer = 0.0f;
+		rt.total = 0;
+	}
 }

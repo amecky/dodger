@@ -17,7 +17,6 @@ Dodger::Dodger() : ds::BaseApp() {
 
 Dodger::~Dodger() {
 	delete _context->settings;
-	delete _context->playSettings;
 	delete _context;
 }
 
@@ -27,8 +26,8 @@ Dodger::~Dodger() {
 bool Dodger::loadContent() {
 	_context = new GameContext;
 	_context->settings = new GameSettings;
+	_context->settings->load();
 	_context->particles = particles;
-	_context->playSettings = new GamePlaySettings;
 	_context->hudDialog = gui.get("HUD");
 	assert(_context->hudDialog != 0);
 	addGameState(new MainGameState(_context));

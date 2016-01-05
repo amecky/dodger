@@ -14,8 +14,6 @@ struct GameContext {
 	float playerAngle;
 	ds::ParticleManager* particles;
 	ds::DebugPanel debugPanel;
-	GamePlaySettings* playSettings;
-
 	int points;
 };
 

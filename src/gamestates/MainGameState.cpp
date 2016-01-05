@@ -9,7 +9,6 @@ MainGameState::MainGameState(GameContext* context) : ds::GameState("MainGame"), 
 	_bombs = new Bombs(_context);
 	_stars = new Stars(_context);
 	_showSettings = false;
-	_showPlaySettings = false;
 	_showDebug = false;
 	_dialog_pos = v2(10, 710);
 	_grabbing = false;
@@ -65,7 +64,7 @@ void MainGameState::activate() {
 	_dying_timer = 0.0f;
 	_balls->activate();
 	_bombs->clear();
-	_bombs->activate(4);
+	_bombs->activate();
 	_cursor_pos = v2(640, 360);
 
 	_game_timer.reset(60);
@@ -189,9 +188,9 @@ int MainGameState::update(float dt) {
 					for (int j = 0; j < killed; ++j) {						
 						int cnt = 0;
 						switch (_killedBalls[j].type) {
-							case EBT_FOLLOWER: cnt = 1; _context->particles->start(BALL_EXPLOSION, v3(_killedBalls[j].position)); break;
-							case EBT_BIG_CUBE: cnt = 2; _context->particles->start(BIG_CUBE_EXPLOSION, v3(_killedBalls[j].position)); break;
-							case EBT_HUGE_CUBE: cnt = 4; _context->particles->start(HUGE_CUBE_EXPLOSION, v3(_killedBalls[j].position)); break;
+							case 0: cnt = 1; _context->particles->start(BALL_EXPLOSION, v3(_killedBalls[j].position)); break;
+							case 1: cnt = 2; _context->particles->start(BIG_CUBE_EXPLOSION, v3(_killedBalls[j].position)); break;
+							case 2: cnt = 4; _context->particles->start(HUGE_CUBE_EXPLOSION, v3(_killedBalls[j].position)); break;
 							default: cnt = 1; break;
 						}
 						_stars->add(_killedBalls[j].position,cnt);
@@ -216,6 +215,7 @@ int MainGameState::update(float dt) {
 			}
 		}
 		_stars->move(_context->world_pos, dt);
+
 	}
 	else {
 		_dying_timer += dt;
@@ -270,10 +270,7 @@ void MainGameState::render() {
 	drawBorder();
 	ds::renderer::selectViewport(0);
 	if (_showSettings) {
-		_context->settings->showDialog(&_dialog_pos);
-	}
-	if (_showPlaySettings) {
-		_context->playSettings->showCompleteDialog(&_dialog_pos);
+		_context->settings->showCompleteDialog(&_dialog_pos);
 	}
 	if (_showDebug) {
 		_context->debugPanel.showDialog(&_dialog_pos);
@@ -318,17 +315,17 @@ int MainGameState::onChar(int ascii) {
 	if (ascii == 'q') {
 		_showSettings = !_showSettings;
 	}
-	if (ascii == 'p') {
-		_showPlaySettings = !_showPlaySettings;
-	}
 	if (ascii == 'd') {
 		_showDebug = !_showDebug;
 	}
+	if (ascii == '1') {
+		_balls->emitt(0);
+	}
 	if (ascii == '2') {
-		_balls->emitt(EBT_BIG_CUBE, 1);
+		_balls->emitt(1);
 	}
 	if (ascii == '3') {
-		_balls->emitt(EBT_HUGE_CUBE, 1);
+		_balls->emitt(2);
 	}
 	return 0;
 }

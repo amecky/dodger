@@ -28,7 +28,7 @@ typedef ds::DataArray<Bomb, 32> BombArray;
 public:
 	Bombs(GameContext* context);
 	~Bombs();
-	void activate(int maxCurrent);
+	void activate();
 	void tick(EventBuffer* buffer,float dt);
 	void render();
 	void killAll();
@@ -44,7 +44,6 @@ private:
 	void scaleBombs(EventBuffer* buffer, float dt);
 	void drawRing(const v2& pos,float timer);
 	GameContext* _context;
-	int _max_current;
 	float _spawn_timer;
 	BombArray _bombs;
 	float _cells[36];

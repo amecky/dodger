@@ -4,15 +4,16 @@ Energy Cubes killed: 32 / 4 / 0
 Stars collected: 5
 Total time: 0:32
 Points: 124500
-
-CubeType {
- const char* name;
- int num_stars;
- float min_vel;
- float max_val;
- float grow_ttl;
-}
-- [ ] fix game over dialog: Balls killed / Stars collected / Level / Time played
+- [ ] add matching explosions for every cube type
+- [ ] rename EnergyBalls to Cubes
+- [ ] fix all dialogs
+- [ ] try HUGE clock in the center
+- [ ] add wave/cube which is big -> moves for a certain time and then stops and rotates towards player and starts moving again
+- [ ] border color flashing when explosion
+- [ ] get number of stars to generate from cube definition in MainGameState
+- [ ] try to make inner line of border a bit darker
+- [ ] try different numbers of bombs
+- [ ] check game settings -> everything still needed?
 
 16.12.2015
 - [x] different behaviors

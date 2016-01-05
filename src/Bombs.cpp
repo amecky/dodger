@@ -144,10 +144,9 @@ void Bombs::drawRing(const v2& pos,float timer) {
 // ---------------------------------------
 // activate
 // ---------------------------------------
-void Bombs::activate(int maxCurrent) {
+void Bombs::activate() {
 	_spawn_timer = 0.0f;
 	_bombs.clear();
-	_max_current = maxCurrent;
 }
 
 // ---------------------------------------
@@ -178,9 +177,9 @@ void Bombs::scaleBombs(EventBuffer* buffer, float dt) {
 // ---------------------------------------
 void Bombs::tick(EventBuffer* buffer, float dt) {
 	// spawn
-	if (_bombs.numObjects < _max_current) {
+	if (_bombs.numObjects < _context->settings->maxBombs) {
 		_spawn_timer += dt;
-		if (_spawn_timer > 1.0f) {
+		if (_spawn_timer > _context->settings->bombStartTTL) {
 			_spawn_timer = 0.0f;
 			create();
 		}

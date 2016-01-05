@@ -1,24 +1,27 @@
 "cube" {
+	"type" : "0" ,
 	"name" : "Follower" ,
-	"velocity" : "40" ,
-	"velocity_variance" : "20" ,
+	"velocity" : "60" ,
+	"velocity_variance" : "10" ,
 	"num_stars" : "1" ,
-	"behavior_bits" : "7" ,
+	"behavior_bits" : "14" ,
 	"grow_ttl" : "0.2"
 }
 "cube" {
+	"type" : "1" ,
 	"name" : "BigCube" ,
-	"velocity" : "40" ,
-	"velocity_variance" : "20" ,
+	"velocity" : "65" ,
+	"velocity_variance" : "15" ,
 	"num_stars" : "2" ,
-	"behavior_bits" : "1" ,
+	"behavior_bits" : "16" ,
 	"grow_ttl" : "0.4"
 }
 "cube" {
+	"type" : "2" ,
 	"name" : "HugeCube" ,
-	"velocity" : "40" ,
-	"velocity_variance" : "20" ,
+	"velocity" : "35" ,
+	"velocity_variance" : "15" ,
 	"num_stars" : "4" ,
-	"behavior_bits" : "1" ,
+	"behavior_bits" : "16" ,
 	"grow_ttl" : "0.6"
 }
