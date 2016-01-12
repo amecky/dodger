@@ -1,33 +1,33 @@
-"player_trail" {
-	"file" : "player_trail" ,
-	"id" : "1"
+player_trail {
+	file : "player_trail"
+	id : 1
 }
-"enemy_start_dots" {
-	"file" : "enemy_start_dots",
-	"id" : "2"
+enemy_start_dots {
+	file : "enemy_start_dots"
+	id : 2
 }
-"dodger_trail" {
-	"file" : "dodger_trail",
-	"id" : "3"
+dodger_trail {
+	file : "dodger_trail"
+	id : 3
 }
-"explosion" {
-	"file" : "explosion",
-	"id" : "4"
+explosion {
+	file : "explosion"
+	id : 4
 }
-"bomb_explosion" {
-	"file" : "bomb_explosion",
-	"id" : "5"
+bomb_explosion {
+	file : "bomb_explosion"
+	id : 5
 }
-"ball_explosion" {
-	"file" : "ball_explosion",
-	"id" : "6"
+ball_explosion {
+	file : "ball_explosion"
+	id : 6
 }
-"big_cube_explosion" {
-	"file" : "big_cube_explosion",
-	"id" : "7"
+big_cube_explosion {
+	file : "big_cube_explosion"
+	id : 7
 }
-"huge_cube_explosion" {
-	"file" : "huge_cube_explosion",
-	"id" : "8"
+huge_cube_explosion {
+	file : "huge_cube_explosion"
+	id : 8
 }
 

@@ -1,7 +1,7 @@
 #include "Cubes.h"
 
 bool CubeDefinitions::loadData(JSONReader& reader) {
-	std::vector<Category*> all = reader.getCategories();
+	const ds::Array<Category*>& all = reader.getCategories();
 	for (size_t i = 0; i < all.size(); ++i) {
 		Category* c = all[i];
 		if (c->getName() == "cube") {
@@ -21,7 +21,7 @@ bool CubeDefinitions::loadData(JSONReader& reader) {
 }
 
 bool WaveDefinitions::loadData(JSONReader& reader) {
-	std::vector<Category*> all = reader.getCategories();
+	const ds::Array<Category*>& all = reader.getCategories();
 	for (size_t i = 0; i < all.size(); ++i) {
 		Category* c = all[i];
 		if (c->getName() == "wave") {

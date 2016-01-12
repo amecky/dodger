@@ -1,20 +1,20 @@
-"GameOver" {
-	"id" : "1" ,
-	"file" : "GameOver" 
+GameOver {
+	id : 1 
+	file : "GameOver" 
 }
-"MainMenu" {
-	"id" : "2" ,
-	"file" : "MainMenu" 
+MainMenu {
+	id : 2 
+	file : "MainMenu"
 }
-"Credits" {
-	"id" : "3" ,
-	"file" : "credits" 
+Credits {
+	id : 3 
+	file : "credits"
 }
-"Highscores" {
-	"id" : "4" ,
-	"file" : "Highscores" 
+Highscores {
+	id : 4 
+	file : "Highscores"
 }
-"HUD" {
-	"id" : "5" ,
-	"file" : "HUD" 
+HUD {
+	id : 5 
+	file : "HUD"
 }

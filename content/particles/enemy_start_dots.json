@@ -1,54 +1,54 @@
-"particlesystem" {
-	"max" : "2048" ,
-	"id" : "1" ,
-	"texture_rect" : "40, 120, 20, 20" ,
-	"texture_id" : "0" ,
-	"emitter" {
-		"count" : "12" ,	
-		"ejection_period" : "0",
-		"ejection_variance" : "0",
-		"ejection_counter" : "0",
-		"duration" : "0.0"
+particlesystem {
+	max : 2048
+	id : 1
+	texture_rect : 40, 120, 20, 20
+	texture_id : 0
+	emitter {
+		count : 12	
+		ejection_period : 0
+		ejection_variance : 0
+		ejection_counter : 0
+		duration : 0.0
 	}
-	"generators" {
-		"ring_position" {
-			"radius" : "50" ,
-			"variance" : "5" ,
-			"angle_variance" : "10" ,
-			"step" : "30"
+	generators {
+		ring_position {
+			radius : 50
+			variance : 5
+			angle_variance : 10
+			step : 30
 		}
-		"random" {
-			"min_random" : "0.2" ,
-			"max_random" : "1.0"
+		random {
+			min_random : 0.2
+			max_random : 1.0
 		}		
-		"lifecycle" {
-			"ttl" : "0.6" ,
-			"variance" : "0.1"
+		lifecycle {
+			ttl : 0.6
+			variance : 0.1
 		}
-		"size" {
-			"size" : "0.3,0.3" ,
-			"variance" : "0.1,0.1"
+		size {
+			size : 0.3,0.3
+			variance : 0.1,0.1
 		}
-		"color" {
-			"color" : "255,255,255,255"
+		color {
+			color : 255,255,255,255
 		}
-		"radial_velocity" {
-			"velocity" : "-100" ,
-			"variance" : "5"
+		radial_velocity {
+			velocity : -100
+			variance : 5
 		}
 	}	
-	"modifiers" {
-		"lifecycle" {
+	modifiers {
+		lifecycle {
 		}	
-		"position" {
+		position {
 		}	
-		"linear_size" {
-			"min_scale" : "1.0,1.0" ,
-			"max_scale" : "0.8,0.8"
+		linear_size {
+			min_scale : 1.0,1.0
+			max_scale : 0.8,0.8
 		}
-		"linear_color" {
-			"start_color" : "255,0,0,255" ,			
-			"end_color" : "64,0,0,0" 
+		linear_color {
+			start_color : 255,0,0,255			
+			end_color : 64,0,0,0 
 		}
 	}
 }

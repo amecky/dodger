@@ -22,6 +22,7 @@
     <ClCompile Include="src\utils\Numbers.cpp">
       <Filter>utils</Filter>
     </ClCompile>
+    <ClCompile Include="src\Cubes.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -50,6 +51,7 @@
     <ClInclude Include="src\utils\Numbers.h">
       <Filter>utils</Filter>
     </ClInclude>
+    <ClInclude Include="src\Cubes.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Dodger.manifest" />

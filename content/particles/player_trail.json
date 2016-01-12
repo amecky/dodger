@@ -1,43 +1,43 @@
-"particlesystem" {
-	"max" : "256" ,
-	"id" : "1" ,
-	"texture_rect" : "475, 290, 20, 20" ,
-	"texture_id" : "0" ,
-	"emitter" {
-		"count" : "4" ,	
-		"ejection_period" : "0",
-		"ejection_variance" : "0",
-		"ejection_counter" : "0",
+particlesystem {
+	max : 256
+	id : 1
+	texture_rect : 475, 290, 20, 20
+	texture_id : 0
+	emitter {
+		count : 4	
+		ejection_period : 0
+		ejection_variance : 0
+		ejection_counter : 0
 	}
-	"generators" {
-		"ring_position" {
-			"radius" : "10" ,
-			"variance" : "8" ,
-			"angle_variance" : "180"
+	generators {
+		ring_position {
+			radius : 10
+			variance : 8
+			angle_variance : 180
 		}
-		"random" {
-			"min_random" : "0.2" ,
-			"max_random" : "1.0"
+		random {
+			min_random : 0.2
+			max_random : 1.0
 		}		
-		"lifecycle" {
-			"ttl" : "3.0" ,
-			"variance" : "0.2"
+		lifecycle {
+			ttl : 3.0
+			variance : 0.2
 		}
-		"size" {
-			"size" : "0.3,0.3" ,
-			"variance" : "0.0,0.0"
+		size {
+			size : 0.3,0.3
+			variance : 0.0,0.0
 		}		
 	}	
-	"modifiers" {
-		"lifecycle" {
+	modifiers {
+		lifecycle {
 		}				
-		"color_path" {
-			"0.0" : "255,204,68,255" ,			
-			"1.0" : "255,204,68,32"
+		color_path {
+			0.0 : 255,204,68,255			
+			1.0 : 255,204,68,32
 		}		
-		"linear_size" {
-			"min_scale" : "0.4,0.4" ,
-			"max_scale" : "0.2,0.2"
+		linear_size {
+			min_scale : 0.4,0.4
+			max_scale : 0.2,0.2
 		}
 	}
 }

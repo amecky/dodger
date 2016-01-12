@@ -1,76 +1,85 @@
-"image" { 
-    "id" : "0" , 
-    "pos" : "140.00,660.00" , 
-    "color" : "255,255,255,255" , 
-    "centered" : "true" , 
-    "scale" : "1.00" , 
-    "rect" : "410,410,520,60"
-}"button" { 
-    "id" : "1" , 
-    "pos" : "100.00,200.00" , 
-    "color" : "255,255,255,255" , 
-    "centered" : "true" , 
-    "scale" : "1.00" , 
-    "rect" : "370,0,340,60" , 
-    "text" : "Restart"
-}"button" { 
-    "id" : "2" , 
-    "pos" : "100.00,100.00" , 
-    "color" : "255,255,255,255" , 
-    "centered" : "true" , 
-    "scale" : "1.00" , 
-    "rect" : "370,0,340,60" , 
-    "text" : "Main Menu"
-}"numbers" { 
-    "id" : "8" , 
-    "pos" : "512.00,440.00" , 
-    "color" : "255,255,255,255" , 
-    "centered" : "true" , 
-    "scale" : "1.50" , 
-    "value" : "1" , 
-    "length" : "2"
-}"numbers" { 
-    "id" : "9" , 
-    "pos" : "560.00,360.00" , 
-    "color" : "255,255,255,255" , 
-    "centered" : "true" , 
-    "scale" : "1.50" , 
-    "value" : "0" , 
-    "length" : "3"
-}"text" { 
-    "id" : "10" , 
-    "pos" : "380.00,560.00" , 
-    "color" : "255,255,255,255" , 
-    "centered" : "true" , 
-    "scale" : "1.00" , 
-    "text" : "Collected:"
-}"text" { 
-    "id" : "11" , 
-    "pos" : "512.00,480.00" , 
-    "color" : "255,255,255,255" , 
-    "centered" : "true" , 
-    "scale" : "1.00" , 
-    "text" : "Level:"
-}"text" { 
-    "id" : "12" , 
-    "pos" : "512.00,400.00" , 
-    "color" : "255,255,255,255" , 
-    "centered" : "true" , 
-    "scale" : "1.00" , 
-    "text" : "Bombs removed:"
-}"text" { 
-    "id" : "13" , 
-    "pos" : "512.00,320.00" , 
-    "color" : "255,255,255,255" , 
-    "centered" : "true" , 
-    "scale" : "1.00" , 
-    "text" : "Points:"
-}"numbers" { 
-    "id" : "14" , 
-    "pos" : "512.00,280.00" , 
-    "color" : "255,255,255,255" , 
-    "centered" : "true" , 
-    "scale" : "1.50" , 
-    "value" : "0" , 
-    "length" : "7"
+image { 
+    id : 0 
+    pos : 140.00,660.00 
+    color : 255,255,255,255 
+    centered : true 
+    scale : 1.00 
+    rect : 410,410,520,60
+}
+button { 
+    id : 1 
+    pos : 100.00,200.00 
+    color : 255,255,255,255 
+    centered : true 
+    scale : 1.00 
+    rect : 370,0,340,60 
+    text : "Restart"
+}
+button { 
+    id : 2 
+    pos : 100.00,100.00 
+    color : 255,255,255,255 
+    centered : true 
+    scale : 1.00 
+    rect : 370,0,340,60 
+    text : "Main Menu"
+}
+numbers { 
+    id : 8 
+    pos : 512.00,440.00 
+    color : 255,255,255,255 
+    centered : true 
+    scale : 1.50 
+    value : 1 
+    length : 2
+}
+numbers { 
+    id : 9 
+    pos : 560.00,360.00 
+    color : 255,255,255,255 
+    centered : true 
+    scale : 1.50 
+    value : 0 
+    length : 3
+}
+text { 
+    id : 10 
+    pos : 380.00,560.00 
+    color : 255,255,255,255 
+    centered : true 
+    scale : 1.00 
+    text : "Collected:"
+}
+text { 
+    id : 11 
+    pos : 512.00,480.00 
+    color : 255,255,255,255 
+    centered : true 
+    scale : 1.00 
+    text : "Level:"
+}
+text { 
+    id : 12 
+    pos : 512.00,400.00 
+    color : 255,255,255,255 
+    centered : true 
+    scale : 1.00 
+    text : "Bombs removed:"
+}
+text { 
+    id : 13 
+    pos : 512.00,320.00 
+    color : 255,255,255,255 
+    centered : true 
+    scale : 1.00 
+    text : "Points:"
+}
+numbers { 
+    id : 14 
+    pos : 512.00,280.00 
+    color : 255,255,255,255 
+    centered : true 
+    scale : 1.50 
+    value : 0 
+    length : 7
 }

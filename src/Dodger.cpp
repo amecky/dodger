@@ -28,12 +28,12 @@ bool Dodger::loadContent() {
 	_context->settings = new GameSettings;
 	_context->settings->load();
 	_context->particles = particles;
-	_context->hudDialog = gui.get("HUD");
+	_context->hudDialog = gui->get("HUD");
 	assert(_context->hudDialog != 0);
 	addGameState(new MainGameState(_context));
-	addGameState(new GameOverState(&gui, _context));
-	addGameState(new HighscoreState(&gui, _context));
-	addGameState(new MainMenuState(&gui, _context));
+	addGameState(new GameOverState(gui, _context));
+	addGameState(new HighscoreState(gui, _context));
+	addGameState(new MainMenuState(gui, _context));
 	connectGameStates("GameOver", 1, "MainGame");
 	connectGameStates("GameOver", 2, "MainMenuState");
 	connectGameStates("MainGame", 1, "GameOver");
