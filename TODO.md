@@ -5,7 +5,6 @@ Stars collected: 5
 Total time: 0:32
 Points: 124500
 - [ ] add matching explosions for every cube type
-- [ ] rename EnergyBalls to Cubes
 - [ ] fix all dialogs
 - [ ] try HUGE clock in the center
 - [ ] add wave/cube which is big -> moves for a certain time and then stops and rotates towards player and starts moving again
@@ -13,7 +12,12 @@ Points: 124500
 - [ ] get number of stars to generate from cube definition in MainGameState
 - [ ] try to make inner line of border a bit darker
 - [ ] try different numbers of bombs
-- [ ] check game settings -> everything still needed?
+
+8.1.2016
+- [x] rename EnergyBalls to Cubes
+
+5.1.2016
+- [x] check game settings -> everything still needed?
 
 16.12.2015
 - [x] different behaviors

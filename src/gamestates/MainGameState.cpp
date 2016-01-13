@@ -3,9 +3,10 @@
 #include "..\Constants.h"
 #include <Vector.h>
 #include <math\matrix.h>
+#include <utils\Log.h>
 
 MainGameState::MainGameState(GameContext* context) : ds::GameState("MainGame"), _context(context) {
-	_balls = new EnergyBalls(_context);
+	_balls = new Cubes(_context);
 	_bombs = new Bombs(_context);
 	_stars = new Stars(_context);
 	_showSettings = false;

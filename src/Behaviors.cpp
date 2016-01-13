@@ -1,5 +1,5 @@
 #include "Behaviors.h"
-#include "EnergyBalls.h"
+#include "Cubes.h"
 #include <math\Bitset.h>
 // ------------------------------------------------
 // behavior

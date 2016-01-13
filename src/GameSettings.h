@@ -21,7 +21,7 @@ struct GameSettings : public ds::DynamicGameSettings {
 		addInt("max_bombs", &maxBombs, 3);
 	}
 
-	const char* getName() const {
-		return "game_settings";
+	const char* getFileName() const {
+		return "game_settings.json";
 	}
 };

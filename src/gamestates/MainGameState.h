@@ -3,12 +3,10 @@
 #include <renderer\render_types.h>
 #include <ui\IMGUI.h>
 #include "..\GameContext.h"
-#include <vector>
-#include "..\EnergyBalls.h"
+#include "..\Cubes.h"
 #include "..\Stars.h"
 #include "..\Bombs.h"
 #include "..\EventBuffer.h"
-#include "..\Stars.h"
 #include "..\utils\Numbers.h"
 #include <lib\DataArray.h>
 
@@ -60,7 +58,7 @@ private:
 	ID _bomb_id;
 	bool _grabbing;
 	GameContext* _context;
-	EnergyBalls* _balls;
+	Cubes* _balls;
 	Bombs* _bombs;
 	Stars* _stars;
 	EventBuffer _buffer;
