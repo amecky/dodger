@@ -28,7 +28,7 @@ public:
 	bool saveData(ds::JSONWriter& writer) {
 		return true;
 	}
-	bool loadData(ds::JSONReader& reader);
+	bool loadData(const ds::JSONReader& reader);
 	const char* getFileName() const {
 		return "resources\\cube_definitions.json";
 	}
@@ -57,7 +57,7 @@ public:
 	bool saveData(ds::JSONWriter& writer) {
 		return true;
 	}
-	bool loadData(ds::JSONReader& reader);
+	bool loadData(const ds::JSONReader& reader);
 	const char* getFileName() const {
 		return "resources\\wave_definitions.json";
 	}

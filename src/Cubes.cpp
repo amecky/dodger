@@ -1,7 +1,7 @@
 #include "Cubes.h"
 #include <math\Bitset.h>
 
-bool CubeDefinitions::loadData(ds::JSONReader& reader) {
+bool CubeDefinitions::loadData(const ds::JSONReader& reader) {
 	int cats[32];
 	int num = reader.get_categories(cats, 32);
 	for (int i = 0; i < num; ++i) {
@@ -18,7 +18,7 @@ bool CubeDefinitions::loadData(ds::JSONReader& reader) {
 	return true;
 }
 
-bool WaveDefinitions::loadData(ds::JSONReader& reader) {
+bool WaveDefinitions::loadData(const ds::JSONReader& reader) {
 	int cats[32];
 	int num = reader.get_categories(cats, 32);
 	for (int i = 0; i < num; ++i) {
