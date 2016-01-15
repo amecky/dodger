@@ -19,7 +19,20 @@ const int SIMPLE_MOVE_BIT = 4;
 const int DODGER_EXPLOSION    = 5;
 const int PLAYER_EXPLOSION    = 5;
 const int BOMB_EXPLOSION      = 5;
+const int BOMB_RING_EXPLOSION = 9;
 const int BALL_EXPLOSION      = 7;
 const int BOMB_STARTUP        = 5;
 const int BIG_CUBE_EXPLOSION  = 6;
 const int HUGE_CUBE_EXPLOSION = 6;
+
+// objects types
+enum ObjectTypes {
+	OT_UNKNOWN,
+	OT_STAR,
+	OT_PLAYER,
+	OT_BOMB,
+	OT_FOLLOWER,
+	OT_BIG_CUBE,
+	OT_HUGE_CUBE,
+	OT_EOL
+};

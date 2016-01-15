@@ -4,7 +4,6 @@
 #include <ui\IMGUI.h>
 #include "..\GameContext.h"
 #include "..\Cubes.h"
-#include "..\Stars.h"
 #include "..\Bombs.h"
 #include "..\EventBuffer.h"
 #include "..\utils\Numbers.h"
@@ -55,12 +54,18 @@ private:
 	void drawBorder();
 	void killPlayer();
 	void movePlayer(float dt);
+	
+	void moveStars(const v2& target, float dt);
+	void createStar(const v2& pos);
+	void addStar(const v2& pos, int count);
+
 	ID _bomb_id;
 	bool _grabbing;
 	GameContext* _context;
+	ds::World* _world;
 	Cubes* _balls;
 	Bombs* _bombs;
-	Stars* _stars;
+	//Stars* _stars;
 	EventBuffer _buffer;
 	v2 _cursor_pos;
 	bool _showSettings;
@@ -76,5 +81,7 @@ private:
 	Numbers* _clock;
 	Numbers* _points;
 
+	ds::SID _player_id;
+	ds::SID _ring_id;
 };
 

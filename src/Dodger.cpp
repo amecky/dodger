@@ -16,6 +16,7 @@ Dodger::Dodger() : ds::BaseApp() {
 }
 
 Dodger::~Dodger() {
+	delete _context->world;
 	delete _context->settings;
 	delete _context;
 }
@@ -29,6 +30,9 @@ bool Dodger::loadContent() {
 	_context->settings->load();
 	_context->particles = particles;
 	_context->hudDialog = gui->get("HUD");
+	_context->world = new ds::World();
+	ds::Rect r(50,50,1500,980);
+	_context->world->setBoundingRect(r);
 	assert(_context->hudDialog != 0);
 	addGameState(new MainGameState(_context));
 	addGameState(new GameOverState(gui, _context));

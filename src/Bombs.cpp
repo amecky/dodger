@@ -1,7 +1,7 @@
 #include "Bombs.h"
 
 
-Bombs::Bombs(GameContext* context) : _context(context) {
+Bombs::Bombs(GameContext* context) : _context(context) , _world(context->world) {
 	float step = TWO_PI / 36.0f;
 	for (int i = 0; i < 36; ++i) {
 		_cells[i] = 0.9f + sin(step * static_cast<float>(i) * 12.0f) * 0.4f;
@@ -22,22 +22,38 @@ Bombs::~Bombs() {
 // create
 // ---------------------------------------
 void Bombs::create() {
+	v2 pos;
+	pos.x = ds::math::random(200.0f, 1400.0f);
+	pos.y = ds::math::random(200.0f, 700.0f);
+	ds::SID sid = _world->create(pos, "Bomb");
 	ID id = _bombs.add();
 	Bomb& b = _bombs.get(id);
-	b.position.x = ds::math::random(200.0f, 1400.0f);
-	b.position.y = ds::math::random(200.0f, 700.0f);
+	b.sid = sid;
 	float angle = ds::math::random(0.0f, TWO_PI);
 	float v = ds::math::random(30.0f, 50.0f);
-	b.velocity = ds::vector::getRadialVelocity(angle, v);
-	b.scale = v2(1, 1);
+	v2 vel = ds::vector::getRadialVelocity(angle, v);
+	_world->moveBy(sid, vel, true);
+	_world->setRotation(sid, vel);
+	_world->scaleByPath(sid, &_scale_path, _context->settings->bombFlashingTTL);
 	b.state = Bomb::BS_STARTING;
 	b.resetTimer();
-	b.color = ds::Color(130, 0, 255, 255);
-	b.rotation = 0.0f;
-	b.texture = _texture;
-	_context->particles->start(BOMB_STARTUP, v3(b.position));
+	_context->particles->start(BOMB_STARTUP, v3(pos));
 }
 
+void Bombs::handleEvents(const ds::ActionEventBuffer& buffer) {
+	for (int i = 0; i < buffer.events.size(); ++i) {
+		const ds::ActionEvent& event = buffer.events[i];
+		if (event.type == ds::AT_SCALE_BY_PATH) {
+			BombArray::iterator it = _bombs.begin();
+			while (it != _bombs.end()) {
+				if (it->sid == event.sid) {
+					it->state = Bomb::BS_ACTIVE;
+				}
+				++it;
+			}
+		}
+	}
+}
 // ---------------------------------------
 // grab bomb
 // ---------------------------------------
@@ -45,9 +61,11 @@ bool Bombs::grab(const v2& pos, float radius, ID* id) {
 	BombArray::iterator it = _bombs.begin();
 	while (it != _bombs.end()) {
 		if (it->state == Bomb::BS_ACTIVE) {
-			if (ds::math::checkCircleIntersection(_context->world_pos, radius, it->position, 20.0f)) {
+			v2 p = _world->getPosition(it->sid);
+			if (ds::math::checkCircleIntersection(_context->world_pos, radius, p, 20.0f)) {
 				it->state = Bomb::BS_FOLLOWING;
-				it->color = ds::Color(0, 192, 32, 255);
+				_world->stopAction(it->sid, ds::AT_MOVE_BY);
+				_world->setColor(it->sid, ds::Color(0, 192, 32, 255));
 				*id = it->id;
 				return true;
 			}
@@ -70,11 +88,13 @@ bool Bombs::contains(ID id) const {
 void Bombs::follow(ID id, const v2& target) {
 	if (_bombs.contains(id)) {
 		Bomb& bomb = _bombs.get(id);
+		v2 p = _world->getPosition(bomb.sid);
 		float angle = 0.0f;
-		ds::math::followRelative(target, bomb.position, &angle, 60.0f, 0.02f);
-		v2 diff = _context->world_pos - bomb.position;
+		ds::math::followRelative(target,p, &angle, 60.0f, 0.02f);
+		v2 diff = _context->world_pos - p;
 		v2 n = normalize(diff);
-		bomb.rotation = ds::vector::calculateRotation(n);
+		_world->setPosition(bomb.sid, p);
+		_world->setRotation(bomb.sid,  ds::vector::calculateRotation(n));
 	}
 }
 
@@ -84,13 +104,16 @@ void Bombs::follow(ID id, const v2& target) {
 void Bombs::burst(ID id, float direction) {
 	if (_bombs.contains(id)) {
 		Bomb& bomb = _bombs.get(id);
-		v2 diff = _context->world_pos - bomb.position;
+		v2 p = _world->getPosition(bomb.sid);
+		v2 diff = _context->world_pos - p;
 		v2 n = normalize(diff);
 		float angle = ds::vector::calculateRotation(n);
 		angle += PI;
-		bomb.velocity = ds::vector::getRadialVelocity(angle, 100.0f);
+		v2 vel = ds::vector::getRadialVelocity(angle, 100.0f);
+		_world->moveBy(bomb.sid,vel);
 		bomb.state = Bomb::BS_TICKING;
-		bomb.color = ds::Color(128, 0, 0, 255);
+		_world->setColor(bomb.sid, ds::Color(128, 0, 0, 255));
+		_world->setRotation(bomb.sid, vel);
 	}
 }
 
@@ -99,7 +122,7 @@ void Bombs::burst(ID id, float direction) {
 // ---------------------------------------
 const v2& Bombs::getPosition(ID id) const {
 	const Bomb& b = _bombs.get(id);
-	return b.position;
+	return _world->getPosition(b.sid);
 }
 
 // ---------------------------------------
@@ -115,10 +138,10 @@ void Bombs::clear() {
 void Bombs::render() {
 	BombArray::iterator it = _bombs.begin();
 	while (it != _bombs.end()) {
-		ds::sprites::draw(*it);
 		if (it->state == Bomb::BS_TICKING) {
 			float norm = it->timer / _context->settings->bombFlashingTTL;
-			drawRing(it->position,norm);
+			v2 p = _world->getPosition(it->sid);
+			drawRing(p ,norm);
 		}
 		++it;
 	}
@@ -157,12 +180,14 @@ void Bombs::scaleBombs(EventBuffer* buffer, float dt) {
 	while (it != _bombs.end()) {
 		if (it->state == Bomb::BS_TICKING) {
 			if (it->tickTimer(dt, _context->settings->bombFlashingTTL)) {
-				_context->particles->start(BOMB_EXPLOSION, v3(it->position));
-				buffer->add(GameEvent::GE_BOMB_EXPLODED, it->position);
+				v2 p = _world->getPosition(it->sid);
+				_context->particles->start(BOMB_EXPLOSION, v3(p));
+				_context->particles->start(BOMB_RING_EXPLOSION, v3(p));
+				buffer->add(GameEvent::GE_BOMB_EXPLODED, p);
+				_world->remove(it->sid);
 				it = _bombs.remove(it->id);
 			}
 			else {
-				_scale_path.get(it->normalizedTimer, &it->scale);
 				++it;
 			}
 		}
@@ -184,36 +209,6 @@ void Bombs::tick(EventBuffer* buffer, float dt) {
 			create();
 		}
 	}
-	// move
-	BombArray::iterator it = _bombs.begin();
-	while (it != _bombs.end()) {
-		if (it->state == Bomb::BS_ACTIVE || it->state == Bomb::BS_TICKING) {
-			it->position += it->velocity * dt;
-			bool bouncing = false;
-			if (it->position.x < 130.0f || it->position.x > 1470.0f) {
-				it->velocity.x *= -1.0f;
-				bouncing = true;
-			}
-			if (it->position.y < 130.0f || it->position.y > 770.0f) {
-				it->velocity.y *= -1.0f;
-				bouncing = true;
-			}
-			if (bouncing) {
-				it->position += it->velocity * dt;
-			}
-			v2 n = normalize(it->velocity);
-			it->rotation = ds::vector::calculateRotation(n);
-		}
-		if (it->state == Bomb::BS_STARTING) {
-			if (it->tickTimer(dt, _context->settings->bombStartTTL)) {
-				it->state = Bomb::BS_ACTIVE;
-			}
-			_scale_path.get(it->normalizedTimer, &it->scale);
-			v2 n = normalize(it->velocity);
-			it->rotation = ds::vector::calculateRotation(n);
-		}
-		++it;
-	}	
 	scaleBombs(buffer, dt);
 }
 
@@ -224,11 +219,12 @@ void Bombs::checkInterception(EventBuffer* buffer, const v2& pos, float radius) 
 	BombArray::iterator it = _bombs.begin();
 	while (it != _bombs.end()) {
 		if (it->state == Bomb::BS_ACTIVE) {
-			if (ds::math::checkCircleIntersection(_context->world_pos, PLAYER_RADIUS, it->position, 20.0f)) {
+			v2 p = _world->getPosition(it->sid);
+			if (ds::math::checkCircleIntersection(_context->world_pos, PLAYER_RADIUS, p, 20.0f)) {
 				it->state = Bomb::BS_TICKING;
 				it->resetTimer();
-				it->color = ds::Color(230, 88, 31, 255);
-				buffer->add(GameEvent::GE_BOMB_ACTIVATED, it->position);
+				_world->setColor(it->sid, ds::Color(230, 88, 31, 255));
+				buffer->add(GameEvent::GE_BOMB_ACTIVATED, p);
 			}
 		}
 		++it;
@@ -241,7 +237,9 @@ void Bombs::checkInterception(EventBuffer* buffer, const v2& pos, float radius) 
 void Bombs::killAll() {
 	BombArray::iterator it = _bombs.begin();
 	while (it != _bombs.end()) {
-		_context->particles->start(BOMB_EXPLOSION, v3(it->position));
+		v2 p = _world->getPosition(it->sid);
+		_context->particles->start(BOMB_EXPLOSION, p);
+		_world->remove(it->sid);
 		++it;
 	}
 	_bombs.clear();

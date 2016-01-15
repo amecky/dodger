@@ -4,7 +4,7 @@ particlesystem {
 	texture_rect : 40, 120, 10, 10
 	texture_id : 0
 	emitter {
-		count : 32	
+		count : 64	
 		ejection_period : 0
 		ejection_variance : 0
 		ejection_counter : 0
@@ -25,13 +25,13 @@ particlesystem {
 			variance : 0.8
 		}
 		size {
-			size : 0.4,0.4
+			size : 1.4,1.4
 			variance : 0.0,0.0
 		}
 		hsv_color {
-			hsv : 271,100,100
-			saturation_variance : 30
-			value_variance : 20
+			hsv : 0,71,100
+			saturation_variance : 10
+			value_variance : 10
 			alpha : 255
 		}
 	}	

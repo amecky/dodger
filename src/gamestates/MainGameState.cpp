@@ -5,10 +5,10 @@
 #include <math\matrix.h>
 #include <utils\Log.h>
 
-MainGameState::MainGameState(GameContext* context) : ds::GameState("MainGame"), _context(context) {
+MainGameState::MainGameState(GameContext* context) : ds::GameState("MainGame"), _context(context) , _world(context->world) {
 	_balls = new Cubes(_context);
 	_bombs = new Bombs(_context);
-	_stars = new Stars(_context);
+	//_stars = new Stars(_context);
 	_showSettings = false;
 	_showDebug = false;
 	_dialog_pos = v2(10, 710);
@@ -38,7 +38,7 @@ MainGameState::MainGameState(GameContext* context) : ds::GameState("MainGame"), 
 MainGameState::~MainGameState() {
 	delete _points;
 	delete _clock;
-	delete _stars;
+	//delete _stars;
 	delete _bombs;
 	delete _balls;
 }
@@ -61,6 +61,11 @@ void MainGameState::activate() {
 	_context->hudDialog->setNumber(HUD_LEVEL, 1);
 	_context->playerPosition = v2(640, 360);
 	_context->playerAngle = 0.0f;
+
+	_player_id = _world->create(_context->playerPosition, "Player");
+	_ring_id = _world->create(_context->playerPosition, "Ring");
+	_world->attachCollider(_player_id, OT_PLAYER, 0);
+
 	_dying = false;
 	_dying_timer = 0.0f;
 	_balls->activate();
@@ -70,7 +75,8 @@ void MainGameState::activate() {
 
 	_game_timer.reset(60);
 	_context->hudDialog->setNumber(HUD_TIMER, _game_timer.seconds);
-	_stars->clear();
+	// FIXME: remove all stars
+	//_stars->clear();
 	_grabbing = false;
 	_border_color = ds::Color(192, 128, 0, 255);
 
@@ -112,8 +118,11 @@ void MainGameState::killPlayer() {
 	_dying_timer = 0.0f;
 	_balls->killAll();
 	_bombs->killAll();
-	_stars->clear();
+	// FIXME: remove all stars
+	//_stars->clear();
 	_context->particles->start(PLAYER_EXPLOSION, v3(_context->world_pos));
+	_world->remove(_player_id);
+	_world->remove(_ring_id);
 }
 
 // -------------------------------------------------------
@@ -122,30 +131,17 @@ void MainGameState::killPlayer() {
 void MainGameState::movePlayer(float dt) {
 	_cursor_pos = ds::renderer::getMousePosition();
 	_context->debugPanel.show("Cursor", _cursor_pos);
-	v2 wp;
-	float dx = _context->world_pos.x - 1280.0f / 2.0f;
-	if (dx < 0.0f) {
-		dx = 0.0f;
-	}
-	if (dx > 320.0f) {
-		dx = 320.0f;
-	}
-	wp.x = _cursor_pos.x + dx;
-
-	float dy = _context->world_pos.y - 720.0f / 2.0f;
-	if (dy < 0.0f) {
-		dy = 0.0f;
-	}
-	if (dy > 180.0f) {
-		dy = 180.0f;
-	}
-	wp.y = _cursor_pos.y + dy;
+	ds::renderer::selectViewport(_viewport_id);
+	v2 wp = ds::renderer::screen_to_world(_cursor_pos, _context->world_pos);
 	_context->debugPanel.show("WP", wp);
-
 	ds::math::followRelative(wp, _context->playerPosition, &_context->playerAngle, 5.0f, 1.1f * dt);
 	ds::vector::clamp(_context->playerPosition, v2(60, 60), v2(1540, 840));
 	_context->world_pos = _context->playerPosition;
+	_world->setPosition(_player_id, _context->playerPosition);
+	_world->setPosition(_ring_id, _context->playerPosition);
+	_world->setRotation(_player_id, _context->playerAngle);
 	ds::renderer::setViewportPosition(_viewport_id, _context->world_pos);
+	ds::renderer::selectViewport(0);
 }
 
 // -------------------------------------------------------
@@ -161,6 +157,9 @@ int MainGameState::update(float dt) {
 	if (!_dying) {
 
 		movePlayer(dt);
+
+		_context->world->tick(dt);
+
 		if (_grabbing) {
 			_bombs->follow(_bomb_id, _context->world_pos);
 		}
@@ -172,7 +171,7 @@ int MainGameState::update(float dt) {
 
 		_buffer.reset();
 
-		_balls->tick(dt);
+		//_balls->tick(dt);
 
 		if (_balls->checkBallsInterception()) {
 			LOG << "player hit ball";
@@ -181,6 +180,9 @@ int MainGameState::update(float dt) {
 
 		_buffer.reset();
 		_bombs->tick(&_buffer, dt);
+		const ds::ActionEventBuffer& actionBuffer = _context->world->getEventBuffer();
+		_bombs->handleEvents(actionBuffer);
+
 		if (_buffer.num > 0) {
 			for (int i = 0; i < _buffer.num; ++i) {
 				const GameEvent& event = _buffer.events[i];
@@ -194,7 +196,7 @@ int MainGameState::update(float dt) {
 							case 2: cnt = 4; _context->particles->start(HUGE_CUBE_EXPLOSION, v3(_killedBalls[j].position)); break;
 							default: cnt = 1; break;
 						}
-						_stars->add(_killedBalls[j].position,cnt);
+						addStar(_killedBalls[j].position,cnt);
 					}
 					_context->points += killed;
 					_context->hudDialog->setNumber(HUD_POINTS, _context->points);
@@ -207,15 +209,27 @@ int MainGameState::update(float dt) {
 			}
 		}
 
-		_stars->tick(dt);
-		int picked = _stars->pickup(_context->world_pos, PLAYER_RADIUS);
+		int numCollisions = _world->getNumCollisions();
+		int picked = 0;
+		if (numCollisions > 0) {
+			for (int i = 0; i < numCollisions; ++i) {
+				const ds::Collision& collision = _world->getCollision(i);
+				if (collision.containsType(OT_PLAYER) && collision.containsType(OT_STAR)) {
+					LOG << "picked up star";
+					ds::SID sid = collision.getSIDByType(OT_STAR);
+					_world->remove(sid);
+					++picked;
+				}
+			}
+		}
+
 		if (picked > 0) {
 			_game_timer.seconds += picked;
 			if (_game_timer.seconds > 60) {
 				_game_timer.seconds = 60;
 			}
 		}
-		_stars->move(_context->world_pos, dt);
+		moveStars(_context->world_pos, dt);
 
 	}
 	else {
@@ -291,12 +305,12 @@ void MainGameState::render() {
 		// FIXME: pulsate color
 		ds::sprites::draw(bp, ds::math::buildTexture(40, 400, 40, 40),angle);
 	}
+	_context->world->render();
 	_bombs->render();
-	_stars->render();
 	
 	if (!_dying) {
-		ds::sprites::draw(_context->world_pos, ds::math::buildTexture(40, 0, 40, 42), _context->playerAngle);
-		ds::sprites::draw(_context->world_pos, ds::math::buildTexture(440, 0, 152, 152));
+		//ds::sprites::draw(_context->world_pos, ds::math::buildTexture(40, 0, 40, 42), _context->playerAngle);
+		//ds::sprites::draw(_context->world_pos, ds::math::buildTexture(440, 0, 152, 152));
 	}
 
 
@@ -304,6 +318,53 @@ void MainGameState::render() {
 	ds::sprites::draw(_cursor_pos, ds::math::buildTexture(40, 160, 20, 20));
 	
 	
+}
+
+// ---------------------------------------
+// move towards player if in range
+// ---------------------------------------
+void MainGameState::moveStars(const v2& target, float dt) {
+	ds::SID ids[64];
+	int num = _world->find_by_type(OT_STAR, ids, 64);
+	for (int i = 0; i < num; ++i) {
+		v2 p = _world->getPosition(ids[i]);
+		v2 diff = target - p;
+		if (sqr_length(diff) <  _context->settings->starMagnetRadius * _context->settings->starMagnetRadius) {
+			v2 n = normalize(diff);
+			n *= _context->settings->starSeekVelocity;
+			p += n * dt;
+			_world->setPosition(ids[i], p);
+		}
+	}
+}
+
+void MainGameState::createStar(const v2& pos) {
+	ds::SID sid = _world->create(pos, "Star");
+	_world->scaleByPath(sid, &_context->settings->starScalePath, _context->settings->starFlashTTL);
+	_world->attachCollider(sid, OT_STAR, 0);
+	_world->removeAfter(sid, _context->settings->starTTL);
+}
+// ---------------------------------------
+// add new star
+// ---------------------------------------
+void MainGameState::addStar(const v2& pos, int count) {
+	ds::SID ids[64];
+	int num = _world->find_by_type(OT_STAR, ids, 64);
+	if (num + count < 128) {
+		if (count == 1) {
+			createStar(pos);
+		}
+		else {
+			// spread out with radius = 20
+			float step = TWO_PI / static_cast<float>(count);
+			for (int i = 0; i < count; ++i) {
+				v2 position;
+				position.x = pos.x + 20.0f * cos(step * static_cast<float>(i));
+				position.y = pos.y + 20.0f * sin(step * static_cast<float>(i));
+				createStar(position);
+			}
+		}
+	}
 }
 
 // -------------------------------------------------------
@@ -327,6 +388,12 @@ int MainGameState::onChar(int ascii) {
 	}
 	if (ascii == '3') {
 		_balls->emitt(2);
+	}
+	if (ascii == '4') {
+		addStar(v2(800, 540), 1);
+	}
+	if (ascii == '5') {
+		addStar(v2(800, 540), 6);
 	}
 	return 0;
 }

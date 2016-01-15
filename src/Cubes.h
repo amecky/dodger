@@ -6,7 +6,6 @@
 #include "GameContext.h"
 #include <lib\DataArray.h>
 #include "BallEmitter.h"
-#include "Stars.h"
 #include "Behaviors.h"
 
 struct CubeDefinition {

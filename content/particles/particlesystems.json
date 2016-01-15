@@ -1,33 +1,36 @@
-player_trail {
-	file : "player_trail"
-	id : 1
+player_trail { 
+    id : 1
+    file : "player_trail"
 }
-enemy_start_dots {
-	file : "enemy_start_dots"
-	id : 2
+enemy_start_dots { 
+    id : 2
+    file : "enemy_start_dots"
 }
-dodger_trail {
-	file : "dodger_trail"
-	id : 3
+dodger_trail { 
+    id : 3
+    file : "dodger_trail"
 }
-explosion {
-	file : "explosion"
-	id : 4
+explosion { 
+    id : 4
+    file : "explosion"
 }
-bomb_explosion {
-	file : "bomb_explosion"
-	id : 5
+bomb_explosion { 
+    id : 5
+    file : "bomb_explosion"
 }
-ball_explosion {
-	file : "ball_explosion"
-	id : 6
+ball_explosion { 
+    id : 6
+    file : "ball_explosion"
 }
-big_cube_explosion {
-	file : "big_cube_explosion"
-	id : 7
+big_cube_explosion { 
+    id : 7
+    file : "big_cube_explosion"
 }
-huge_cube_explosion {
-	file : "huge_cube_explosion"
-	id : 8
+huge_cube_explosion { 
+    id : 8
+    file : "huge_cube_explosion"
 }
-
+bomb_ring_explosion { 
+    id : 9
+    file : "bomb_ring_explosion"
+}

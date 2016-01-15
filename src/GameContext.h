@@ -4,6 +4,7 @@
 #include "GameSettings.h"
 #include <particles\ParticleManager.h>
 #include <ui\DebugPanel.h>
+#include <world\World.h>
 
 struct GameContext {
 
@@ -15,5 +16,6 @@ struct GameContext {
 	ds::ParticleManager* particles;
 	ds::DebugPanel debugPanel;
 	int points;
+	ds::World* world;
 };
 

@@ -5,7 +5,7 @@
 #include "EventBuffer.h"
 #include <utils\TimedObject.h>
 
-struct Bomb : public ds::ObjectTimer , ds::BasicSprite {
+struct Bomb : public ds::ObjectTimer {
 
 	enum BombState {
 		BS_STARTING,
@@ -13,11 +13,11 @@ struct Bomb : public ds::ObjectTimer , ds::BasicSprite {
 		BS_TICKING,
 		BS_FOLLOWING
 	};
-
+	ID id;
 	BombState state;
-	v2 velocity;
-
-	Bomb() : BasicSprite() , state(BS_ACTIVE) , velocity(0,0) {}
+	//v2 velocity;
+	ds::SID sid;
+	Bomb() : state(BS_ACTIVE)  {}
 
 };
 
@@ -38,12 +38,14 @@ public:
 	void burst(ID id, float direction);
 	const v2& getPosition(ID id) const;
 	void clear();
+	void handleEvents(const ds::ActionEventBuffer& buffer);
 private:
 	void checkInterception(EventBuffer* buffer, const v2& pos, float radius);
 	void create();
 	void scaleBombs(EventBuffer* buffer, float dt);
 	void drawRing(const v2& pos,float timer);
 	GameContext* _context;
+	ds::World* _world;
 	float _spawn_timer;
 	BombArray _bombs;
 	float _cells[36];
