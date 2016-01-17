@@ -1,7 +1,7 @@
 particlesystem { 
     max : 1024
     texture_id : 0
-    texture_rect : 80,440,60,60
+    texture_rect : 0,440,60,60
     emitter { 
         count : 1
         ejection_period : 0

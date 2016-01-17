@@ -183,6 +183,7 @@ void Bombs::scaleBombs(EventBuffer* buffer, float dt) {
 				v2 p = _world->getPosition(it->sid);
 				_context->particles->start(BOMB_EXPLOSION, v3(p));
 				_context->particles->start(BOMB_RING_EXPLOSION, v3(p));
+				_context->particles->start(BOMB_DEBRIS, v3(p));
 				buffer->add(GameEvent::GE_BOMB_EXPLODED, p);
 				_world->remove(it->sid);
 				it = _bombs.remove(it->id);

@@ -34,3 +34,7 @@ bomb_ring_explosion {
     id : 9
     file : "bomb_ring_explosion"
 }
+bomb_debris { 
+    id : 10
+    file : "bomb_debris"
+}
