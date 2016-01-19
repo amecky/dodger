@@ -38,3 +38,7 @@ bomb_debris {
     id : 10
     file : "bomb_debris"
 }
+bomb_appearance { 
+    id : 11
+    file : "bomb_appearance"
+}

@@ -22,7 +22,7 @@ const int BOMB_EXPLOSION      = 5;
 const int BOMB_RING_EXPLOSION = 9;
 const int BOMB_DEBRIS         = 10;
 const int BALL_EXPLOSION      = 7;
-const int BOMB_STARTUP        = 5;
+const int BOMB_STARTUP        = 11;
 const int BIG_CUBE_EXPLOSION  = 6;
 const int HUGE_CUBE_EXPLOSION = 6;
 

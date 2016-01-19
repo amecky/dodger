@@ -112,7 +112,8 @@ void Bombs::burst(ID id, float direction) {
 		v2 vel = ds::vector::getRadialVelocity(angle, 100.0f);
 		_world->moveBy(bomb.sid,vel);
 		bomb.state = Bomb::BS_TICKING;
-		_world->setColor(bomb.sid, ds::Color(128, 0, 0, 255));
+		//_world->setColor(bomb.sid, ds::Color(128, 0, 0, 255));
+		_world->flashColor(bomb.sid, ds::Color(138, 39, 0), ds::Color(255, 165, 130), 0.3f, -1);
 		_world->setRotation(bomb.sid, vel);
 	}
 }
@@ -224,7 +225,8 @@ void Bombs::checkInterception(EventBuffer* buffer, const v2& pos, float radius) 
 			if (ds::math::checkCircleIntersection(_context->world_pos, PLAYER_RADIUS, p, 20.0f)) {
 				it->state = Bomb::BS_TICKING;
 				it->resetTimer();
-				_world->setColor(it->sid, ds::Color(230, 88, 31, 255));
+				//_world->setColor(it->sid, ds::Color(230, 88, 31, 255));
+				_world->flashColor(it->sid, ds::Color(138, 39, 0), ds::Color(255, 135, 88), 0.4f, -1);
 				buffer->add(GameEvent::GE_BOMB_ACTIVATED, p);
 			}
 		}

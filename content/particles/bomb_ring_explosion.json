@@ -1,23 +1,31 @@
 particlesystem { 
     max : 1024
     texture_id : 0
-    texture_rect : 0,440,60,60
+    texture_rect : 40,120,10,10
     emitter { 
-        count : 1
+        count : 32
         ejection_period : 0
         ejection_variance : 0
         ejection_counter : 0
     }
     generators { 
         ring_position { 
-            radius : 0
-            variance : 0
-            angle_variance : 0
+            radius : 20
+            variance : 2
+            angle_variance : 10
             step : 0
         }
         lifecycle { 
-            ttl : 0.5
-            variance : 0
+            ttl : 1.1
+            variance : 0.2
+        }
+		radial_velocity {
+			velocity : 140
+			variance : 10
+		}		
+        size { 
+            scale : 1,1
+            variance : 0.4,0.4
         }
         hsv_color { 
             hsv : 0,41,100
@@ -30,13 +38,15 @@ particlesystem {
     modifiers { 
         lifecycle { 
         }
-        linear_alpha { 
-            start_alpha : 1
-            end_alpha : 0
+		position {
+		}
+        alpha_path { 
+            path : 0.0,1.0,0.8,0.8,1.0,0.0
         }
-        linear_size { 
-            min_scale : 0.8,0.8
-            max_scale : 1.8,1.8
+        size_path { 
+            path: 0.0,0.8,0.8,
+				  0.7,0.7,0.7,
+				  1.0,0.4,0.4
         }
     }
 }
