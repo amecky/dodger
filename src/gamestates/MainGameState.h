@@ -54,12 +54,12 @@ private:
 	void drawBorder();
 	void killPlayer();
 	void movePlayer(float dt);
-	
+	void handleCollisions();
 	void moveStars(const v2& target, float dt);
 	void createStar(const v2& pos);
 	void addStar(const v2& pos, int count);
 
-	ID _bomb_id;
+	ds::SID _bomb_id;
 	bool _grabbing;
 	GameContext* _context;
 	ds::World* _world;

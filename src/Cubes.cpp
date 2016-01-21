@@ -1,6 +1,9 @@
 #include "Cubes.h"
 #include <math\Bitset.h>
 
+// ---------------------------------------
+// load cube definitions
+// ---------------------------------------
 bool CubeDefinitions::loadData(const ds::JSONReader& reader) {
 	int cats[32];
 	int num = reader.get_categories(cats, 32);
@@ -18,6 +21,9 @@ bool CubeDefinitions::loadData(const ds::JSONReader& reader) {
 	return true;
 }
 
+// ---------------------------------------
+// load wave definitions
+// ---------------------------------------
 bool WaveDefinitions::loadData(const ds::JSONReader& reader) {
 	int cats[32];
 	int num = reader.get_categories(cats, 32);
@@ -32,7 +38,10 @@ bool WaveDefinitions::loadData(const ds::JSONReader& reader) {
 	return true;
 }
 
-Cubes::Cubes(GameContext* context) : _context(context) {
+// ---------------------------------------
+// Cubes
+// ---------------------------------------
+Cubes::Cubes(GameContext* context) : _context(context) , _world(context->world) {
 
 	_spawnData.count_x = 10;
 	_spawnData.count_y = 5;
@@ -63,125 +72,153 @@ Cubes::~Cubes() {
 }
 
 // ---------------------------------------
-// build from template
-// ---------------------------------------
-bool Cubes::buildFromTemplate(Ball* ball, const char* name) {
-	ds::Sprite sprite;
-	if (ds::renderer::getSpriteTemplate(name, &sprite)) {
-		ball->texture = sprite.texture;
-		ball->color = sprite.color;
-		float dim = sprite.texture.rect.width();
-		if (sprite.texture.rect.height() > dim) {
-			dim = sprite.texture.rect.height();
-		}
-		ball->size = dim * 0.5f;
-		return true;
-	}
-	return false;
-}
-
-// ---------------------------------------
 // create ball
 // ---------------------------------------
-void Cubes::createBall(const v2& pos, int current, int total, const CubeDefinition& cubeDefinition) {
-	ID id = _balls.add();
-	Ball& ball = _balls.get(id);
-	ball.position = pos;
+void Cubes::createBall(const v2& pos, int current, int total, int waveDefinitionIndex) {
+	v2 position = pos;
+	const WaveDefinition& waveDefinition = _waveDefinitions.get(waveDefinitionIndex);
+	const CubeDefinition cubeDefinition = _cubeDefintions.get(waveDefinition.cubeType);
 	if (total > 1) {
 		float ra = static_cast<float>(current) / static_cast<float>(total)* TWO_PI;
 		float rd = ds::math::random(10.0f, 25.0f);
 		v2 pp = v2(rd * cos(ra), rd * sin(ra));
-		ball.position += pp;
+		position += pp;
 	}
+	ds::SID sid = _world->create(position, cubeDefinition.name);
+	_world->attachCollider(sid, cubeDefinition.type, 0);
+	Ball* data = (Ball*)_world->attach_data(sid, sizeof(Ball));
+	assert(data != 0);
 	float angle = ds::math::random(0.0f, TWO_PI);
-	ball.velocity = ds::vector::getRadialVelocity(angle, ds::math::random(cubeDefinition.velocity - cubeDefinition.velocityVariance, cubeDefinition.velocity + cubeDefinition.velocityVariance));
-	ball.state = Ball::BS_GROWING;
-	ball.timer = 0.0f;
-	ds::bit::set(&ball.behaviors, SIMPLE_MOVE_BIT);
-	ball.type = cubeDefinition.type;
-	ball.force = v2(0, 0);
-	bool ret = buildFromTemplate(&ball, cubeDefinition.name);
-	assert(ret);
+	data->velocity = ds::vector::getRadialVelocity(angle, ds::math::random(cubeDefinition.velocity - cubeDefinition.velocityVariance, cubeDefinition.velocity + cubeDefinition.velocityVariance));
+	_world->scaleByPath(sid, &_context->settings->starScalePath,0.4f);
+	data->force = v2(0, 0);
+	data->def_index = waveDefinition.cubeType;
+	data->wave_index = waveDefinitionIndex;
 }
 
 // ---------------------------------------
-// render
+// handle events
 // ---------------------------------------
-void Cubes::render() {
-	for (uint32 i = 0; i < _balls.numObjects; ++i) {
-		ds::sprites::draw(_balls.objects[i]);
-	}
-}
-
-// ---------------------------------------
-// scale growing balls
-// ---------------------------------------
-void Cubes::scaleGrowingBalls(float dt) {
-	for (uint32 i = 0; i < _balls.numObjects; ++i) {
-		Ball& ball = _balls.objects[i];
-		if (ball.state == Ball::BS_GROWING) {
-			const CubeDefinition& def = _cubeDefintions.get(ball.type);
-			ball.timer += dt;
-			float norm = ball.timer / def.growTTL;
-			if (norm > 1.0f) {
-				norm = 1.0f;
-				ball.state = Ball::BS_MOVING;
-				ball.timer = 0.0f;
-				ball.behaviors = def.behaviorBits;
+void Cubes::handleEvents(const ds::ActionEventBuffer& buffer) {
+	for (int i = 0; i < buffer.events.size(); ++i) {
+		const ds::ActionEvent& event = buffer.events[i];
+		if (_world->contains(event.sid)) {
+			int t = _world->getType(event.sid);
+			if (t == OT_BIG_CUBE || t == OT_HUGE_CUBE) {
+				if (event.type == ds::AT_SCALE_BY_PATH) {
+					Ball* data = (Ball*)_world->get_data(event.sid);
+					assert(data != 0);
+					_world->moveBy(event.sid, data->velocity, true);
+				}
 			}
-			ball.color.a = norm;
-			ball.scale = tweening::interpolate(tweening::easeInQuad, v2(0.1f, 0.1f), v2(1.0f, 1.0f), norm);
 		}
 	}
 }
 
+// ---------------------------------------
+// seek
+// ---------------------------------------
+void Cubes::seek(const v2& target, float velocity) {
+	ds::SID sids[256];
+	int num = _world->find_by_type(OT_FOLLOWER, sids, 256);
+	for (int i = 0; i < num; ++i) {
+		Ball* data = (Ball*)_world->get_data(sids[i]);
+		assert(data != 0);
+		v2 diff = target - _world->getPosition(sids[i]);
+		v2 n = normalize(diff);
+		v2 desired = n * velocity;
+		data->force += desired;
+	}
+}
+
+// ------------------------------------------------
+// separate
+// ------------------------------------------------
+void Cubes::separate(const v2& target, float minDistance, float relaxation) {
+	float sqrDist = minDistance * minDistance;
+	ds::SID sids[256];
+	int num = _world->find_by_type(OT_FOLLOWER, sids, 256);
+	for (int i = 0; i < num; ++i) {
+		Ball* data = (Ball*)_world->get_data(sids[i]);
+		assert(data != 0);
+		int cnt = 0;
+		v2 separationForce = v2(0, 0);
+		v2 averageDirection = v2(0, 0);
+		v2 distance = v2(0, 0);
+		v2 currentPos = _world->getPosition(sids[i]);
+		for (int j = 0; j < num; j++) {
+			if (i != j) {
+				v2 dist = _world->getPosition(sids[j]) - currentPos;
+				if (sqr_length(dist) < sqrDist) {
+					++cnt;
+					separationForce += dist;
+					separationForce = normalize(separationForce);
+					separationForce = separationForce * relaxation;
+					averageDirection += separationForce;
+				}
+			}
+		}
+		if (cnt > 0) {
+			data->force -= averageDirection;
+		}
+	}
+}
+
+// ------------------------------------------------
+// align
+// ------------------------------------------------
+void Cubes::align(const v2& target, float desiredDistance) {
+	float sqrDesired = desiredDistance * desiredDistance;
+	ds::SID sids[256];
+	int num = _world->find_by_type(OT_FOLLOWER, sids, 256);
+	for (int i = 0; i < num; ++i) {
+		Ball* data = (Ball*)_world->get_data(sids[i]);
+		assert(data != 0);
+		int cnt = 0;
+		v2 separationForce = v2(0, 0);
+		v2 averageDirection = v2(0, 0);
+		v2 distance = v2(0, 0);
+		v2 currentPos = _world->getPosition(sids[i]);
+		for (int j = 0; j < num; j++) {
+			if (i != j) {
+				v2 dist = _world->getPosition(sids[j]) - currentPos;
+				if (sqr_length(dist) < sqrDesired) {
+					++cnt;
+					averageDirection += data->velocity;
+				}
+			}
+		}
+		if (cnt > 0) {
+			averageDirection /= static_cast<float>(cnt);
+			data->force += averageDirection;
+		}
+	}
+}
 // ---------------------------------------
 // move balls
 // ---------------------------------------
-void Cubes::moveBalls(float dt) {
-	// reset velocity
-	for (uint32 i = 0; i < _balls.numObjects; ++i) {
-		_balls.objects[i].force = v2(0, 0);
+void Cubes::move(float dt) {
+	int count = 0;
+	ds::SID sids[256];
+	int num = _world->find_by_type(OT_FOLLOWER, sids, 256);
+	for (int i = 0; i < num; ++i) {
+		Ball* data = (Ball*)_world->get_data(sids[i]);
+		assert(data != 0);
+		data->force = v2(0, 0);
 	}
-	// apply behaviors
-	behavior::seek(_balls.objects, _balls.numObjects, _context->world_pos, 120.0f, dt);
-	behavior::separate(_balls.objects, _balls.numObjects, _context->world_pos, 40.0f, 15.0f, dt);
-	behavior::align(_balls.objects, _balls.numObjects, _context->world_pos, 40.0f, dt);
-	behavior::simple_move(_balls.objects, _balls.numObjects, dt);
-	// move and rotate
-	for (uint32 i = 0; i < _balls.numObjects; ++i) {
-		Ball& b = _balls.objects[i];
-		b.position += b.force * dt;
-		bool changed = false;
-		if (b.position.x < 100.0f || b.position.x > 1500.0f) {
-			b.velocity.x *= -1.0f;
-			changed = true;
-		}
-		if (b.position.y < 50.0f || b.position.y > 850.0f) {
-			b.velocity.y *= -1.0f;
-			changed = true;
-		}
-		if (changed) {
-			b.position += b.velocity * dt;
-		}
-		v2 diff = _context->world_pos - b.position;
+	seek(_context->world_pos, 120.0f);
+	separate(_context->world_pos, 40.0f, 15.0f);
+	align(_context->world_pos, 40.0f);
+	for (int i = 0; i < num; ++i) {
+		Ball* data = (Ball*)_world->get_data(sids[i]);
+		assert(data != 0);
+		v2 p = _world->getPosition(sids[i]);
+		p += data->force * dt;
+		_world->setPosition(sids[i],p);
+		v2 diff = _context->world_pos - p;
 		v2 n = normalize(diff);
-		b.rotation = ds::vector::calculateRotation(n);
-		// FIXME: make sure we are inside the grid!
+		_world->setRotation(sids[i], ds::vector::calculateRotation(n));
 	}
-}
-
-// ---------------------------------------
-// check balls interception with player
-// ---------------------------------------
-bool Cubes::checkBallsInterception() const {
-	for (uint32 i = 0; i < _balls.numObjects; ++i) {
-		const Ball& b = _balls.objects[i];
-		if (ds::math::checkCircleIntersection(_context->world_pos, PLAYER_RADIUS, b.position, 15.0f)) {
-			return true;
-		}
-	}
-	return false;
 }
 
 // ---------------------------------------
@@ -189,39 +226,41 @@ bool Cubes::checkBallsInterception() const {
 // ---------------------------------------
 int Cubes::killBalls(const v2& bombPos, KilledBall* killedBalls) {
 	int count = 0;
-	for (uint32 i = 0; i < _balls.numObjects; ++i) {
-		Ball& b = _balls.objects[i];
-		if (ds::math::checkCircleIntersection(bombPos, BOMB_EXPLOSION_RADIUS, b.position, b.size)) {
-			WaveRuntime& runtime = _waveRuntimes[b.type];
+	int types[] = { OT_FOLLOWER, OT_BIG_CUBE, OT_HUGE_CUBE };
+	ds::SID sids[256];
+	int num = _world->find_by_types(types, 3, sids, 256);
+	for (int i = 0; i < num; ++i) {
+		v2 p = _world->getPosition(sids[i]);
+		Ball* data = (Ball*)_world->get_data(sids[i]);
+		assert(data != 0);
+		// FIXME!!!
+		float size = 20.0f;
+		if (ds::math::checkCircleIntersection(bombPos, BOMB_EXPLOSION_RADIUS, p, size)) {
+			WaveRuntime& runtime = _waveRuntimes[data->wave_index];
 			--runtime.current;
 			KilledBall& kb = killedBalls[count++];
-			kb.position = b.position;
-			kb.type = b.type;
-			_balls.remove(b.id);
+			kb.position = p;
+			kb.type = _world->getType(sids[i]);
+			_world->remove(sids[i]);
 		}
 	}
 	return count;
 }
 
 // ---------------------------------------
-// move
-// ---------------------------------------
-void Cubes::move(float dt) {
-	// growing
-	scaleGrowingBalls(dt);
-	// move
-	moveBalls(dt);
-}
-
-// ---------------------------------------
 // kill all
 // ---------------------------------------
-void Cubes::killAll() {
-	for (uint32 i = 0; i < _balls.numObjects; ++i) {
-		Ball& b = _balls.objects[i];
-		_context->particles->start(BALL_EXPLOSION, v3(b.position));
+void Cubes::killAll(bool explode) {
+	int types[] = { 4, 5, 6 };
+	ds::SID sids[256];
+	int num = _world->find_by_types(types, 3, sids, 256);
+	for ( int i = 0; i < num; ++i) {
+		if (explode) {
+			v2 p = _world->getPosition(sids[i]);
+			_context->particles->start(BALL_EXPLOSION, p);
+		}
+		_world->remove(sids[i]);
 	}
-	_balls.clear();
 }
 
 // ------------------------------------------------
@@ -229,17 +268,16 @@ void Cubes::killAll() {
 // ------------------------------------------------
 void Cubes::emitt(int type) {
 	const SpawnPoint& spawn = _emitter->random();
-	const CubeDefinition& def = _cubeDefintions.get(type);
 	const WaveDefinition& waveDef = _waveDefinitions.get(type);
 	for (int i = 0; i < waveDef.numSpawn; ++i) {
-		createBall(spawn.position, i, waveDef.numSpawn, def);
+		createBall(spawn.position, i, waveDef.numSpawn, type);
 	}
 }
 
 // ------------------------------------------------
-// tick and create new dodgers
+// tick and create new cubes
 // ------------------------------------------------
-void Cubes::tick(float dt) {
+void Cubes::spawn(float dt) {
 	for (size_t i = 0; i < _waveDefinitions.size(); ++i) {
 		const WaveDefinition& waveDef = _waveDefinitions.get(i);
 		WaveRuntime& runtime = _waveRuntimes[i];
@@ -248,10 +286,9 @@ void Cubes::tick(float dt) {
 			runtime.timer = 0.0f;
 			int delta = waveDef.maxConcurrent - runtime.current;
 			if (delta > 0) {
-				const SpawnPoint& spawn = _emitter->random();
-				const CubeDefinition cubeDef = _cubeDefintions.get(waveDef.cubeType);
-				for (int i = 0; i < waveDef.numSpawn; ++i) {
-					createBall(spawn.position, i, waveDef.numSpawn, cubeDef);
+				const SpawnPoint& spawn = _emitter->random();				
+				for (int j = 0; j < waveDef.numSpawn; ++j) {
+					createBall(spawn.position, j, waveDef.numSpawn, i);
 					++runtime.total;
 					++runtime.current;
 				}
@@ -259,7 +296,6 @@ void Cubes::tick(float dt) {
 		}
 
 	}
-	move(dt);
 }
 
 // ------------------------------------------------
@@ -267,7 +303,8 @@ void Cubes::tick(float dt) {
 // ------------------------------------------------
 void Cubes::activate() {
 	_emitted = 0;
-	_balls.clear();
+	// FIXME:
+	killAll(false);
 	_emitter->rebuild();
 	_spawner_position = v2(200, 200);
 	for (size_t i = 0; i < _waveRuntimes.size(); ++i) {

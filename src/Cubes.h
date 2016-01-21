@@ -6,8 +6,10 @@
 #include "GameContext.h"
 #include <lib\DataArray.h>
 #include "BallEmitter.h"
-#include "Behaviors.h"
 
+// ---------------------------------------
+// Cube definition
+// ---------------------------------------
 struct CubeDefinition {
 
 	char name[20];
@@ -19,6 +21,9 @@ struct CubeDefinition {
 	int type;
 };
 
+// ---------------------------------------
+// Cube definitions
+// ---------------------------------------
 class CubeDefinitions : public ds::DataFile {
 
 public:
@@ -41,6 +46,9 @@ private:
 	ds::Array<CubeDefinition> _definitions;
 };
 
+// ---------------------------------------
+// Wave definition
+// ---------------------------------------
 struct WaveDefinition {
 	int cubeType;
 	int maxConcurrent;
@@ -48,6 +56,9 @@ struct WaveDefinition {
 	float spawnTTL;	
 };
 
+// ---------------------------------------
+// Wave definitions
+// ---------------------------------------
 class WaveDefinitions : public ds::DataFile {
 
 public:
@@ -80,26 +91,20 @@ struct KilledBall {
 // ----------------------------------------
 // Ball
 // ----------------------------------------
-struct Ball : ds::BasicSprite {
+struct Ball {
 
-	enum BallState {
-		BS_GROWING,
-		BS_STARTING,
-		BS_MOVING,
-		BS_EOL
-	};
 	v2 velocity;
 	v2 force;
-	float size;
-	BallState state;
-	int behaviors;
-	float timer;
-	int type;
+	int def_index;
+	int wave_index;
 
-	Ball() : ds::BasicSprite(), velocity(0, 0), force(0, 0), size(1.0f), state(BS_EOL), behaviors(0), timer(0.0f), type(0) {}
+	Ball() : velocity(0, 0), force(0, 0) , def_index(0) , wave_index(0) {}
 
 };
 
+// ---------------------------------------
+// Wave runtime
+// ---------------------------------------
 struct WaveRuntime {
 	int definitionIndex;
 	int current;
@@ -109,27 +114,28 @@ struct WaveRuntime {
 
 typedef ds::Array<WaveRuntime> WaveRuntimes;
 
+// ---------------------------------------
+// Cubes
+// ---------------------------------------
 class Cubes {
 
 public:
 	Cubes(GameContext* context);
 	~Cubes();
 	void activate();
-	void render();
-	void tick(float dt);
+	void spawn(float dt);
 	int killBalls(const v2& bombPos, KilledBall* positions);
-	bool checkBallsInterception() const;
-	void killAll();
+	void killAll(bool explode = true);
 	void emitt(int type);
-private:
+	void handleEvents(const ds::ActionEventBuffer& buffer);
 	void move(float dt);
-	void createBall(const v2& pos, int current, int total, const CubeDefinition& cubeDefinition);
-	void scaleGrowingBalls(float dt);
-	void moveBalls(float dt);
-	bool buildFromTemplate(Ball* ball, const char* name);
-
+private:	
+	void createBall(const v2& pos, int current, int total, int waveDefinitionIndex);
+	void seek(const v2& target, float velocity);
+	void separate(const v2& target, float minDistance, float relaxation);
+	void align(const v2& target, float desiredDistance);
 	GameContext* _context;
-	ds::DataArray<Ball, MAX_BALLS> _balls;
+	ds::World* _world;
 	v2 _spawner_position;
 	SpawnerData _spawnData;
 	CubeDefinitions _cubeDefintions;

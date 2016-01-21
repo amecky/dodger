@@ -172,17 +172,17 @@ int MainGameState::update(float dt) {
 		_buffer.reset();
 
 		//_balls->tick(dt);
-
-		if (_balls->checkBallsInterception()) {
-			LOG << "player hit ball";
-			killPlayer();
-		}
-
+		_balls->move(dt);
+		
 		_buffer.reset();
 		_bombs->tick(&_buffer, dt);
+
+		// handle events
 		const ds::ActionEventBuffer& actionBuffer = _context->world->getEventBuffer();
 		_bombs->handleEvents(actionBuffer);
+		_balls->handleEvents(actionBuffer);
 
+		// handle game events
 		if (_buffer.num > 0) {
 			for (int i = 0; i < _buffer.num; ++i) {
 				const GameEvent& event = _buffer.events[i];
@@ -209,26 +209,8 @@ int MainGameState::update(float dt) {
 			}
 		}
 
-		int numCollisions = _world->getNumCollisions();
-		int picked = 0;
-		if (numCollisions > 0) {
-			for (int i = 0; i < numCollisions; ++i) {
-				const ds::Collision& collision = _world->getCollision(i);
-				if (collision.containsType(OT_PLAYER) && collision.containsType(OT_STAR)) {
-					LOG << "picked up star";
-					ds::SID sid = collision.getSIDByType(OT_STAR);
-					_world->remove(sid);
-					++picked;
-				}
-			}
-		}
+		handleCollisions();
 
-		if (picked > 0) {
-			_game_timer.seconds += picked;
-			if (_game_timer.seconds > 60) {
-				_game_timer.seconds = 60;
-			}
-		}
 		moveStars(_context->world_pos, dt);
 
 	}
@@ -243,6 +225,42 @@ int MainGameState::update(float dt) {
 	_context->particles->update(dt);
 
 	return 0;
+}
+
+// -------------------------------------------------------
+// handle collisions
+// -------------------------------------------------------
+void MainGameState::handleCollisions() {
+	// handle collisions
+	int numCollisions = _world->getNumCollisions();
+	int picked = 0;
+	if (numCollisions > 0) {
+		for (int i = 0; i < numCollisions; ++i) {
+			const ds::Collision& collision = _world->getCollision(i);
+			if (collision.containsType(OT_PLAYER) && collision.containsType(OT_STAR)) {
+				LOG << "picked up star";
+				ds::SID sid = collision.getSIDByType(OT_STAR);
+				_world->remove(sid);
+				++picked;
+			}
+			else if (collision.containsType(OT_PLAYER) && collision.containsType(OT_FOLLOWER)) {
+				killPlayer();
+			}
+			else if (collision.containsType(OT_PLAYER) && collision.containsType(OT_HUGE_CUBE)) {
+				killPlayer();
+			}
+			else if (collision.containsType(OT_PLAYER) && collision.containsType(OT_BIG_CUBE)) {
+				killPlayer();
+			}
+		}
+	}
+
+	if (picked > 0) {
+		_game_timer.seconds += picked;
+		if (_game_timer.seconds > 60) {
+			_game_timer.seconds = 60;
+		}
+	}
 }
 
 // -------------------------------------------------------
@@ -294,9 +312,9 @@ void MainGameState::render() {
 	_points->render();
 	ds::renderer::selectViewport(_viewport_id);
 	_context->particles->render();
-	_balls->render();
+	//_balls->render();
 	if (_grabbing) {
-		v2 bp = _bombs->getPosition(_bomb_id);
+		v2 bp = _world->getPosition(_bomb_id);
 		v2 diff = _context->world_pos - bp;
 		v2 n = normalize(diff);
 		float angle = ds::vector::calculateRotation(n);
@@ -376,6 +394,9 @@ int MainGameState::onChar(int ascii) {
 	}
 	if (ascii == 'q') {
 		_showSettings = !_showSettings;
+	}
+	if (ascii == 'x') {
+		_balls->killAll();
 	}
 	if (ascii == 'd') {
 		_showDebug = !_showDebug;

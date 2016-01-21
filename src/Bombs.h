@@ -5,7 +5,7 @@
 #include "EventBuffer.h"
 #include <utils\TimedObject.h>
 
-struct Bomb : public ds::ObjectTimer {
+struct BombData {
 
 	enum BombState {
 		BS_STARTING,
@@ -13,17 +13,14 @@ struct Bomb : public ds::ObjectTimer {
 		BS_TICKING,
 		BS_FOLLOWING
 	};
-	ID id;
 	BombState state;
-	//v2 velocity;
-	ds::SID sid;
-	Bomb() : state(BS_ACTIVE)  {}
+	float timer;
+
+	BombData() : state(BS_ACTIVE) , timer(0.0f) {}
 
 };
 
 class Bombs {
-
-typedef ds::DataArray<Bomb, 32> BombArray;
 
 public:
 	Bombs(GameContext* context);
@@ -32,11 +29,9 @@ public:
 	void tick(EventBuffer* buffer,float dt);
 	void render();
 	void killAll();
-	bool grab(const v2& pos, float radius,ID* id);
-	bool contains(ID id) const;
-	void follow(ID id,const v2& target);
-	void burst(ID id, float direction);
-	const v2& getPosition(ID id) const;
+	bool grab(const v2& pos, float radius,ds::SID* id);
+	void follow(ds::SID id,const v2& target);
+	void burst(ds::SID id, float direction);
 	void clear();
 	void handleEvents(const ds::ActionEventBuffer& buffer);
 private:
@@ -47,9 +42,8 @@ private:
 	GameContext* _context;
 	ds::World* _world;
 	float _spawn_timer;
-	BombArray _bombs;
+	ds::SID _bomb_sids[16];
 	float _cells[36];
-	ds::Texture _texture;
 	ds::Texture _ring_texture;
 	ds::Vector2fPath _scale_path;
 
