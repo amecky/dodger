@@ -42,3 +42,9 @@ bomb_appearance {
     id : 11
     file : "bomb_appearance"
 }
+groups {
+	bomb_explosion {
+		id : 1
+		systems : 5,9,10
+	}
+}
