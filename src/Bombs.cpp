@@ -174,9 +174,7 @@ void Bombs::scaleBombs(EventBuffer* buffer, float dt) {
 			data->timer += dt;
 			if (data->timer >= _context->settings->bombFlashingTTL) {
 				v2 p = _world->getPosition(_bomb_sids[i]);
-				_context->particles->start(BOMB_EXPLOSION, v3(p));
-				_context->particles->start(BOMB_RING_EXPLOSION, v3(p));
-				_context->particles->start(BOMB_DEBRIS, v3(p));
+				_context->particles->startGroup(1, v3(p));
 				buffer->add(GameEvent::GE_BOMB_EXPLODED, p);
 				_world->remove(_bomb_sids[i]);
 			}
