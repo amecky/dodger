@@ -416,6 +416,9 @@ int MainGameState::onChar(int ascii) {
 	if (ascii == '5') {
 		addStar(v2(800, 540), 6);
 	}
+	if (ascii == '6') {
+		_context->particles->startGroup(1, v3(512, 384, 0));
+	}
 	return 0;
 }
 
