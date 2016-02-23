@@ -16,6 +16,7 @@ MainGameState::MainGameState(GameContext* context) : ds::GameState("MainGame"), 
 	_dying = false;
 	_dying_timer = 0.0f;
 	_viewport_id = ds::renderer::createViewport(1280, 720, 1600, 900);
+	_basic_viewport = ds::renderer::createViewport(1280, 720, 1280, 720);
 	ds::renderer::setViewportPosition(_viewport_id, v2(800, 450));
 
 	_number_definitions.define(0, ds::Rect(300,   0, 49, 33));
@@ -301,10 +302,10 @@ void MainGameState::drawBorder() {
 void MainGameState::render() {	
 	ds::renderer::selectViewport(_viewport_id);
 	drawBorder();
-	ds::renderer::selectViewport(0);
-	if (_showSettings) {
-		_context->settings->showCompleteDialog(&_dialog_pos);
-	}
+	ds::renderer::selectViewport(_basic_viewport);
+	//if (_showSettings) {
+		//_context->settings->showCompleteDialog(&_dialog_pos);
+	//}
 	if (_showDebug) {
 		_context->debugPanel.showDialog(&_dialog_pos);
 	}

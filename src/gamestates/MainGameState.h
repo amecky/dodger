@@ -76,6 +76,7 @@ private:
 	bool _dying;
 	float _dying_timer;
 	int _viewport_id;
+	int _basic_viewport;
 	ds::Color _border_color;
 	NumberDefinitions _number_definitions;
 	Numbers* _clock;
