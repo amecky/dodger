@@ -1,55 +1,41 @@
-particlesystem { 
-    max : 1024
-    texture_id : 0
-    texture_rect : 40,120,10,10
-    emitter { 
-        count : 64
-        ejection_period : 0
-        ejection_variance : 0
-        ejection_counter : 0
-    }
-    generators { 
-        ring_position { 
-            radius : 8
-            variance : 7
-            angle_variance : 30
-            step : 0
-        }
-        radial_velocity { 
-            velocity : 140
-            variance : 60
-        }
-        lifecycle { 
-            ttl : 1
-            variance : 0.8
-        }
-        size { 
-            scale : 1,1
-            variance : 0,0
-        }
-        hsv_color { 
-            hsv : 271,100,100
-            alpha : 255
-            hue_variance : 0
-            saturation_variance : 10
-            value_variance : 10
-        }
-    }
-    modifiers { 
-        lifecycle { 
-        }
-        position { 
-        }
-        damping_velocity { 
-            damping : 140
-        }
-        linear_size { 
-            min_scale : 0.8,0.8
-            max_scale : 0.1,0.1
-        }
-        linear_alpha { 
-            start_alpha : 1
-            end_alpha : 0
-        }
-    }
+spawn { 
+	texture : 40,120,10,10
+    duration : 0
+    rate : 64
+    loop : 0
+    loop_delay : 0.0
+}
+ring_location {
+    radius : 8
+    variance : 7
+    angle_variance : 30
+    step : 0
+}
+lifecycle { 
+    ttl : 1.0
+    variance : 0.8
+}
+color {
+	hsv : 271,100,100
+    alpha : 255
+    hue_variance : 0
+    saturation_variance : 10
+    value_variance : 10
+}
+size { 
+	initial : 1,1
+	variance : 0.0,0.0
+	min : 0.8,0.8
+    max : 0.1,0.1
+}
+alpha { 
+	initial : 1.0
+	variance : 0.0
+	min : 1.0
+	max : 0.0
+}
+velocity {
+	radial : 140
+    radial_variance : 60
+	distribution : 0.0,1.0,1.0,1.0,0.0,0.0
 }

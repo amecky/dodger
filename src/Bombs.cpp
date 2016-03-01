@@ -34,7 +34,7 @@ void Bombs::create() {
 	_world->setRotation(sid, vel);
 	_world->scaleByPath(sid, &_scale_path, _context->settings->bombFlashingTTL);
 	data->state = BombData::BS_STARTING;
-	_context->particles->start(BOMB_STARTUP, v3(pos));
+	_context->particles->start(BOMB_STARTUP, pos);
 }
 
 void Bombs::handleEvents(const ds::ActionEventBuffer& buffer) {
@@ -174,7 +174,7 @@ void Bombs::scaleBombs(EventBuffer* buffer, float dt) {
 			data->timer += dt;
 			if (data->timer >= _context->settings->bombFlashingTTL) {
 				v2 p = _world->getPosition(_bomb_sids[i]);
-				_context->particles->startGroup(1, v3(p));
+				_context->particles->startGroup(1, p);
 				buffer->add(GameEvent::GE_BOMB_EXPLODED, p);
 				_world->remove(_bomb_sids[i]);
 			}
