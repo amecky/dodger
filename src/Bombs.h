@@ -1,9 +1,9 @@
 #pragma once
-#include <sprites\SpriteBatch.h>
+#include <renderer\sprites.h>
 #include "GameContext.h"
-#include <lib\DataArray.h>
+#include <core\lib\DataArray.h>
 #include "EventBuffer.h"
-#include <utils\TimedObject.h>
+#include <core\utils\TimedObject.h>
 
 struct BombData {
 

@@ -1,5 +1,5 @@
 #include "BallEmitter.h"
-#include <math\Bitset.h>
+#include <core\math\Bitset.h>
 // --------------------------------------
 // edges spawner
 // --------------------------------------

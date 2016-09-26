@@ -1,5 +1,5 @@
 #include "Numbers.h"
-#include <math\GameMath.h>
+#include <core\math\math.h>
 
 
 const float ND_START[] = {
@@ -13,7 +13,7 @@ const float ND_WIDTH[] = {
 
 Numbers::Numbers(const NumberDefinitions& definitions,int length) : _length(length) {
 	for (int i = 0; i < 10; ++i) {
-		_definitions[i].texture = ds::math::buildTexture(definitions.rects[i]);
+		_definitions[i].texture = math::buildTexture(definitions.rects[i]);
 		_definitions[i].width = definitions.rects[i].width();
 	}
 	num = 0;

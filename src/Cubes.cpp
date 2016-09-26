@@ -1,5 +1,5 @@
 #include "Cubes.h"
-#include <math\Bitset.h>
+#include <core\math\Bitset.h>
 
 // ---------------------------------------
 // load cube definitions
@@ -80,7 +80,7 @@ void Cubes::createBall(const v2& pos, int current, int total, int waveDefinition
 	const CubeDefinition cubeDefinition = _cubeDefintions.get(waveDefinition.cubeType);
 	if (total > 1) {
 		float ra = static_cast<float>(current) / static_cast<float>(total)* TWO_PI;
-		float rd = ds::math::random(10.0f, 25.0f);
+		float rd = math::random(10.0f, 25.0f);
 		v2 pp = v2(rd * cos(ra), rd * sin(ra));
 		position += pp;
 	}
@@ -88,8 +88,8 @@ void Cubes::createBall(const v2& pos, int current, int total, int waveDefinition
 	_world->attachCollider(sid, cubeDefinition.type, 0);
 	Ball* data = (Ball*)_world->attach_data(sid, sizeof(Ball));
 	assert(data != 0);
-	float angle = ds::math::random(0.0f, TWO_PI);
-	data->velocity = ds::vector::getRadialVelocity(angle, ds::math::random(cubeDefinition.velocity - cubeDefinition.velocityVariance, cubeDefinition.velocity + cubeDefinition.velocityVariance));
+	float angle = math::random(0.0f, TWO_PI);
+	data->velocity = ds::vector::getRadialVelocity(angle, math::random(cubeDefinition.velocity - cubeDefinition.velocityVariance, cubeDefinition.velocity + cubeDefinition.velocityVariance));
 	_world->scaleByPath(sid, &_context->settings->starScalePath,0.4f);
 	data->force = v2(0, 0);
 	data->def_index = waveDefinition.cubeType;

@@ -1,6 +1,6 @@
 #pragma once
 #include <renderer\render_types.h>
-#include <sprites\SpriteBatch.h>
+#include <renderer\sprites.h>
 
 struct NumberDefinitions {
 

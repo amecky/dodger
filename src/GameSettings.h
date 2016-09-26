@@ -1,5 +1,5 @@
 #pragma once
-#include <data\DynamicSettings.h>
+#include <core\data\DynamicSettings.h>
 
 struct GameSettings : public ds::DynamicGameSettings {
 
@@ -14,18 +14,15 @@ struct GameSettings : public ds::DynamicGameSettings {
 	float bombStartTTL;
 	int maxBombs;
 
-	GameSettings() {
-		addFloat("bomb_flashing_ttl", &bombFlashingTTL, 0.8f);
-		addFloat("star_ttl", &starTTL, 3.0f);
-		addFloat("star_flash_ttl", &starFlashTTL, 0.6f);
-		addFloat("star_magnet_radius", &starMagnetRadius, 250.0f);
-		addFloat("star_seek_velocity", &starSeekVelocity, 400.0f);
-		addFloat("bomb_start_ttl", &bombStartTTL, 0.5f);
-		addPath("star_scale_path", &starScalePath);
-		addInt("max_bombs", &maxBombs, 3);
+	GameSettings() : ds::DynamicGameSettings("game_settings.json") {
+		add("bomb_flashing_ttl", &bombFlashingTTL, 0.8f);
+		add("star_ttl", &starTTL, 3.0f);
+		add("star_flash_ttl", &starFlashTTL, 0.6f);
+		add("star_magnet_radius", &starMagnetRadius, 250.0f);
+		add("star_seek_velocity", &starSeekVelocity, 400.0f);
+		add("bomb_start_ttl", &bombStartTTL, 0.5f);
+		//addPath("star_scale_path", &starScalePath);
+		add("max_bombs", &maxBombs, 3);
 	}
 
-	const char* getFileName() const {
-		return "game_settings.json";
-	}
 };

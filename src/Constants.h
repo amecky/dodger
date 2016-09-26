@@ -1,5 +1,5 @@
 #pragma once
-#include <utils\Color.h>
+#include <core\graphics\Color.h>
 #include <renderer\render_types.h>
 
 const int MAX_BALLS = 256;

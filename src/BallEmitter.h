@@ -1,6 +1,6 @@
 #pragma once
 #include <Vector.h>
-#include <math\GameMath.h>
+#include <core\math\math.h>
 #include <renderer\graphics.h>
 
 // --------------------------------------
@@ -34,7 +34,7 @@ struct StartPoint {
 // --------------------------------------
 // start points
 // --------------------------------------
-typedef std::vector<StartPoint> StartPoints;
+typedef ds::Array<StartPoint> StartPoints;
 
 // --------------------------------------
 // spawner emitter type
@@ -84,7 +84,7 @@ public:
 	}
 
 	const SpawnPoint& random() {
-		int o = ds::math::random(0, _total);
+		int o = math::random(0, _total);
 		return _points[o];
 	}
 	const int size() const {

@@ -1,10 +1,10 @@
 #pragma once
-#include <io\DataFile.h>
-#include <io\json.h>
-#include <lib\collection_types.h>
-#include <sprites\SpriteBatch.h>
+#include <core\io\DataFile.h>
+#include <core\io\json.h>
+#include <core\lib\collection_types.h>
+#include <renderer\sprites.h>
 #include "GameContext.h"
-#include <lib\DataArray.h>
+#include <core\lib\DataArray.h>
 #include "BallEmitter.h"
 
 // ---------------------------------------
@@ -24,10 +24,10 @@ struct CubeDefinition {
 // ---------------------------------------
 // Cube definitions
 // ---------------------------------------
-class CubeDefinitions : public ds::DataFile {
+class CubeDefinitions : public ds::JSONAssetFile {
 
 public:
-	CubeDefinitions() {}
+	CubeDefinitions() : ds::JSONAssetFile("resources\\cube_definitions.json") {}
 	~CubeDefinitions() {}
 	bool saveData(ds::JSONWriter& writer) {
 		return true;
@@ -59,10 +59,10 @@ struct WaveDefinition {
 // ---------------------------------------
 // Wave definitions
 // ---------------------------------------
-class WaveDefinitions : public ds::DataFile {
+class WaveDefinitions : public ds::JSONAssetFile {
 
 public:
-	WaveDefinitions() {}
+	WaveDefinitions() : ds::JSONAssetFile("resources\\wave_definitions.json") {}
 	~WaveDefinitions() {}
 	bool saveData(ds::JSONWriter& writer) {
 		return true;

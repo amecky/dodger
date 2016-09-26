@@ -1,8 +1,8 @@
 #include "Dodger.h"
-#include "utils\Log.h"
+#include <core\log\Log.h>
 #include "Constants.h"
-#include <sprites\SpriteBatch.h>
-#include <base\GameStateMachine.h>
+#include <renderer\sprites.h>
+#include <gamestates\GameStateMachine.h>
 #include "gamestates\MainGameState.h"
 #include "gamestates\GameOverState.h"
 #include "gamestates\MainMenuState.h"
@@ -21,6 +21,18 @@ Dodger::~Dodger() {
 	delete _context;
 }
 
+// -------------------------------------------------------
+// prepare
+// -------------------------------------------------------
+void Dodger::prepare(ds::Settings* settings) {
+	settings->screenWidth = 1024;
+	settings->screenHeight = 768;
+	settings->clearColor = ds::Color(0, 0, 0, 255);
+	settings->fullScreen = false;
+	settings->reportingDirectory = "reports";
+	settings->synched = true;
+	settings->logTypes = ds::LogTypes::LT_CONSOLE | ds::LogTypes::LT_FILE;
+}
 // -------------------------------------------------------
 // Load content and prepare game
 // -------------------------------------------------------
@@ -60,13 +72,7 @@ void Dodger::update(float dt) {
 // -------------------------------------------------------
 // Draw
 // -------------------------------------------------------
-void Dodger::draw() {
+void Dodger::render() {
 	
 }
 
-void Dodger::onGUIButton(ds::DialogID dlgID, int button) {
-	LOG << "dialog: " << dlgID << " button:" << button;
-	if (dlgID == 10 && button == 1) {
-		shutdown();
-	}
-}
