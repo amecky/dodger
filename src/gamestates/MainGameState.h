@@ -1,13 +1,13 @@
 #pragma once
-#include <base\GameState.h>
+#include <gamestates\GameState.h>
 #include <renderer\render_types.h>
-#include <ui\IMGUI.h>
+#include <imgui\IMGUI.h>
 #include "..\GameContext.h"
 #include "..\Cubes.h"
 #include "..\Bombs.h"
 #include "..\EventBuffer.h"
 #include "..\utils\Numbers.h"
-#include <lib\DataArray.h>
+#include <core\lib\DataArray.h>
 
 struct GameTimer {
 

@@ -67,7 +67,8 @@ void Numbers::set(const v2& pos, int value, const ds::Color& color) {
 }
 
 void Numbers::render() {
+	ds::SpriteBuffer* sprites = graphics::getSpriteBuffer();
 	for (int i = 0; i < num; ++i) {
-		ds::sprites::draw(m_Sprites[i]);// .position, m_Sprites[i].texture.textureID, m_Sprites[i].texture.uv, m_Sprites[i].texture.dim, 0.0f, 1.0f, 1.0f, m_Sprites[i].color);
+		sprites->draw(m_Sprites[i]);// .position, m_Sprites[i].texture.textureID, m_Sprites[i].texture.uv, m_Sprites[i].texture.dim, 0.0f, 1.0f, 1.0f, m_Sprites[i].color);
 	}
 }

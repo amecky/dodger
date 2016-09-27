@@ -4,9 +4,9 @@
 #include <renderer\sprites.h>
 #include <gamestates\GameStateMachine.h>
 #include "gamestates\MainGameState.h"
-#include "gamestates\GameOverState.h"
-#include "gamestates\MainMenuState.h"
-#include "gamestates\HighscoreState.h"
+//#include "gamestates\GameOverState.h"
+//#include "gamestates\MainMenuState.h"
+//#include "gamestates\HighscoreState.h"
 #include "GameContext.h"
 #include "GameSettings.h"
 
@@ -40,16 +40,16 @@ bool Dodger::loadContent() {
 	_context = new GameContext;
 	_context->settings = new GameSettings;
 	_context->settings->load();
-	_context->particles = particles;
-	_context->hudDialog = gui->get("HUD");
-	_context->world = new ds::World();
+	//_context->particles = particles;
+	//_context->hudDialog = gui->get("HUD");
+	//_context->world = new ds::World();
 	ds::Rect r(50,50,1500,980);
 	_context->world->setBoundingRect(r);
 	assert(_context->hudDialog != 0);
 	addGameState(new MainGameState(_context));
-	addGameState(new GameOverState(gui, _context));
-	addGameState(new HighscoreState(gui, _context));
-	addGameState(new MainMenuState(gui, _context));
+	//addGameState(new GameOverState(gui, _context));
+	//addGameState(new HighscoreState(gui, _context));
+	//addGameState(new MainMenuState(gui, _context));
 	connectGameStates("GameOver", 1, "MainGame");
 	connectGameStates("GameOver", 2, "MainMenuState");
 	connectGameStates("MainGame", 1, "GameOver");

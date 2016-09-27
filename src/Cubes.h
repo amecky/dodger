@@ -33,6 +33,7 @@ public:
 		return true;
 	}
 	bool loadData(const ds::JSONReader& reader);
+	bool reloadData(const ds::JSONReader& reader) {}
 	const char* getFileName() const {
 		return "resources\\cube_definitions.json";
 	}
@@ -68,6 +69,7 @@ public:
 		return true;
 	}
 	bool loadData(const ds::JSONReader& reader);
+	bool reloadData(const ds::JSONReader& reader) {}
 	const char* getFileName() const {
 		return "resources\\wave_definitions.json";
 	}
@@ -135,7 +137,7 @@ private:
 	void separate(const v2& target, float minDistance, float relaxation);
 	void align(const v2& target, float desiredDistance);
 	GameContext* _context;
-	ds::World* _world;
+	//ds::World* _world;
 	v2 _spawner_position;
 	SpawnerData _spawnData;
 	CubeDefinitions _cubeDefintions;

@@ -1,9 +1,9 @@
 #include "MainGameState.h"
-#include <sprites\SpriteBatch.h>
+#include <renderer\sprites.h>
 #include "..\Constants.h"
 #include <Vector.h>
-#include <math\matrix.h>
-#include <utils\Log.h>
+#include <core\math\matrix.h>
+#include <core\log\Log.h>
 
 MainGameState::MainGameState(GameContext* context) : ds::GameState("MainGame"), _context(context) , _world(context->world) {
 	_balls = new Cubes(_context);
