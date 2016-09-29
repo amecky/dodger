@@ -319,12 +319,14 @@ void MainGameState::render() {
 	v3* positions = (v3*)array->get_ptr(ds::WEC_POSITION);
 	ds::Texture* textures = (ds::Texture*)array->get_ptr(ds::WEC_TEXTURE);
 	v3* rotations = (v3*)array->get_ptr(ds::WEC_ROTATION);
+	v3* scales = (v3*)array->get_ptr(ds::WEC_SCALE);
+	ds::Color* colors = (ds::Color*)array->get_ptr(ds::WEC_COLOR);
 	for (uint32_t i = 0; i < array->size; ++i) {
 		v2 p = positions[i].xy();
 		float r = rotations[i].x;
 		ds::Texture t = textures[i];
 		//LOG << i << " p: " << DBG_V2(p) << " r: " << RADTODEG(r) << " tex: " << DBG_TEX(t);
-		sprites->draw(positions[i].xy(), textures[i], rotations[i].x);
+		sprites->draw(positions[i].xy(), textures[i], rotations[i].x,scales[i].xy(),colors[i]);
 	}
 	/*
 	ds::renderer::selectViewport(_viewport_id);
@@ -387,7 +389,7 @@ void MainGameState::moveStars(const v2& target, float dt) {
 }
 
 void MainGameState::createStar(const v2& pos) {
-	ID sid = _world->create(pos, math::buildTexture(0, 40, 24, 24), OT_STAR);
+	ID sid = _world->create(pos, math::buildTexture(0, 40, 24, 24), OT_STAR, 0.0f, v2(1, 1), ds::Color(255, 180, 0, 255));
 	LOG << "star id: " << sid;
 	//_world->scaleByPath(sid, &_context->settings->starScalePath, _context->settings->starFlashTTL);
 	//_world->attachCollider(sid, OT_STAR, 0);
