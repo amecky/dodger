@@ -9,20 +9,20 @@ struct GameSettings : public ds::DynamicGameSettings {
 	float starFlashTTL;
 	float starMagnetRadius;
 	float starSeekVelocity;
-	ds::Vector2fPath starScalePath;
+	ds::V3Path starScalePath;
 	// bomb
 	float bombStartTTL;
 	int maxBombs;
 
-	GameSettings() : ds::DynamicGameSettings("game_settings.json") {
-		add("bomb_flashing_ttl", &bombFlashingTTL, 0.8f);
-		add("star_ttl", &starTTL, 3.0f);
-		add("star_flash_ttl", &starFlashTTL, 0.6f);
-		add("star_magnet_radius", &starMagnetRadius, 250.0f);
-		add("star_seek_velocity", &starSeekVelocity, 400.0f);
-		add("bomb_start_ttl", &bombStartTTL, 0.5f);
-		//addPath("star_scale_path", &starScalePath);
-		add("max_bombs", &maxBombs, 3);
+	GameSettings() : ds::DynamicGameSettings("content\\game_settings.json") {
+		add("settings.bomb_flashing_ttl", &bombFlashingTTL, 0.8f);
+		add("settings.star_ttl", &starTTL, 3.0f);
+		add("settings.star_flash_ttl", &starFlashTTL, 0.6f);
+		add("settings.star_magnet_radius", &starMagnetRadius, 250.0f);
+		add("settings.star_seek_velocity", &starSeekVelocity, 400.0f);
+		add("settings.bomb_start_ttl", &bombStartTTL, 0.5f);
+		add("settings.star_scale_path", &starScalePath);
+		add("settings.max_bombs", &maxBombs, 3);
 	}
 
 };

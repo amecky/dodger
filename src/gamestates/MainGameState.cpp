@@ -158,6 +158,11 @@ void MainGameState::movePlayer(float dt) {
 int MainGameState::update(float dt) {
 	
 	movePlayer(dt);
+
+	const v2 wp = _world->getPosition(_player).xy();
+	moveStars(wp, dt);
+
+	_world->tick(dt);
 	/*
 	_context->debugPanel.reset();
 
@@ -372,28 +377,28 @@ void MainGameState::render() {
 // move towards player if in range
 // ---------------------------------------
 void MainGameState::moveStars(const v2& target, float dt) {
-	/*
-	ds::SID ids[64];
+	ID ids[64];
 	int num = _world->find_by_type(OT_STAR, ids, 64);
 	for (int i = 0; i < num; ++i) {
-		v2 p = _world->getPosition(ids[i]);
+		const v2 p = _world->getPosition(ids[i]).xy();
 		v2 diff = target - p;
 		if (sqr_length(diff) <  _context->settings->starMagnetRadius * _context->settings->starMagnetRadius) {
 			v2 n = normalize(diff);
 			n *= _context->settings->starSeekVelocity;
-			p += n * dt;
-			_world->setPosition(ids[i], p);
+			v2 np = p + n * dt;
+			_world->setPosition(ids[i], np);
+			if (sqr_length(diff) < 25.0f) {
+				_world->remove(ids[i]);
+			}
 		}
 	}
-	*/
 }
 
 void MainGameState::createStar(const v2& pos) {
-	ID sid = _world->create(pos, math::buildTexture(0, 40, 24, 24), OT_STAR, 0.0f, v2(1, 1), ds::Color(255, 180, 0, 255));
-	LOG << "star id: " << sid;
-	//_world->scaleByPath(sid, &_context->settings->starScalePath, _context->settings->starFlashTTL);
+	ID id = _world->create(pos, math::buildTexture(0, 40, 24, 24), OT_STAR, 0.0f, v2(1, 1), ds::Color(255, 180, 0, 255));
+	_world->scaleByPath(id, &_context->settings->starScalePath, _context->settings->starFlashTTL);
 	//_world->attachCollider(sid, OT_STAR, 0);
-	//_world->removeAfter(sid, _context->settings->starTTL);
+	_world->removeAfter(id, _context->settings->starTTL);
 }
 // ---------------------------------------
 // add new star
