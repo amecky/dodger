@@ -16,7 +16,7 @@ Dodger::Dodger() : ds::BaseApp() {
 }
 
 Dodger::~Dodger() {
-	delete _context->world;
+	//delete _context->world;
 	delete _context->settings;
 	delete _context;
 }
@@ -37,6 +37,11 @@ void Dodger::prepare(ds::Settings* settings) {
 // Load content and prepare game
 // -------------------------------------------------------
 bool Dodger::loadContent() {
+
+	RID material = ds::res::find("SpriteMaterial", ds::ResourceType::MATERIAL);	
+	ds::Material* m = ds::res::getMaterial(material);
+	m->texture = ds::res::find("TextureArray", ds::ResourceType::TEXTURE);
+
 	_context = new GameContext;
 	_context->settings = new GameSettings;
 	_context->settings->load();
@@ -44,16 +49,16 @@ bool Dodger::loadContent() {
 	//_context->hudDialog = gui->get("HUD");
 	//_context->world = new ds::World();
 	ds::Rect r(50,50,1500,980);
-	_context->world->setBoundingRect(r);
-	assert(_context->hudDialog != 0);
+	//_context->world->setBoundingRect(r);
+	//assert(_context->hudDialog != 0);
 	addGameState(new MainGameState(_context));
 	//addGameState(new GameOverState(gui, _context));
 	//addGameState(new HighscoreState(gui, _context));
 	//addGameState(new MainMenuState(gui, _context));
-	connectGameStates("GameOver", 1, "MainGame");
-	connectGameStates("GameOver", 2, "MainMenuState");
-	connectGameStates("MainGame", 1, "GameOver");
-	connectGameStates("MainMenuState", 3, "MainGame");
+	//connectGameStates("GameOver", 1, "MainGame");
+	//connectGameStates("GameOver", 2, "MainMenuState");
+	//connectGameStates("MainGame", 1, "GameOver");
+	//connectGameStates("MainMenuState", 3, "MainGame");
 	return true;
 }
 

@@ -3,11 +3,12 @@
 #include <renderer\render_types.h>
 #include <imgui\IMGUI.h>
 #include "..\GameContext.h"
-#include "..\Cubes.h"
-#include "..\Bombs.h"
+//#include "..\Cubes.h"
+//#include "..\Bombs.h"
 #include "..\EventBuffer.h"
 #include "..\utils\Numbers.h"
 #include <core\lib\DataArray.h>
+#include <core\world\World.h>
 
 struct GameTimer {
 
@@ -63,8 +64,14 @@ private:
 	bool _grabbing;
 	GameContext* _context;
 	ds::World* _world;
-	Cubes* _balls;
-	Bombs* _bombs;
+	ID _player;
+	ID _playerRing;
+	float _playerAngle;
+	ID _cursor;
+
+
+	//Cubes* _balls;
+	//Bombs* _bombs;
 	//Stars* _stars;
 	EventBuffer _buffer;
 	v2 _cursor_pos;
@@ -72,7 +79,7 @@ private:
 	bool _showDebug;
 	v2 _dialog_pos;
 	GameTimer _game_timer;
-	KilledBall _killedBalls[MAX_BALLS];
+	//KilledBall _killedBalls[MAX_BALLS];
 	bool _dying;
 	float _dying_timer;
 	int _viewport_id;
@@ -82,7 +89,5 @@ private:
 	Numbers* _clock;
 	Numbers* _points;
 
-	ds::SID _player_id;
-	ds::SID _ring_id;
 };
 

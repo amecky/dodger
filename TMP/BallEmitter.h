@@ -2,7 +2,7 @@
 #include <Vector.h>
 #include <core\math\math.h>
 #include <renderer\graphics.h>
-
+#include <core\lib\collection_types.h>
 // --------------------------------------
 // spawn point
 // --------------------------------------

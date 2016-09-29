@@ -1,5 +1,5 @@
 #include "Bombs.h"
-#include <utils\Log.h>
+#include <core\log\Log.h>
 
 Bombs::Bombs(GameContext* context) : _context(context) , _world(context->world) {
 	float step = TWO_PI / 36.0f;
@@ -7,7 +7,7 @@ Bombs::Bombs(GameContext* context) : _context(context) , _world(context->world) 
 		_cells[i] = 0.9f + sin(step * static_cast<float>(i) * 12.0f) * 0.4f;
 	}
 	//_texture = ds::math::buildTexture(0, 440, 60, 60);
-	_ring_texture = ds::math::buildTexture(40, 120, 6, 6);
+	_ring_texture = math::buildTexture(40, 120, 6, 6);
 	_scale_path.add(0.0f, v2(0.1f,0.1f));
 	_scale_path.add(0.5f, v2(1.5f,1.5f));
 	_scale_path.add(0.75f, v2(0.75f,0.75f));
@@ -23,18 +23,18 @@ Bombs::~Bombs() {
 // ---------------------------------------
 void Bombs::create() {
 	v2 pos;
-	pos.x = ds::math::random(200.0f, 1400.0f);
-	pos.y = ds::math::random(200.0f, 700.0f);
+	pos.x = math::random(200.0f, 1400.0f);
+	pos.y = math::random(200.0f, 700.0f);
 	ds::SID sid = _world->create(pos, "Bomb");
 	BombData* data = (BombData*)_world->attach_data(sid, sizeof(BombData));
-	float angle = ds::math::random(0.0f, TWO_PI);
-	float v = ds::math::random(30.0f, 50.0f);
+	float angle = math::random(0.0f, TWO_PI);
+	float v = math::random(30.0f, 50.0f);
 	v2 vel = ds::vector::getRadialVelocity(angle, v);
 	_world->moveBy(sid, vel, true);
 	_world->setRotation(sid, vel);
 	_world->scaleByPath(sid, &_scale_path, _context->settings->bombFlashingTTL);
 	data->state = BombData::BS_STARTING;
-	_context->particles->start(BOMB_STARTUP, pos);
+	//_context->particles->start(BOMB_STARTUP, pos);
 }
 
 void Bombs::handleEvents(const ds::ActionEventBuffer& buffer) {
@@ -81,7 +81,7 @@ void Bombs::follow(ds::SID id, const v2& target) {
 	if (_world->contains(id)) {
 		v2 p = _world->getPosition(id);
 		float angle = 0.0f;
-		ds::math::followRelative(target,p, &angle, 60.0f, 0.02f);
+		math::followRelative(target,p, &angle, 60.0f, 0.02f);
 		v2 diff = _context->world_pos - p;
 		v2 n = normalize(diff);
 		_world->setPosition(id, p);

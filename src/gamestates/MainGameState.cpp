@@ -4,20 +4,31 @@
 #include <Vector.h>
 #include <core\math\matrix.h>
 #include <core\log\Log.h>
+#include "base\InputSystem.h"
+#include <core\math\GameMath.h>
 
-MainGameState::MainGameState(GameContext* context) : ds::GameState("MainGame"), _context(context) , _world(context->world) {
-	_balls = new Cubes(_context);
-	_bombs = new Bombs(_context);
+MainGameState::MainGameState(GameContext* context) : ds::GameState("MainGame"), _context(context) {//, _world(context->world) {
+	//_balls = new Cubes(_context);
+	//_bombs = new Bombs(_context);
 	//_stars = new Stars(_context);
+	_world = new ds::World;
+	_player = _world->create(v2(512, 384), math::buildTexture(40, 0, 40, 40), OT_PLAYER);
+	_playerAngle = 0.0f;
+	_cursor = _world->create(v2(700, 384), math::buildTexture(40, 160, 20, 20), 100);
+
+	//_world->create(v2(200, 384), math::buildTexture(40, 0, 40, 42), 0.0f);
+	_playerRing = _world->create(v2(100, 384), math::buildTexture(440, 0, 152, 152), OT_RING);
+
+
 	_showSettings = false;
 	_showDebug = false;
 	_dialog_pos = v2(10, 710);
 	_grabbing = false;
 	_dying = false;
 	_dying_timer = 0.0f;
-	_viewport_id = ds::renderer::createViewport(1280, 720, 1600, 900);
-	_basic_viewport = ds::renderer::createViewport(1280, 720, 1280, 720);
-	ds::renderer::setViewportPosition(_viewport_id, v2(800, 450));
+	//_viewport_id = ds::renderer::createViewport(1280, 720, 1600, 900);
+	//_basic_viewport = ds::renderer::createViewport(1280, 720, 1280, 720);
+	//ds::renderer::setViewportPosition(_viewport_id, v2(800, 450));
 
 	_number_definitions.define(0, ds::Rect(300,   0, 49, 33));
 	_number_definitions.define(1, ds::Rect(300,  49, 21, 33));
@@ -40,8 +51,8 @@ MainGameState::~MainGameState() {
 	delete _points;
 	delete _clock;
 	//delete _stars;
-	delete _bombs;
-	delete _balls;
+	//delete _bombs;
+	//delete _balls;
 }
 
 // -------------------------------------------------------
@@ -55,8 +66,9 @@ void MainGameState::init() {
 // activate
 // -------------------------------------------------------
 void MainGameState::activate() {
-	
+	/*
 	//_context->hudDialog->activate();
+
 	_context->points = 0;
 	_context->hudDialog->setNumber(HUD_POINTS, 0);
 	_context->hudDialog->setNumber(HUD_LEVEL, 1);
@@ -83,14 +95,14 @@ void MainGameState::activate() {
 
 	_clock->set(v2(640,640), 60, ds::Color(64,64,64,255));
 	_points->set(v2(540, 60), 0, ds::Color(64, 64, 64, 255));
-	
+	*/
 }
 
 // -------------------------------------------------------
 // dactivate
 // -------------------------------------------------------
 void MainGameState::deactivate() {
-	_context->hudDialog->deactivate();
+	//_context->hudDialog->deactivate();
 }
 
 // -------------------------------------------------------
@@ -99,7 +111,7 @@ void MainGameState::deactivate() {
 int MainGameState::onButtonUp(int button, int x, int y) {
 	if (_grabbing) {
 		_grabbing = false;
-		_bombs->burst(_bomb_id, 0.0f);
+		//_bombs->burst(_bomb_id, 0.0f);
 	}
 	return 0;
 }
@@ -108,47 +120,45 @@ int MainGameState::onButtonUp(int button, int x, int y) {
 // on button up
 // -------------------------------------------------------
 int MainGameState::onButtonDown(int button, int x, int y) {
-	if (_bombs->grab(_context->world_pos, 75.0f, &_bomb_id)) {
-		_grabbing = true;
-	}
+	//if (_bombs->grab(_context->world_pos, 75.0f, &_bomb_id)) {
+		//_grabbing = true;
+	//}
 	return 0;
 }
 
 void MainGameState::killPlayer() {
 	_dying = true;
 	_dying_timer = 0.0f;
-	_balls->killAll();
-	_bombs->killAll();
+	//_balls->killAll();
+	//_bombs->killAll();
 	// FIXME: remove all stars
 	//_stars->clear();
-	_context->particles->start(PLAYER_EXPLOSION, v3(_context->world_pos));
-	_world->remove(_player_id);
-	_world->remove(_ring_id);
+	//_context->particles->start(PLAYER_EXPLOSION, v3(_context->world_pos));
+	_world->remove(_player);
+	_world->remove(_playerRing);
 }
 
 // -------------------------------------------------------
 // move player
 // -------------------------------------------------------
 void MainGameState::movePlayer(float dt) {
-	_cursor_pos = ds::renderer::getMousePosition();
-	_context->debugPanel.show("Cursor", _cursor_pos);
-	ds::renderer::selectViewport(_viewport_id);
-	v2 wp = ds::renderer::screen_to_world(_cursor_pos, _context->world_pos);
-	_context->debugPanel.show("WP", wp);
-	ds::math::followRelative(wp, _context->playerPosition, &_context->playerAngle, 5.0f, 1.1f * dt);
-	ds::vector::clamp(_context->playerPosition, v2(60, 60), v2(1540, 840));
-	_context->world_pos = _context->playerPosition;
-	_world->setPosition(_player_id, _context->playerPosition);
-	_world->setPosition(_ring_id, _context->playerPosition);
-	_world->setRotation(_player_id, _context->playerAngle);
-	ds::renderer::setViewportPosition(_viewport_id, _context->world_pos);
-	ds::renderer::selectViewport(0);
+	v2 cp = ds::input::getMousePosition();
+	_world->setPosition(_cursor, cp);
+	v2 wp = _world->getPosition(_player).xy();
+	float angle = 0.0f;
+	ds::math::followRelative(cp, wp, &_playerAngle, 5.0f, 1.1f * dt);
+	_world->setRotation(_player, _playerAngle);
+	_world->setPosition(_player, wp);
+	_world->setPosition(_playerRing, wp);
 }
 
 // -------------------------------------------------------
 // Update
 // -------------------------------------------------------
 int MainGameState::update(float dt) {
+	
+	movePlayer(dt);
+	/*
 	_context->debugPanel.reset();
 
 	_context->debugPanel.show("World Pos", _context->world_pos);
@@ -224,7 +234,7 @@ int MainGameState::update(float dt) {
 	}
 
 	_context->particles->update(dt);
-
+	*/
 	return 0;
 }
 
@@ -233,6 +243,7 @@ int MainGameState::update(float dt) {
 // -------------------------------------------------------
 void MainGameState::handleCollisions() {
 	// handle collisions
+	/*
 	int numCollisions = _world->getNumCollisions();
 	int picked = 0;
 	if (numCollisions > 0) {
@@ -262,12 +273,14 @@ void MainGameState::handleCollisions() {
 			_game_timer.seconds = 60;
 		}
 	}
+	*/
 }
 
 // -------------------------------------------------------
 // draw border
 // -------------------------------------------------------
 void MainGameState::drawBorder() {
+	/*
 	// background
 	ds::sprites::draw(v2(480, 306), ds::math::buildTexture(0, 512, 480, 306), 0.0f, 2.0f, 2.0f);
 	ds::sprites::draw(v2(1280, 306), ds::math::buildTexture(0, 512, 320, 306), 0.0f, 2.0f, 2.0f);
@@ -294,12 +307,26 @@ void MainGameState::drawBorder() {
 	// missing top and bottom pieces
 	ds::sprites::draw(v2(1505, 870), ds::math::buildTexture(840, 40, 90, 40), 0.0f, 1.0f, 1.0f, _border_color);
 	ds::sprites::draw(v2(1505, 30), ds::math::buildTexture(960, 40, 90, 40), 0.0f, 1.0f, 1.0f, _border_color);
+	*/
 }
 
 // -------------------------------------------------------
 // render
 // -------------------------------------------------------
 void MainGameState::render() {	
+	ds::SpriteBuffer* sprites = graphics::getSpriteBuffer();
+	ds::ChannelArray* array = _world->getChannelArray();
+	v3* positions = (v3*)array->get_ptr(ds::WEC_POSITION);
+	ds::Texture* textures = (ds::Texture*)array->get_ptr(ds::WEC_TEXTURE);
+	v3* rotations = (v3*)array->get_ptr(ds::WEC_ROTATION);
+	for (uint32_t i = 0; i < array->size; ++i) {
+		v2 p = positions[i].xy();
+		float r = rotations[i].x;
+		ds::Texture t = textures[i];
+		//LOG << i << " p: " << DBG_V2(p) << " r: " << RADTODEG(r) << " tex: " << DBG_TEX(t);
+		sprites->draw(positions[i].xy(), textures[i], rotations[i].x);
+	}
+	/*
 	ds::renderer::selectViewport(_viewport_id);
 	drawBorder();
 	ds::renderer::selectViewport(_basic_viewport);
@@ -336,13 +363,14 @@ void MainGameState::render() {
 	ds::renderer::selectViewport(0);
 	ds::sprites::draw(_cursor_pos, ds::math::buildTexture(40, 160, 20, 20));
 	
-	
+	*/
 }
 
 // ---------------------------------------
 // move towards player if in range
 // ---------------------------------------
 void MainGameState::moveStars(const v2& target, float dt) {
+	/*
 	ds::SID ids[64];
 	int num = _world->find_by_type(OT_STAR, ids, 64);
 	for (int i = 0; i < num; ++i) {
@@ -355,19 +383,21 @@ void MainGameState::moveStars(const v2& target, float dt) {
 			_world->setPosition(ids[i], p);
 		}
 	}
+	*/
 }
 
 void MainGameState::createStar(const v2& pos) {
-	ds::SID sid = _world->create(pos, "Star");
-	_world->scaleByPath(sid, &_context->settings->starScalePath, _context->settings->starFlashTTL);
-	_world->attachCollider(sid, OT_STAR, 0);
-	_world->removeAfter(sid, _context->settings->starTTL);
+	ID sid = _world->create(pos, math::buildTexture(0, 40, 24, 24), OT_STAR);
+	LOG << "star id: " << sid;
+	//_world->scaleByPath(sid, &_context->settings->starScalePath, _context->settings->starFlashTTL);
+	//_world->attachCollider(sid, OT_STAR, 0);
+	//_world->removeAfter(sid, _context->settings->starTTL);
 }
 // ---------------------------------------
 // add new star
 // ---------------------------------------
 void MainGameState::addStar(const v2& pos, int count) {
-	ds::SID ids[64];
+	ID ids[64];
 	int num = _world->find_by_type(OT_STAR, ids, 64);
 	if (num + count < 128) {
 		if (count == 1) {
@@ -397,29 +427,29 @@ int MainGameState::onChar(int ascii) {
 		_showSettings = !_showSettings;
 	}
 	if (ascii == 'x') {
-		_balls->killAll();
+		//_balls->killAll();
 	}
 	if (ascii == 'd') {
 		_showDebug = !_showDebug;
 	}
 	if (ascii == '1') {
-		_balls->emitt(0);
+		//_balls->emitt(0);
 	}
 	if (ascii == '2') {
-		_balls->emitt(1);
+		//_balls->emitt(1);
 	}
 	if (ascii == '3') {
-		_balls->emitt(2);
+		//_balls->emitt(2);
 	}
 	if (ascii == '4') {
-		addStar(v2(800, 540), 1);
+		addStar(v2(math::random(100,800), math::random(100,600)), 1);
 	}
 	if (ascii == '5') {
-		addStar(v2(800, 540), 6);
+		addStar(v2(512, 384), 6);
 	}
-	if (ascii == '6') {
-		_context->particles->startGroup(1, v3(512, 384, 0));
-	}
+	//if (ascii == '6') {
+		//_context->particles->startGroup(1, v3(512, 384, 0));
+	//}
 	return 0;
 }
 
