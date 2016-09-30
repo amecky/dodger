@@ -4,7 +4,7 @@
 #include <imgui\IMGUI.h>
 #include "..\GameContext.h"
 //#include "..\Cubes.h"
-//#include "..\Bombs.h"
+#include "..\objects\Bombs.h"
 #include "..\EventBuffer.h"
 #include "..\utils\Numbers.h"
 #include <core\lib\DataArray.h>
@@ -71,7 +71,7 @@ private:
 
 
 	//Cubes* _balls;
-	//Bombs* _bombs;
+	Bombs* _bombs;
 	//Stars* _stars;
 	EventBuffer _buffer;
 	v2 _cursor_pos;

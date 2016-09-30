@@ -1,9 +1,9 @@
 #pragma once
 #include <renderer\sprites.h>
-#include "GameContext.h"
+#include "..\GameContext.h"
 #include <core\lib\DataArray.h>
-#include "EventBuffer.h"
-#include <core\utils\TimedObject.h>
+#include "..\EventBuffer.h"
+#include <core\world\World.h>
 
 struct BombData {
 
@@ -23,7 +23,7 @@ struct BombData {
 class Bombs {
 
 public:
-	Bombs(GameContext* context);
+	Bombs(GameContext* context, ds::World* world);
 	~Bombs();
 	void activate();
 	void tick(EventBuffer* buffer,float dt);
@@ -34,9 +34,9 @@ public:
 	void burst(ds::SID id, float direction);
 	void clear();
 	void handleEvents(const ds::ActionEventBuffer& buffer);
-private:
-	void checkInterception(EventBuffer* buffer, const v2& pos, float radius);
 	void create();
+private:
+	void checkInterception(EventBuffer* buffer, const v2& pos, float radius);	
 	void scaleBombs(EventBuffer* buffer, float dt);
 	void drawRing(const v2& pos,float timer);
 	GameContext* _context;
@@ -45,7 +45,7 @@ private:
 	ds::SID _bomb_sids[16];
 	float _cells[36];
 	ds::Texture _ring_texture;
-	ds::Vector2fPath _scale_path;
+	ds::V3Path _scale_path;
 
 };
 

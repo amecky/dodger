@@ -8,11 +8,12 @@
 #include <core\math\GameMath.h>
 #include <core\io\ReportWriter.h>
 
-MainGameState::MainGameState(GameContext* context) : ds::GameState("MainGame"), _context(context) {//, _world(context->world) {
-	//_balls = new Cubes(_context);
-	//_bombs = new Bombs(_context);
-	//_stars = new Stars(_context);
+MainGameState::MainGameState(GameContext* context) : ds::GameState("MainGame"), _context(context) {
 	_world = new ds::World;
+	//_balls = new Cubes(_context);
+	_bombs = new Bombs(_context, _world);
+	//_stars = new Stars(_context);
+	
 	_player = _world->create(v2(512, 384), math::buildTexture(40, 0, 40, 40), OT_PLAYER);
 	_playerAngle = 0.0f;
 	_cursor = _world->create(v2(700, 384), math::buildTexture(40, 160, 20, 20), 100);
@@ -446,6 +447,9 @@ int MainGameState::onChar(int ascii) {
 	}
 	if (ascii == 'q') {
 		_showSettings = !_showSettings;
+	}
+	if (ascii == 'b') {
+		_bombs->create();
 	}
 	if (ascii == 'x') {
 		//_balls->killAll();
