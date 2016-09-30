@@ -6,6 +6,7 @@
 #include <core\log\Log.h>
 #include "base\InputSystem.h"
 #include <core\math\GameMath.h>
+#include <core\io\ReportWriter.h>
 
 MainGameState::MainGameState(GameContext* context) : ds::GameState("MainGame"), _context(context) {//, _world(context->world) {
 	//_balls = new Cubes(_context);
@@ -148,8 +149,10 @@ void MainGameState::movePlayer(float dt) {
 	float angle = 0.0f;
 	ds::math::followRelative(cp, wp, &_playerAngle, 5.0f, 1.1f * dt);
 	_world->setRotation(_player, _playerAngle);
-	_world->setPosition(_player, wp);
-	_world->setPosition(_playerRing, wp);
+	if (ds::math::isInside(wp, ds::Rect(0, 0, 1024, 768))) {
+		_world->setPosition(_player, wp);
+		_world->setPosition(_playerRing, wp);
+	}
 }
 
 // -------------------------------------------------------
@@ -163,6 +166,17 @@ int MainGameState::update(float dt) {
 	moveStars(wp, dt);
 
 	_world->tick(dt);
+
+	uint32_t n = ds::events::num();
+	if (n > 0) {
+		for (uint32_t i = 0; i < n; ++i) {
+			if (ds::events::getType(i) == 100) {
+				LOG << "writing report now";
+				ds::ReportWriter writer("reports\\world.html");
+				_world->saveReport(writer);
+			}
+		}
+	}
 	/*
 	_context->debugPanel.reset();
 

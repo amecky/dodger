@@ -1,8 +1,8 @@
 settings {
 	bomb_flashing_ttl : 0.8
-	star_ttl : 3.0 
+	star_ttl : 1.0 
 	star_flash_ttl : 0.3
-	star_magnet_radius : 250 
+	star_magnet_radius : 150 
 	star_seek_velocity : 400 
 	bomb_start_ttl : 1.0
 	max_bombs : 4
