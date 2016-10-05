@@ -15,6 +15,7 @@ MainGameState::MainGameState(GameContext* context) : ds::GameState("MainGame"), 
 	//_stars = new Stars(_context);
 	
 	_player = _world->create(v2(512, 384), math::buildTexture(40, 0, 40, 40), OT_PLAYER);
+	_world->attachCollider(_player, ds::PST_CIRCLE, v2(40.f, 0.0));
 	_playerAngle = 0.0f;
 	_cursor = _world->create(v2(700, 384), math::buildTexture(40, 160, 20, 20), 100);
 
@@ -157,6 +158,18 @@ void MainGameState::movePlayer(float dt) {
 }
 
 // -------------------------------------------------------
+// reflect velocity
+// -------------------------------------------------------
+void MainGameState::reflectVelocity(ID id,const v3& normal, float dt) {
+	BombData* data = (BombData*)_world->get_data(id);
+	float mdt = dot(data->velocity, normal);
+	v3 ref = data->velocity - 2.0f * mdt * normal;
+	_world->moveBy(id, ref);
+	data->velocity = ref;
+	v3 bp = _world->getPosition(id) + data->velocity * dt * 4.0f;
+	_world->setPosition(id, bp.xy());
+}
+// -------------------------------------------------------
 // Update
 // -------------------------------------------------------
 int MainGameState::update(float dt) {
@@ -175,6 +188,47 @@ int MainGameState::update(float dt) {
 				LOG << "writing report now";
 				ds::ReportWriter writer("reports\\world.html");
 				_world->saveReport(writer);
+			}
+		}
+	}
+
+	if (_world->hasEvents()) {
+		uint32_t n = _world->numEvents();
+		for (uint32_t i = 0; i < n; ++i) {
+			const ds::ActionEvent& event = _world->getEvent(i);
+			if (event.action == ds::AT_BOUNCE) {
+				v3* vel = (v3*)_world->getEventData(i);
+				BombData* data = (BombData*)_world->get_data(event.id);
+				data->velocity = *vel;
+			}
+		}
+	}
+
+	if (_world->hasCollisions()) {
+		uint32_t n = _world->numCollisions();
+		for (uint32_t i = 0; i < n; ++i) {
+			const ds::Collision& c = _world->getCollision(i);
+			if (c.isBetween(OT_BOMB, OT_BOMB)) {
+				v3 fp = _world->getPosition(c.firstID);
+				v3 sp = _world->getPosition(c.secondID);
+				v3 d = sp - fp;
+				float l = length(d);
+				v3 nd = normalize(d);
+
+				reflectVelocity(c.firstID, nd, dt);
+				reflectVelocity(c.secondID, nd, dt);
+			}
+			else if (c.isBetween(OT_PLAYER, OT_BOMB)) {
+				ID bid = c.getIDByType(OT_BOMB);
+				v3 fp = _world->getPosition(c.firstID);
+				v3 sp = _world->getPosition(c.secondID);
+				v3 d = sp - fp;
+				v3 nd = normalize(d);
+				reflectVelocity(bid, nd, dt);
+			}
+			else if (c.isBetween(OT_PLAYER, OT_STAR)) {
+				ID id = c.getIDByType(OT_STAR);
+				_world->remove(id);
 			}
 		}
 	}
@@ -345,7 +399,6 @@ void MainGameState::render() {
 		v2 p = positions[i].xy();
 		float r = rotations[i].x;
 		ds::Texture t = textures[i];
-		//LOG << i << " p: " << DBG_V2(p) << " r: " << RADTODEG(r) << " tex: " << DBG_TEX(t);
 		sprites->draw(positions[i].xy(), textures[i], rotations[i].x,scales[i].xy(),colors[i]);
 	}
 	/*
@@ -402,19 +455,20 @@ void MainGameState::moveStars(const v2& target, float dt) {
 			n *= _context->settings->starSeekVelocity;
 			v2 np = p + n * dt;
 			_world->setPosition(ids[i], np);
-			if (sqr_length(diff) < 25.0f) {
-				_world->remove(ids[i]);
-			}
 		}
 	}
 }
 
+// ---------------------------------------
+// create star
+// ---------------------------------------
 void MainGameState::createStar(const v2& pos) {
 	ID id = _world->create(pos, math::buildTexture(0, 40, 24, 24), OT_STAR, 0.0f, v2(1, 1), ds::Color(255, 180, 0, 255));
 	_world->scaleByPath(id, &_context->settings->starScalePath, _context->settings->starFlashTTL);
-	//_world->attachCollider(sid, OT_STAR, 0);
+	_world->attachCollider(id, ds::PST_CIRCLE, v2(24.0f, 24.0f));
 	_world->removeAfter(id, _context->settings->starTTL);
 }
+
 // ---------------------------------------
 // add new star
 // ---------------------------------------
@@ -458,7 +512,8 @@ int MainGameState::onChar(int ascii) {
 		_showDebug = !_showDebug;
 	}
 	if (ascii == '1') {
-		//_balls->emitt(0);
+		ds::ChannelArray* array = _world->getChannelArray();
+		LOG << "array size: " << array->size;
 	}
 	if (ascii == '2') {
 		//_balls->emitt(1);
@@ -470,7 +525,7 @@ int MainGameState::onChar(int ascii) {
 		addStar(v2(math::random(100,800), math::random(100,600)), 1);
 	}
 	if (ascii == '5') {
-		addStar(v2(512, 384), 6);
+		addStar(v2(math::random(100, 800), math::random(100, 600)), 5);
 	}
 	//if (ascii == '6') {
 		//_context->particles->startGroup(1, v3(512, 384, 0));

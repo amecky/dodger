@@ -59,6 +59,7 @@ private:
 	void moveStars(const v2& target, float dt);
 	void createStar(const v2& pos);
 	void addStar(const v2& pos, int count);
+	void reflectVelocity(ID id, const v3& normal, float dt);
 
 	ds::SID _bomb_id;
 	bool _grabbing;

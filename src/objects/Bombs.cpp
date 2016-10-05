@@ -26,13 +26,15 @@ void Bombs::create() {
 	pos.x = math::random(200.0f, 800.0f);
 	pos.y = math::random(200.0f, 600.0f);
 	ID sid = _world->create(pos, math::buildTexture(0, 440, 60, 60),OT_BOMB);
-	//BombData* data = (BombData*)_world->attach_data(sid, sizeof(BombData));
+	_world->attachCollider(sid, ds::PST_CIRCLE, v2(60.0f, 0.0f));
+	BombData* data = (BombData*)_world->attach_data(sid, sizeof(BombData),OT_BOMB);
 	float angle = math::random(0.0f, TWO_PI);
 	float v = math::random(30.0f, 50.0f);
 	v2 vel = math::getRadialVelocity(angle, v);
 	_world->moveBy(sid, vel, true);
 	_world->scaleByPath(sid, &_scale_path, _context->settings->bombFlashingTTL);
-	//data->state = BombData::BS_STARTING;
+	data->state = BombData::BS_STARTING;
+	data->velocity = vel;
 	//_context->particles->start(BOMB_STARTUP, pos);
 }
 
