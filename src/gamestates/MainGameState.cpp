@@ -22,6 +22,7 @@ MainGameState::MainGameState(GameContext* context) : ds::GameState("MainGame"), 
 	//_world->create(v2(200, 384), math::buildTexture(40, 0, 40, 42), 0.0f);
 	_playerRing = _world->create(v2(100, 384), math::buildTexture(440, 0, 152, 152), OT_RING);
 
+	_wanderingCubes = new WanderingCubes(_world);
 
 	_showSettings = false;
 	_showDebug = false;
@@ -53,6 +54,8 @@ MainGameState::MainGameState(GameContext* context) : ds::GameState("MainGame"), 
 MainGameState::~MainGameState() {
 	delete _points;
 	delete _clock;
+	delete _wanderingCubes;
+	delete _world;
 	//delete _stars;
 	//delete _bombs;
 	//delete _balls;
@@ -196,6 +199,8 @@ int MainGameState::update(float dt) {
 			}
 		}
 	}
+
+	_wanderingCubes->tick(dt);
 
 	handleCollisions(dt);
 
@@ -520,8 +525,7 @@ int MainGameState::onChar(int ascii) {
 		_showDebug = !_showDebug;
 	}
 	if (ascii == '1') {
-		ds::ChannelArray* array = _world->getChannelArray();
-		LOG << "array size: " << array->size;
+		_wanderingCubes->create();
 	}
 	if (ascii == '2') {
 		//_balls->emitt(1);

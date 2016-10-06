@@ -3,7 +3,7 @@
 #include <renderer\render_types.h>
 #include <imgui\IMGUI.h>
 #include "..\GameContext.h"
-//#include "..\Cubes.h"
+#include "..\objects\WanderingCubes.h"
 #include "..\objects\Bombs.h"
 #include "..\EventBuffer.h"
 #include "..\utils\Numbers.h"
@@ -61,7 +61,8 @@ private:
 	void addStar(const v2& pos, int count);
 	void reflectVelocity(ID id, const v3& normal, float dt);
 
-	ds::SID _bomb_id;
+	ID _bomb_id;
+
 	bool _grabbing;
 	GameContext* _context;
 	ds::World* _world;
@@ -69,7 +70,7 @@ private:
 	ID _playerRing;
 	float _playerAngle;
 	ID _cursor;
-
+	WanderingCubes* _wanderingCubes;
 
 	//Cubes* _balls;
 	Bombs* _bombs;
