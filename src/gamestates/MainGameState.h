@@ -55,7 +55,7 @@ private:
 	void drawBorder();
 	void killPlayer();
 	void movePlayer(float dt);
-	void handleCollisions();
+	void handleCollisions(float dt);
 	void moveStars(const v2& target, float dt);
 	void createStar(const v2& pos);
 	void addStar(const v2& pos, int count);

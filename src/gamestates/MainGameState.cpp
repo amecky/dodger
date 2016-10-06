@@ -123,9 +123,10 @@ int MainGameState::onButtonUp(int button, int x, int y) {
 // on button up
 // -------------------------------------------------------
 int MainGameState::onButtonDown(int button, int x, int y) {
-	//if (_bombs->grab(_context->world_pos, 75.0f, &_bomb_id)) {
-		//_grabbing = true;
-	//}
+	v3 pos = _world->getPosition(_player);
+	if (_bombs->grab(pos.xy(), 75.0f, &_bomb_id)) {
+		_grabbing = true;
+	}
 	return 0;
 }
 
@@ -181,6 +182,10 @@ int MainGameState::update(float dt) {
 
 	_world->tick(dt);
 
+	if (_grabbing) {
+		_bombs->follow(_bomb_id, wp, dt);
+	}
+
 	uint32_t n = ds::events::num();
 	if (n > 0) {
 		for (uint32_t i = 0; i < n; ++i) {
@@ -191,6 +196,8 @@ int MainGameState::update(float dt) {
 			}
 		}
 	}
+
+	handleCollisions(dt);
 
 	if (_world->hasEvents()) {
 		uint32_t n = _world->numEvents();
@@ -204,34 +211,7 @@ int MainGameState::update(float dt) {
 		}
 	}
 
-	if (_world->hasCollisions()) {
-		uint32_t n = _world->numCollisions();
-		for (uint32_t i = 0; i < n; ++i) {
-			const ds::Collision& c = _world->getCollision(i);
-			if (c.isBetween(OT_BOMB, OT_BOMB)) {
-				v3 fp = _world->getPosition(c.firstID);
-				v3 sp = _world->getPosition(c.secondID);
-				v3 d = sp - fp;
-				float l = length(d);
-				v3 nd = normalize(d);
-
-				reflectVelocity(c.firstID, nd, dt);
-				reflectVelocity(c.secondID, nd, dt);
-			}
-			else if (c.isBetween(OT_PLAYER, OT_BOMB)) {
-				ID bid = c.getIDByType(OT_BOMB);
-				v3 fp = _world->getPosition(c.firstID);
-				v3 sp = _world->getPosition(c.secondID);
-				v3 d = sp - fp;
-				v3 nd = normalize(d);
-				reflectVelocity(bid, nd, dt);
-			}
-			else if (c.isBetween(OT_PLAYER, OT_STAR)) {
-				ID id = c.getIDByType(OT_STAR);
-				_world->remove(id);
-			}
-		}
-	}
+	
 	/*
 	_context->debugPanel.reset();
 
@@ -315,7 +295,35 @@ int MainGameState::update(float dt) {
 // -------------------------------------------------------
 // handle collisions
 // -------------------------------------------------------
-void MainGameState::handleCollisions() {
+void MainGameState::handleCollisions(float dt) {
+	if (_world->hasCollisions()) {
+		uint32_t n = _world->numCollisions();
+		for (uint32_t i = 0; i < n; ++i) {
+			const ds::Collision& c = _world->getCollision(i);
+			if (c.isBetween(OT_BOMB, OT_BOMB)) {
+				v3 fp = _world->getPosition(c.firstID);
+				v3 sp = _world->getPosition(c.secondID);
+				v3 d = sp - fp;
+				float l = length(d);
+				v3 nd = normalize(d);
+
+				reflectVelocity(c.firstID, nd, dt);
+				reflectVelocity(c.secondID, nd, dt);
+			}
+			else if (c.isBetween(OT_PLAYER, OT_BOMB)) {
+				ID bid = c.getIDByType(OT_BOMB);
+				v3 fp = _world->getPosition(c.firstID);
+				v3 sp = _world->getPosition(c.secondID);
+				v3 d = sp - fp;
+				v3 nd = normalize(d);
+				reflectVelocity(bid, nd, dt);
+			}
+			else if (c.isBetween(OT_PLAYER, OT_STAR)) {
+				ID id = c.getIDByType(OT_STAR);
+				_world->remove(id);
+			}
+		}
+	}
 	// handle collisions
 	/*
 	int numCollisions = _world->getNumCollisions();

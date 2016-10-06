@@ -30,9 +30,9 @@ public:
 	void tick(EventBuffer* buffer,float dt);
 	void render();
 	void killAll();
-	bool grab(const v2& pos, float radius,ds::SID* id);
-	void follow(ds::SID id,const v2& target);
-	void burst(ds::SID id, float direction);
+	bool grab(const v2& pos, float radius,ID* id);
+	void follow(ID id,const v2& target, float dt);
+	void burst(ID id, float direction);
 	void clear();
 	void handleEvents(const ds::ActionEventBuffer& buffer);
 	void create();

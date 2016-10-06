@@ -10,9 +10,6 @@ struct GameContext {
 
 	GameSettings* settings;
 	//ds::GUIDialog* hudDialog;
-	v2 playerPosition;
-	v2 world_pos;
-	float playerAngle;
 	//ds::ParticleManager* particles;
 	//ds::DebugPanel debugPanel;
 	int points;

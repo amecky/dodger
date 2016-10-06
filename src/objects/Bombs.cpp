@@ -1,5 +1,6 @@
 #include "Bombs.h"
 #include <core\log\Log.h>
+#include <core\math\GameMath.h>
 
 Bombs::Bombs(GameContext* context, ds::World* world) : _context(context), _world(world) {
 	float step = TWO_PI / 36.0f;
@@ -58,48 +59,46 @@ void Bombs::handleEvents(const ds::ActionEventBuffer& buffer) {
 // ---------------------------------------
 // grab bomb
 // ---------------------------------------
-bool Bombs::grab(const v2& pos, float radius, ds::SID* id) {
-	/*
-	int num = _world->find_by_type(OT_BOMB, _bomb_sids, 16);
+bool Bombs::grab(const v2& pos, float radius, ID* id) {
+	ID ids[64];
+	int num = _world->find_by_type(OT_BOMB, ids, 64);
 	for (int i = 0; i < num; ++i) {
-		BombData* data = (BombData*)_world->get_data(_bomb_sids[i]);
+		BombData* data = (BombData*)_world->get_data(ids[i]);
 		assert(data != 0);
-		if (data->state == BombData::BS_ACTIVE) {
-			v2 p = _world->getPosition(_bomb_sids[i]);
-			if (ds::math::checkCircleIntersection(_context->world_pos, radius, p, 20.0f)) {
+		//if (data->state == BombData::BS_ACTIVE) {
+			v3 p = _world->getPosition(ids[i]);
+			if (ds::physics::testCircleIntersection(pos, radius, p.xy(), 20.0f)) {
 				data->state = BombData::BS_FOLLOWING;
-				_world->stopAction(_bomb_sids[i], ds::AT_MOVE_BY);
-				_world->setColor(_bomb_sids[i], ds::Color(0, 192, 32, 255));
-				*id = _bomb_sids[i];
+				_world->stopAction(ids[i], ds::AT_MOVE_BY);
+				_world->setColor(ids[i], ds::Color(0, 192, 32, 255));
+				*id = ids[i];
 				return true;
 			}
-		}
+		//}
 	}
-	*/
 	return false;
 }
 
 // ---------------------------------------
 // follow target
 // ---------------------------------------
-void Bombs::follow(ds::SID id, const v2& target) {
-	/*
+void Bombs::follow(ID id, const v2& target, float dt) {
 	if (_world->contains(id)) {
-		v2 p = _world->getPosition(id);
+		v3 p = _world->getPosition(id);
 		float angle = 0.0f;
-		math::followRelative(target,p, &angle, 60.0f, 0.02f);
-		v2 diff = _context->world_pos - p;
-		v2 n = normalize(diff);
-		_world->setPosition(id, p);
-		_world->setRotation(id,  ds::vector::calculateRotation(n));
+		v2 d = p.xy();
+		ds::math::followRelative(target,d, &angle, 60.0f, dt);
+		v3 diff = v3(target) - p;
+		v3 n = normalize(diff);
+		_world->setPosition(id, d);
+		_world->setRotation(id,  math::calculateRotation(n.xy()));
 	}
-	*/
 }
 
 // ---------------------------------------
 // burst
 // ---------------------------------------
-void Bombs::burst(ds::SID id, float direction) {
+void Bombs::burst(ID id, float direction) {
 	/*
 	if (_world->contains(id)) {
 		BombData* data = (BombData*)_world->get_data(id);
