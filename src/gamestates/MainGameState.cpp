@@ -22,7 +22,8 @@ MainGameState::MainGameState(GameContext* context) : ds::GameState("MainGame"), 
 	//_world->create(v2(200, 384), math::buildTexture(40, 0, 40, 42), 0.0f);
 	_playerRing = _world->create(v2(100, 384), math::buildTexture(440, 0, 152, 152), OT_RING);
 
-	_wanderingCubes = new WanderingCubes(_world);
+	_wanderingCubes = new WanderingCubes(_world, context->settings);
+	_spottingCubes = new SpottingCubes(_world, context->settings);
 
 	_showSettings = false;
 	_showDebug = false;
@@ -55,6 +56,7 @@ MainGameState::~MainGameState() {
 	delete _points;
 	delete _clock;
 	delete _wanderingCubes;
+	delete _spottingCubes;
 	delete _world;
 	//delete _stars;
 	//delete _bombs;
@@ -201,6 +203,7 @@ int MainGameState::update(float dt) {
 	}
 
 	_wanderingCubes->tick(dt);
+	_spottingCubes->tick(_player, dt);
 
 	handleCollisions(dt);
 
@@ -208,7 +211,7 @@ int MainGameState::update(float dt) {
 		uint32_t n = _world->numEvents();
 		for (uint32_t i = 0; i < n; ++i) {
 			const ds::ActionEvent& event = _world->getEvent(i);
-			if (event.action == ds::AT_BOUNCE) {
+			if (event.action == ds::AT_BOUNCE && event.type == OT_BOMB) {
 				v3* vel = (v3*)_world->getEventData(i);
 				BombData* data = (BombData*)_world->get_data(event.id);
 				data->velocity = *vel;
@@ -528,7 +531,7 @@ int MainGameState::onChar(int ascii) {
 		_wanderingCubes->create();
 	}
 	if (ascii == '2') {
-		//_balls->emitt(1);
+		_spottingCubes->create();
 	}
 	if (ascii == '3') {
 		//_balls->emitt(2);

@@ -11,3 +11,7 @@ settings {
 					  0.75,0.75,0.75,1.0,
 					  1.0 ,1.0,1.0,1.0
 }
+wanderer {
+	min_rotation_angle : 25
+	max_rotation_angle : 100
+}

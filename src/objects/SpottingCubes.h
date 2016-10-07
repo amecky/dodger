@@ -2,14 +2,14 @@
 #include <core\world\World.h>
 #include "..\GameSettings.h"
 
-class WanderingCubes {
+class SpottingCubes {
 
 public:
-	WanderingCubes(ds::World* world, GameSettings* settings);
-	~WanderingCubes();
+	SpottingCubes(ds::World* world, GameSettings* settings);
+	~SpottingCubes();
 	void reset();
 	void init(int max, float spawnDelay);
-	void tick(float dt);
+	void tick(ID player, float dt);
 	void create();
 private:
 	ds::World* _world;

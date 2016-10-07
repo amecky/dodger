@@ -4,6 +4,7 @@
 #include <imgui\IMGUI.h>
 #include "..\GameContext.h"
 #include "..\objects\WanderingCubes.h"
+#include "..\objects\SpottingCubes.h"
 #include "..\objects\Bombs.h"
 #include "..\EventBuffer.h"
 #include "..\utils\Numbers.h"
@@ -71,7 +72,7 @@ private:
 	float _playerAngle;
 	ID _cursor;
 	WanderingCubes* _wanderingCubes;
-
+	SpottingCubes* _spottingCubes;
 	//Cubes* _balls;
 	Bombs* _bombs;
 	//Stars* _stars;

@@ -14,6 +14,11 @@ struct GameSettings : public ds::DynamicGameSettings {
 	float bombStartTTL;
 	int maxBombs;
 
+	struct Wanderer {
+		float minRotationAngle;
+		float maxRotationAngle;
+	} wanderer;
+
 	GameSettings() : ds::DynamicGameSettings("content\\game_settings.json") {
 		add("settings.bomb_flashing_ttl", &bombFlashingTTL, 0.8f);
 		add("settings.star_ttl", &starTTL, 3.0f);
@@ -23,6 +28,9 @@ struct GameSettings : public ds::DynamicGameSettings {
 		add("settings.bomb_start_ttl", &bombStartTTL, 0.5f);
 		add("settings.star_scale_path", &starScalePath);
 		add("settings.max_bombs", &maxBombs, 3);
+
+		add("wanderer.min_rotation_angle", &wanderer.minRotationAngle, 45.0f);
+		add("wanderer.max_rotation_angle", &wanderer.maxRotationAngle, 180.0f);
 	}
 
 };
