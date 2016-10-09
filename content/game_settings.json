@@ -14,4 +14,12 @@ settings {
 wanderer {
 	min_rotation_angle : 25
 	max_rotation_angle : 100
+	min_rotation_ttl : 0.5
+	max_rotation_ttl : 1.0
+	min_velocity : 50
+	max_velocity : 80
+	min_scale_ttl : 0.5
+	max_scale_ttl : 1.0
+	min_move_ttl : 2.0
+	max_move_ttl : 6.0
 }

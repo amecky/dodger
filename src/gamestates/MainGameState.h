@@ -17,7 +17,7 @@ struct GameTimer {
 	int seconds;
 	int total_seconds;
 
-	GameTimer() : timer(0.0f), seconds(0) {}
+	GameTimer() : timer(0.0f), seconds(0) , total_seconds(0) {}
 
 	bool tick(float dt) {
 		timer += dt;

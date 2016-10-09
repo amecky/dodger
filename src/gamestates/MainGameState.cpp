@@ -202,7 +202,7 @@ int MainGameState::update(float dt) {
 		}
 	}
 
-	_wanderingCubes->tick(dt);
+	_wanderingCubes->tick(_player, dt);
 	_spottingCubes->tick(_player, dt);
 
 	handleCollisions(dt);

@@ -17,7 +17,7 @@ struct BombData {
 	float timer;
 	v3 velocity;
 
-	BombData() : state(BS_ACTIVE) , timer(0.0f) {}
+	BombData() : state(BS_ACTIVE) , timer(0.0f) , velocity(0.0f) {}
 
 };
 

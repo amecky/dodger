@@ -17,6 +17,14 @@ struct GameSettings : public ds::DynamicGameSettings {
 	struct Wanderer {
 		float minRotationAngle;
 		float maxRotationAngle;
+		float minRotationTTL;
+		float maxRotationTTL;
+		float minScaleTTL;
+		float maxScaleTTL;
+		float minVelocity;
+		float maxVelocity;
+		float minMoveTTL;
+		float maxMoveTTL;
 	} wanderer;
 
 	GameSettings() : ds::DynamicGameSettings("content\\game_settings.json") {
@@ -31,6 +39,14 @@ struct GameSettings : public ds::DynamicGameSettings {
 
 		add("wanderer.min_rotation_angle", &wanderer.minRotationAngle, 45.0f);
 		add("wanderer.max_rotation_angle", &wanderer.maxRotationAngle, 180.0f);
+		add("wanderer.min_rotation_ttl", &wanderer.minRotationTTL, 1.0f);
+		add("wanderer.max_rotation_ttl", &wanderer.maxRotationTTL, 2.0f);
+		add("wanderer.min_scale_ttl", &wanderer.minScaleTTL, 1.0f);
+		add("wanderer.max_scale_ttl", &wanderer.maxScaleTTL, 2.0f);
+		add("wanderer.min_velocity", &wanderer.minVelocity, 40.0f);
+		add("wanderer.max_velocity", &wanderer.maxVelocity, 200.0f);
+		add("wanderer.min_move_ttl", &wanderer.minMoveTTL, 1.0f);
+		add("wanderer.max_move_ttl", &wanderer.maxMoveTTL, 2.0f);
 	}
 
 };
