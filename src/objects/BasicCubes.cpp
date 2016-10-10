@@ -1,14 +1,17 @@
 #include "BasicCubes.h"
 
-
-
+// -------------------------------------------------
+// BasicCubes
+// -------------------------------------------------
 BasicCubes::BasicCubes(ds::World* world, CubeEmitter* emitter, GameSettings* settings) : _world(world), _emitter(emitter), _settings(settings), _timer(0.0f), _emitted(0), _running(false), _spawnDelay(0.0f) {
 }
-
 
 BasicCubes::~BasicCubes() {
 }
 
+// -------------------------------------------------
+// reset
+// -------------------------------------------------
 void BasicCubes::reset() {
 	_timer = 0.0f;
 	_emitted = 0;
@@ -16,6 +19,9 @@ void BasicCubes::reset() {
 	_running = false;
 }
 
+// -------------------------------------------------
+// init
+// -------------------------------------------------
 void BasicCubes::init(const SpawnSettings& spawnSettings) {
 	_spawnSettings = spawnSettings;
 	_spawnDelay = math::random(_spawnSettings.minDelay, _spawnSettings.maxDelay);
@@ -24,6 +30,9 @@ void BasicCubes::init(const SpawnSettings& spawnSettings) {
 	_running = true;
 }
 
+// -------------------------------------------------
+// tick
+// -------------------------------------------------
 void BasicCubes::tick(ID target, float dt) {
 	if (_emitted < _spawnSettings.maxCubes && _running) {
 		_timer += dt;

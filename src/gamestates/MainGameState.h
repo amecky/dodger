@@ -5,6 +5,7 @@
 #include "..\GameContext.h"
 #include "..\objects\WanderingCubes.h"
 #include "..\objects\SpottingCubes.h"
+#include "..\objects\FollowerCubes.h"
 #include "..\objects\Bombs.h"
 #include "..\EventBuffer.h"
 #include "..\utils\Numbers.h"
@@ -73,6 +74,7 @@ private:
 	ID _cursor;
 	WanderingCubes* _wanderingCubes;
 	SpottingCubes* _spottingCubes;
+	FollowerCubes* _followerCubes;
 	//Cubes* _balls;
 	Bombs* _bombs;
 	//Stars* _stars;
@@ -91,8 +93,7 @@ private:
 	NumberDefinitions _number_definitions;
 	Numbers* _clock;
 	Numbers* _points;
-	TestCubeEmitter _testEmitter;
-	RandomCubeEmitter _randomEmitter;
+	ds::Array<CubeEmitter*> _emitters;	
 
 };
 

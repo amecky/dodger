@@ -18,9 +18,12 @@ FollowerCubes::~FollowerCubes() {
 // handle events
 // ---------------------------------------
 void FollowerCubes::onEvent(const ds::ActionEvent& event, ID target, float dt) {
+	
 	if (event.action == ds::AT_SCALE_BY_PATH) {					
-		_world->lookAt(event.id, target, 1.0f);
+		_world->seek(event.id, target, 150.0f);
+		_world->separate(event.id, OT_FOLLOWER, 30.0f, 0.9f);
 	}
+	/*
 	else if (event.action == ds::AT_LOOK_AT) {
 		v3 rot = _world->getRotation(event.id);
 		v3 v = math::getRadialVelocity(rot.x, 150.0f);
@@ -30,6 +33,7 @@ void FollowerCubes::onEvent(const ds::ActionEvent& event, ID target, float dt) {
 	else if (event.action == ds::AT_MOVE_BY) {
 		_world->lookAt(event.id, target, 1.0f);
 	}
+	*/
 }
 
 // ---------------------------------------
@@ -38,8 +42,9 @@ void FollowerCubes::onEvent(const ds::ActionEvent& event, ID target, float dt) {
 void FollowerCubes::create() {
 	_emitter->next();
 	for (int i = 0; i < 8; ++i) {
-		ID id = _world->create(_emitter->get(i,8), math::buildTexture(130, 410, 52, 52), OT_FOLLOWER);
-		_world->scaleByPath(id, &_scale_path, 0.8f);
+		ID id = _world->create(_emitter->get(i,8), math::buildTexture(190, 410, 42, 42), OT_FOLLOWER);
+		float ttl = math::random(0.5f, 0.8f);
+		_world->scaleByPath(id, &_scale_path, ttl);
 	}
 
 }

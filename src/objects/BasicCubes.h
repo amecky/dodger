@@ -56,7 +56,7 @@ public:
 	v2 get(int index, int total) const {
 		float step = TWO_PI / static_cast<float>(total);
 		float angle = step * static_cast<float>(index);
-		return math::getRadialVelocity(angle, _radius);
+		return _position + math::getRadialVelocity(angle, _radius);
 	}
 
 private:
