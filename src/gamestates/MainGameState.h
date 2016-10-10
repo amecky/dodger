@@ -91,6 +91,8 @@ private:
 	NumberDefinitions _number_definitions;
 	Numbers* _clock;
 	Numbers* _points;
+	TestCubeEmitter _testEmitter;
+	RandomCubeEmitter _randomEmitter;
 
 };
 

@@ -1,15 +1,15 @@
 #pragma once
 #include "BasicCubes.h"
 
-class SpottingCubes : public BasicCubes {
+class FollowerCubes : public BasicCubes {
 
 public:
-	SpottingCubes(ds::World* world, CubeEmitter* emitter, GameSettings* settings);
-	~SpottingCubes();
+	FollowerCubes(ds::World* world, CubeEmitter* emitter, GameSettings* settings);
+	~FollowerCubes();
 	void onEvent(const ds::ActionEvent& event, ID target, float dt);
 	void create();
 	ObjectType getObjectType() const {
-		return OT_SPOTTER;
+		return OT_FOLLOWER;
 	}
 private:
 	ds::V3Path _scale_path;

@@ -4,11 +4,15 @@
 class WanderingCubes : public BasicCubes {
 
 public:
-	WanderingCubes(ds::World* world, GameSettings* settings);
+	WanderingCubes(ds::World* world, CubeEmitter* emitter, GameSettings* settings);
 	~WanderingCubes();
-	void handleEvents(ID target, float dt);
-	void create(const CubeEmitter& emitter);
+	void create();
+	void onEvent(const ds::ActionEvent& event, ID target, float dt);
+	ObjectType getObjectType() const {
+		return OT_WANDERER;
+	}
 private:
+	float getRotationAngle();
 	ds::V3Path _scale_path;
 };
 

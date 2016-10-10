@@ -27,7 +27,7 @@ const int BIG_CUBE_EXPLOSION  = 6;
 const int HUGE_CUBE_EXPLOSION = 6;
 
 // objects types
-enum ObjectTypes {
+enum ObjectType {
 	OT_UNKNOWN,
 	OT_STAR,
 	OT_PLAYER,

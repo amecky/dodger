@@ -22,8 +22,8 @@ MainGameState::MainGameState(GameContext* context) : ds::GameState("MainGame"), 
 	//_world->create(v2(200, 384), math::buildTexture(40, 0, 40, 42), 0.0f);
 	_playerRing = _world->create(v2(100, 384), math::buildTexture(440, 0, 152, 152), OT_RING);
 
-	_wanderingCubes = new WanderingCubes(_world, context->settings);
-	_spottingCubes = new SpottingCubes(_world, context->settings);
+	_wanderingCubes = new WanderingCubes(_world, &_randomEmitter, context->settings);
+	_spottingCubes = new SpottingCubes(_world, &_randomEmitter, context->settings);
 
 	_showSettings = false;
 	_showDebug = false;
@@ -205,7 +205,7 @@ int MainGameState::update(float dt) {
 	_wanderingCubes->tick(_player, dt);
 	_spottingCubes->tick(_player, dt);
 
-	handleCollisions(dt);
+	//handleCollisions(dt);
 
 	if (_world->hasEvents()) {
 		uint32_t n = _world->numEvents();

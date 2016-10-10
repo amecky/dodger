@@ -1,23 +1,23 @@
-#include "SpottingCubes.h"
+#include "FollowerCubes.h"
 #include <core\math\math.h>
 #include "..\Constants.h"
 // ---------------------------------------
 // WanderingCubes
 // ---------------------------------------
-SpottingCubes::SpottingCubes(ds::World* world, CubeEmitter* emitter, GameSettings* settings) : BasicCubes(world, emitter, settings) {
+FollowerCubes::FollowerCubes(ds::World* world, CubeEmitter* emitter, GameSettings* settings) : BasicCubes(world, emitter, settings) {
 	_scale_path.add(0.0f, v3(0.1f, 0.1f, 0.0f));
 	_scale_path.add(0.5f, v3(1.2f, 1.2f, 0.0f));
 	_scale_path.add(0.75f, v3(0.75f, 0.75f, 0.0f));
 	_scale_path.add(1.0f, v3(1.0f, 1.0f, 0.0f));
 }
 
-SpottingCubes::~SpottingCubes() {
+FollowerCubes::~FollowerCubes() {
 }
 
 // ---------------------------------------
 // handle events
 // ---------------------------------------
-void SpottingCubes::onEvent(const ds::ActionEvent& event, ID target, float dt) {
+void FollowerCubes::onEvent(const ds::ActionEvent& event, ID target, float dt) {
 	if (event.action == ds::AT_SCALE_BY_PATH) {					
 		_world->lookAt(event.id, target, 1.0f);
 	}
@@ -29,16 +29,18 @@ void SpottingCubes::onEvent(const ds::ActionEvent& event, ID target, float dt) {
 	}
 	else if (event.action == ds::AT_MOVE_BY) {
 		_world->lookAt(event.id, target, 1.0f);
-	}	
+	}
 }
 
 // ---------------------------------------
 // create
 // ---------------------------------------
-void SpottingCubes::create() {
+void FollowerCubes::create() {
 	_emitter->next();
-	ID id = _world->create(_emitter->get(), math::buildTexture(130, 410, 52, 52), OT_SPOTTER);
-	_world->scaleByPath(id, &_scale_path, 0.8f);
+	for (int i = 0; i < 8; ++i) {
+		ID id = _world->create(_emitter->get(i,8), math::buildTexture(130, 410, 52, 52), OT_FOLLOWER);
+		_world->scaleByPath(id, &_scale_path, 0.8f);
+	}
 
 }
 

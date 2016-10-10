@@ -2,7 +2,7 @@
 
 
 
-BasicCubes::BasicCubes(ds::World* world, GameSettings* settings) : _world(world), _settings(settings), _timer(0.0f), _emitted(0), _running(false), _spawnDelay(0.0f) {
+BasicCubes::BasicCubes(ds::World* world, CubeEmitter* emitter, GameSettings* settings) : _world(world), _emitter(emitter), _settings(settings), _timer(0.0f), _emitted(0), _running(false), _spawnDelay(0.0f) {
 }
 
 
@@ -34,5 +34,14 @@ void BasicCubes::tick(ID target, float dt) {
 		}
 	}
 
-	handleEvents(target, dt);
+	if (_world->hasEvents()) {
+		uint32_t n = _world->numEvents();
+		for (uint32_t i = 0; i < n; ++i) {
+			const ds::ActionEvent& event = _world->getEvent(i);
+			int type = _world->getType(event.id);
+			if (type == getObjectType()) {
+				onEvent(event, target, dt);
+			}
+		}
+	}
 }
