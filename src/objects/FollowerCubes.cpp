@@ -18,7 +18,6 @@ FollowerCubes::~FollowerCubes() {
 // handle events
 // ---------------------------------------
 void FollowerCubes::onEvent(const ds::ActionEvent& event, ID target, float dt) {
-	
 	if (event.action == ds::AT_SCALE_BY_PATH) {					
 		_world->seek(event.id, target, 150.0f);
 		_world->separate(event.id, OT_FOLLOWER, 30.0f, 0.9f);
@@ -41,8 +40,8 @@ void FollowerCubes::onEvent(const ds::ActionEvent& event, ID target, float dt) {
 // ---------------------------------------
 void FollowerCubes::create() {
 	_emitter->next();
-	for (int i = 0; i < 8; ++i) {
-		ID id = _world->create(_emitter->get(i,8), math::buildTexture(190, 410, 42, 42), OT_FOLLOWER);
+	for (int i = 0; i < 13; ++i) {
+		ID id = _world->create(_emitter->get(i,13), math::buildTexture(190, 410, 42, 42), OT_FOLLOWER);
 		float ttl = math::random(0.5f, 0.8f);
 		_world->scaleByPath(id, &_scale_path, ttl);
 	}

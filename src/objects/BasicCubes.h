@@ -10,7 +10,7 @@ public:
 	const v2& get() const {
 		return _position;
 	}
-	virtual v2 get(int index, int total) const = 0;
+	virtual v2 get(int index, int total) = 0;
 protected:
 	v2 _position;
 };
@@ -22,7 +22,7 @@ public:
 		_position = v2(512, 384);
 	}
 
-	v2 get(int index, int total) const {
+	v2 get(int index, int total) {
 		return _position;
 	}
 };
@@ -37,7 +37,7 @@ public:
 		_position = v2(x, y);
 	}
 
-	v2 get(int index, int total) const {
+	v2 get(int index, int total) {
 		return _position;
 	}
 };
@@ -51,16 +51,20 @@ public:
 		float x = math::random(150.0f, 900.0f);
 		float y = math::random(150.0f, 600.0f);
 		_position = v2(x, y);
+		_threshold = 4;
+		_ring = 1;
+		_cnt = 0;
+		_offset = math::random(0.0f, DEGTORAD(45.0f));
 	}
 
-	v2 get(int index, int total) const {
-		float step = TWO_PI / static_cast<float>(total);
-		float angle = step * static_cast<float>(index);
-		return _position + math::getRadialVelocity(angle, _radius);
-	}
+	v2 get(int index, int total);
 
 private:
 	float _radius;
+	int _threshold;
+	int _cnt;
+	int _ring;
+	float _offset;
 };
 
 struct SpawnSettings {
