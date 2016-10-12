@@ -75,9 +75,11 @@ private:
 	WanderingCubes* _wanderingCubes;
 	SpottingCubes* _spottingCubes;
 	FollowerCubes* _followerCubes;
-	//Cubes* _balls;
+	
 	Bombs* _bombs;
-	//Stars* _stars;
+	bool _shooting;
+	float _bulletTimer;
+
 	EventBuffer _buffer;
 	v2 _cursor_pos;
 	bool _showSettings;

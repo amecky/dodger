@@ -38,5 +38,6 @@ enum ObjectType {
 	OT_RING,
 	OT_WANDERER,
 	OT_SPOTTER,
+	OT_BULLET,
 	OT_EOL
 };

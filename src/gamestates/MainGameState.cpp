@@ -30,6 +30,9 @@ MainGameState::MainGameState(GameContext* context) : ds::GameState("MainGame"), 
 	_spottingCubes = new SpottingCubes(_world, _emitters[1], context->settings);
 	_followerCubes = new FollowerCubes(_world, _emitters[2], context->settings);
 
+	_world->ignoreCollisions(OT_FOLLOWER, OT_FOLLOWER);
+	_world->ignoreCollisions(OT_PLAYER, OT_BULLET);
+
 	_showSettings = false;
 	_showDebug = false;
 	_dialog_pos = v2(10, 710);
@@ -54,6 +57,8 @@ MainGameState::MainGameState(GameContext* context) : ds::GameState("MainGame"), 
 	_clock = new Numbers(_number_definitions, 2);
 	_points = new Numbers(_number_definitions, 6);
 	
+	_bulletTimer = 0.0f;
+	_shooting = false;
 }
 
 
@@ -80,6 +85,8 @@ void MainGameState::init() {
 // activate
 // -------------------------------------------------------
 void MainGameState::activate() {
+	_bulletTimer = 0.0f;
+	_shooting = false;
 	/*
 	//_context->hudDialog->activate();
 
@@ -123,10 +130,13 @@ void MainGameState::deactivate() {
 // on button up
 // -------------------------------------------------------
 int MainGameState::onButtonUp(int button, int x, int y) {
+	/*
 	if (_grabbing) {
 		_grabbing = false;
 		//_bombs->burst(_bomb_id, 0.0f);
 	}
+	*/
+	_shooting = false;
 	return 0;
 }
 
@@ -134,10 +144,14 @@ int MainGameState::onButtonUp(int button, int x, int y) {
 // on button up
 // -------------------------------------------------------
 int MainGameState::onButtonDown(int button, int x, int y) {
+	/*
 	v3 pos = _world->getPosition(_player);
 	if (_bombs->grab(pos.xy(), 75.0f, &_bomb_id)) {
 		_grabbing = true;
 	}
+	*/
+	_shooting = true;
+	_bulletTimer = 0.0f;
 	return 0;
 }
 
@@ -157,15 +171,30 @@ void MainGameState::killPlayer() {
 // move player
 // -------------------------------------------------------
 void MainGameState::movePlayer(float dt) {
-	v2 cp = ds::input::getMousePosition();
+	v2 vel = v2(0.0f);
+	if (ds::input::getKeyState('A')) {
+		vel.x -= 1.0f;
+	}
+	if (ds::input::getKeyState('D')) {
+		vel.x += 1.0f;
+	}
+	if (ds::input::getKeyState('W')) {
+		vel.y += 1.0f;
+	}
+	if (ds::input::getKeyState('S')) {
+		vel.y -= 1.0f;
+	}
+	v2 cp = ds::input::getMousePosition();	
 	_world->setPosition(_cursor, cp);
 	v2 wp = _world->getPosition(_player).xy();
+	v2 pos = wp;
 	float angle = 0.0f;
 	ds::math::followRelative(cp, wp, &_playerAngle, 5.0f, 1.1f * dt);
 	_world->setRotation(_player, _playerAngle);
-	if (ds::math::isInside(wp, ds::Rect(0, 0, 1024, 768))) {
-		_world->setPosition(_player, wp);
-		_world->setPosition(_playerRing, wp);
+	pos += vel * 250.0f * dt;
+	if (ds::math::isInside(pos, ds::Rect(0, 0, 1024, 768))) {			
+		_world->setPosition(_player, pos);
+		_world->setPosition(_playerRing, pos);
 	}
 }
 
@@ -211,7 +240,8 @@ int MainGameState::update(float dt) {
 	_wanderingCubes->tick(_player, dt);
 	_spottingCubes->tick(_player, dt);
 	_followerCubes->tick(_player, dt);
-	//handleCollisions(dt);
+	
+	handleCollisions(dt);
 
 	if (_world->hasEvents()) {
 		uint32_t n = _world->numEvents();
@@ -222,87 +252,27 @@ int MainGameState::update(float dt) {
 				BombData* data = (BombData*)_world->get_data(event.id);
 				data->velocity = *vel;
 			}
-		}
-	}
-
-	
-	/*
-	_context->debugPanel.reset();
-
-	_context->debugPanel.show("World Pos", _context->world_pos);
-	_context->debugPanel.show("Player Pos", _context->playerPosition);
-	_context->debugPanel.show("Player angle", RADTODEG(_context->playerAngle));
-
-	if (!_dying) {
-
-		movePlayer(dt);
-
-		_context->world->tick(dt);
-
-		if (_grabbing) {
-			_bombs->follow(_bomb_id, _context->world_pos);
-		}
-		if (_game_timer.tick(dt)) {
-			killPlayer();
-		}
-		_clock->set(v2(640, 640), _game_timer.seconds, ds::Color(64, 64, 64, 255));
-		_context->hudDialog->setNumber(HUD_TIMER, _game_timer.seconds);
-
-		_buffer.reset();
-
-		//_balls->tick(dt);
-		_balls->move(dt);
-		
-		_buffer.reset();
-		_bombs->tick(&_buffer, dt);
-
-		// handle events
-		const ds::ActionEventBuffer& actionBuffer = _context->world->getEventBuffer();
-		_bombs->handleEvents(actionBuffer);
-		_balls->handleEvents(actionBuffer);
-
-		// handle game events
-		if (_buffer.num > 0) {
-			for (int i = 0; i < _buffer.num; ++i) {
-				const GameEvent& event = _buffer.events[i];
-				if (event.type == GameEvent::GE_BOMB_EXPLODED) {
-					int killed = _balls->killBalls(event.position, _killedBalls);
-					for (int j = 0; j < killed; ++j) {						
-						int cnt = 0;
-						switch (_killedBalls[j].type) {
-							case 0: cnt = 1; _context->particles->start(BALL_EXPLOSION, v3(_killedBalls[j].position)); break;
-							case 1: cnt = 2; _context->particles->start(BIG_CUBE_EXPLOSION, v3(_killedBalls[j].position)); break;
-							case 2: cnt = 4; _context->particles->start(HUGE_CUBE_EXPLOSION, v3(_killedBalls[j].position)); break;
-							default: cnt = 1; break;
-						}
-						addStar(_killedBalls[j].position,cnt);
-					}
-					_context->points += killed;
-					_context->hudDialog->setNumber(HUD_POINTS, _context->points);
-					_points->set(v2(540, 60), _context->points, ds::Color(32, 32, 32, 255));
-					if (ds::math::checkCircleIntersection(_context->world_pos, PLAYER_RADIUS, event.position, 20.0f)) {
-						LOG << "player within bomb explosion";
-						killPlayer();
-					}
-				}
+			else if (event.action == ds::AT_MOVE_BY && event.type == OT_BULLET) {
+				_world->remove(event.id);
 			}
 		}
-
-		handleCollisions();
-
-		moveStars(_context->world_pos, dt);
-
 	}
-	else {
-		_dying_timer += dt;
-		// FIXME: take value from config
-		if (_dying_timer > 2.0f) {
-			return 1;
+
+	if (_shooting) {
+		_bulletTimer += dt;
+		if (_bulletTimer >= 0.1f) {
+			_bulletTimer -= 0.1f;
+			v3 wp = _world->getPosition(_player);
+			v3 r = _world->getRotation(_player);
+			v2 pos = wp.xy();
+			math::addRadial(pos, 30.0f, r.x);
+			ID bullet = _world->create(pos, math::buildTexture(80, 0, 10, 10),OT_BULLET,r.x,v2(1.0f),ds::Color(192,0,0,255));
+			v2 vel = math::getRadialVelocity(r.x, 400.0f);
+			_world->moveBy(bullet, vel, -1.0f, false);
+			_world->attachCollider(bullet, ds::PST_CIRCLE, v2(10.0f));
 		}
 	}
 
-	_context->particles->update(dt);
-	*/
 	return 0;
 }
 
@@ -314,6 +284,7 @@ void MainGameState::handleCollisions(float dt) {
 		uint32_t n = _world->numCollisions();
 		for (uint32_t i = 0; i < n; ++i) {
 			const ds::Collision& c = _world->getCollision(i);
+			/*
 			if (c.isBetween(OT_BOMB, OT_BOMB)) {
 				v3 fp = _world->getPosition(c.firstID);
 				v3 sp = _world->getPosition(c.secondID);
@@ -332,37 +303,22 @@ void MainGameState::handleCollisions(float dt) {
 				v3 nd = normalize(d);
 				reflectVelocity(bid, nd, dt);
 			}
-			else if (c.isBetween(OT_PLAYER, OT_STAR)) {
+			else*/
+			if (c.isBetween(OT_PLAYER, OT_STAR)) {
 				ID id = c.getIDByType(OT_STAR);
 				_world->remove(id);
 			}
+			else if (c.isBetween(OT_PLAYER, OT_FOLLOWER)) {
+				ID id = c.getIDByType(OT_FOLLOWER);
+				_world->remove(id);
+			}
+			else if (c.isBetween(OT_BULLET, OT_FOLLOWER)) {
+				_world->remove(c.firstID);
+				_world->remove(c.secondID);
+			}
 		}
 	}
-	// handle collisions
 	/*
-	int numCollisions = _world->getNumCollisions();
-	int picked = 0;
-	if (numCollisions > 0) {
-		for (int i = 0; i < numCollisions; ++i) {
-			const ds::Collision& collision = _world->getCollision(i);
-			if (collision.containsType(OT_PLAYER) && collision.containsType(OT_STAR)) {
-				LOG << "picked up star";
-				ds::SID sid = collision.getSIDByType(OT_STAR);
-				_world->remove(sid);
-				++picked;
-			}
-			else if (collision.containsType(OT_PLAYER) && collision.containsType(OT_FOLLOWER)) {
-				killPlayer();
-			}
-			else if (collision.containsType(OT_PLAYER) && collision.containsType(OT_HUGE_CUBE)) {
-				killPlayer();
-			}
-			else if (collision.containsType(OT_PLAYER) && collision.containsType(OT_BIG_CUBE)) {
-				killPlayer();
-			}
-		}
-	}
-
 	if (picked > 0) {
 		_game_timer.seconds += picked;
 		if (_game_timer.seconds > 60) {
@@ -530,9 +486,9 @@ int MainGameState::onChar(int ascii) {
 	if (ascii == 'x') {
 		//_balls->killAll();
 	}
-	if (ascii == 'd') {
-		_showDebug = !_showDebug;
-	}
+	//if (ascii == 'd') {
+		//_showDebug = !_showDebug;
+	//}
 	if (ascii == '1') {
 		_wanderingCubes->create();
 	}

@@ -60,7 +60,7 @@ bool Dodger::loadContent() {
 	//connectGameStates("MainGame", 1, "GameOver");
 	//connectGameStates("MainMenuState", 3, "MainGame");
 
-	addShortcut("Save world", 'w', 100);
+	addShortcut("Save world", '0', 100);
 
 	return true;
 }
