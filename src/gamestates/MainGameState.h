@@ -11,6 +11,7 @@
 #include "..\utils\Numbers.h"
 #include <core\lib\DataArray.h>
 #include <core\world\World.h>
+#include <particles\ParticleManager.h>
 
 struct GameTimer {
 
@@ -96,6 +97,6 @@ private:
 	Numbers* _clock;
 	Numbers* _points;
 	ds::Array<CubeEmitter*> _emitters;	
-
+	ds::ParticleManager* _particles;
 };
 

@@ -20,3 +20,8 @@ font {
 	name : "gui_font"
 	file : "gui_font.json"
 }
+particle_manager {
+	sprite_buffer : "xxxx"
+	name : "yyyy"
+
+}

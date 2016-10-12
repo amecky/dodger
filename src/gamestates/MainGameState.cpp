@@ -43,6 +43,9 @@ MainGameState::MainGameState(GameContext* context) : ds::GameState("MainGame"), 
 	//_basic_viewport = ds::renderer::createViewport(1280, 720, 1280, 720);
 	//ds::renderer::setViewportPosition(_viewport_id, v2(800, 450));
 
+
+	_particles = ds::res::getParticleManager();
+
 	_number_definitions.define(0, ds::Rect(300,   0, 49, 33));
 	_number_definitions.define(1, ds::Rect(300,  49, 21, 33));
 	_number_definitions.define(2, ds::Rect(300,  70, 46, 33));
@@ -266,13 +269,13 @@ int MainGameState::update(float dt) {
 			v3 r = _world->getRotation(_player);
 			v2 pos = wp.xy();
 			math::addRadial(pos, 30.0f, r.x);
-			ID bullet = _world->create(pos, math::buildTexture(80, 0, 10, 10),OT_BULLET,r.x,v2(1.0f),ds::Color(192,0,0,255));
+			ID bullet = _world->create(pos, math::buildTexture(0, 390, 18, 12),OT_BULLET,r.x,v2(1.0f),ds::Color(192,0,0,255));
 			v2 vel = math::getRadialVelocity(r.x, 400.0f);
+			_world->setRotation(bullet, r.x);
 			_world->moveBy(bullet, vel, -1.0f, false);
-			_world->attachCollider(bullet, ds::PST_CIRCLE, v2(10.0f));
+			_world->attachCollider(bullet, ds::PST_CIRCLE, v2(18.0f));
 		}
 	}
-
 	return 0;
 }
 
@@ -313,8 +316,11 @@ void MainGameState::handleCollisions(float dt) {
 				_world->remove(id);
 			}
 			else if (c.isBetween(OT_BULLET, OT_FOLLOWER)) {
+				ID id = c.getIDByType(OT_FOLLOWER);
+				v3 p = _world->getPosition(id);
+				_particles->start(5, p.xy());
 				_world->remove(c.firstID);
-				_world->remove(c.secondID);
+				_world->remove(c.secondID);				
 			}
 		}
 	}
@@ -379,6 +385,8 @@ void MainGameState::render() {
 		ds::Texture t = textures[i];
 		sprites->draw(positions[i].xy(), textures[i], rotations[i].x,scales[i].xy(),colors[i]);
 	}
+	sprites->end();
+	_particles->render();
 	/*
 	ds::renderer::selectViewport(_viewport_id);
 	drawBorder();
@@ -504,9 +512,9 @@ int MainGameState::onChar(int ascii) {
 	if (ascii == '5') {
 		addStar(v2(math::random(100, 800), math::random(100, 600)), 5);
 	}
-	//if (ascii == '6') {
-		//_context->particles->startGroup(1, v3(512, 384, 0));
-	//}
+	if (ascii == '6') {
+		_particles->start(5, v2(512, 384));
+	}
 	return 0;
 }
 

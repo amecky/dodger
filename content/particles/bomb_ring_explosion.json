@@ -23,16 +23,16 @@ color {
 	alpha : 255
 }
 size { 
-	initial : 1.4,1.4
+	initial : 0.9,0.9
 	variance : 0.0,0.0
 	path: 0.0,0.8,0.8,0.7,0.7,0.7,1.0,0.4,0.4
 }
 alpha { 
 	initial : 1.0
 	variance : 0.0
-	path: 0.0,0.8,0.8,0.7,0.7,0.7,1.0,0.4,0.4
+	path: 0.0,0.8,0.7,0.7,1.0,0.4
 }
 velocity {
-	radial : 140
-    radial_variance : 10
+	radial : 40
+    radial_variance : 30
 }
