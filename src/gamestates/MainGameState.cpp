@@ -513,7 +513,11 @@ int MainGameState::onChar(int ascii) {
 		addStar(v2(math::random(100, 800), math::random(100, 600)), 5);
 	}
 	if (ascii == '6') {
-		_particles->start(5, v2(512, 384));
+		for (int i = 0; i < 1; ++i) {
+			float x = math::random(100.0f, 900.0f);
+			float y = math::random(100.0f, 620.0f);
+			_particles->start(5, v2(x,y));
+		}
 	}
 	return 0;
 }

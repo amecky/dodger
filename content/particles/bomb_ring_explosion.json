@@ -25,14 +25,26 @@ color {
 size { 
 	initial : 0.9,0.9
 	variance : 0.0,0.0
-	path: 0.0,0.8,0.8,0.7,0.7,0.7,1.0,0.4,0.4
+	min : 0.8,0.8
+    max : 0.1,0.1
 }
 alpha { 
 	initial : 1.0
 	variance : 0.0
-	path: 0.0,0.8,0.7,0.7,1.0,0.4
+	min : 1.0
+	max : 0.1
 }
 velocity {
 	radial : 40
     radial_variance : 30
+}
+rotation {
+    velocity : 360
+    variance : 120
+}
+wiggle {
+	frequency : 2
+	frequency_variance : 0.5
+	amplitude : 20
+	amplitude_variance : 10
 }
