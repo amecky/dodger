@@ -98,5 +98,8 @@ private:
 	Numbers* _points;
 	ds::Array<CubeEmitter*> _emitters;	
 	ds::ParticleManager* _particles;
+
+	bool _testMode;
+	float _testTimer;
 };
 

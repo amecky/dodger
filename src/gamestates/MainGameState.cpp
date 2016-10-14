@@ -32,6 +32,7 @@ MainGameState::MainGameState(GameContext* context) : ds::GameState("MainGame"), 
 
 	_world->ignoreCollisions(OT_FOLLOWER, OT_FOLLOWER);
 	_world->ignoreCollisions(OT_PLAYER, OT_BULLET);
+	_world->ignoreCollisions(OT_BULLET, OT_BULLET);
 
 	_showSettings = false;
 	_showDebug = false;
@@ -39,6 +40,9 @@ MainGameState::MainGameState(GameContext* context) : ds::GameState("MainGame"), 
 	_grabbing = false;
 	_dying = false;
 	_dying_timer = 0.0f;
+
+	_testMode = false;
+	_testTimer = 0.0f;
 	//_viewport_id = ds::renderer::createViewport(1280, 720, 1600, 900);
 	//_basic_viewport = ds::renderer::createViewport(1280, 720, 1280, 720);
 	//ds::renderer::setViewportPosition(_viewport_id, v2(800, 450));
@@ -276,6 +280,14 @@ int MainGameState::update(float dt) {
 			_world->attachCollider(bullet, ds::PST_CIRCLE, v2(18.0f));
 		}
 	}
+
+	if (_testMode) {
+		_testTimer += dt;
+		if (_testTimer >= 5.0f) {
+			_testTimer -= 5.0f;
+			_followerCubes->create();
+		}
+	}
 	return 0;
 }
 
@@ -317,8 +329,10 @@ void MainGameState::handleCollisions(float dt) {
 			}
 			else if (c.isBetween(OT_BULLET, OT_FOLLOWER)) {
 				ID id = c.getIDByType(OT_FOLLOWER);
-				v3 p = _world->getPosition(id);
-				_particles->start(5, p.xy());
+				if (_world->contains(id)) {
+					v3 p = _world->getPosition(id);
+					_particles->start(5, p.xy());
+				}
 				_world->remove(c.firstID);
 				_world->remove(c.secondID);				
 			}
@@ -517,6 +531,12 @@ int MainGameState::onChar(int ascii) {
 			float x = math::random(100.0f, 900.0f);
 			float y = math::random(100.0f, 620.0f);
 			_particles->start(5, v2(x,y));
+		}
+	}
+	if (ascii == '7') {
+		_testMode = !_testMode;
+		if (_testMode) {
+			_testTimer = 0.0f;
 		}
 	}
 	return 0;
