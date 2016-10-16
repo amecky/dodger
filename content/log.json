@@ -1,0 +1,26 @@
+settings {
+    console : true
+    console_width : 600
+    console_height : 400
+    file : true
+    file_name : "log.txt"
+    root_level : "INFO"
+}
+categories {
+    category {
+        name : "world"
+        level : "INFO"
+    }
+    category {
+        name : "physics"
+        level : "INFO"
+    }
+    category {
+        name : "viewport"
+        level : "DEBUG"
+    }
+    category {
+        name : "resources"
+        level : "INFO"
+    }
+}

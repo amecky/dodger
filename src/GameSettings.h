@@ -27,6 +27,11 @@ struct GameSettings : public ds::DynamicGameSettings {
 		float maxMoveTTL;
 	} wanderer;
 
+	struct Bullets {
+		float velocity;
+		float rate;
+	} bullets;
+
 	GameSettings() : ds::DynamicGameSettings("content\\game_settings.json") {
 		add("settings.bomb_flashing_ttl", &bombFlashingTTL, 0.8f);
 		add("settings.star_ttl", &starTTL, 3.0f);
@@ -47,6 +52,9 @@ struct GameSettings : public ds::DynamicGameSettings {
 		add("wanderer.max_velocity", &wanderer.maxVelocity, 200.0f);
 		add("wanderer.min_move_ttl", &wanderer.minMoveTTL, 1.0f);
 		add("wanderer.max_move_ttl", &wanderer.maxMoveTTL, 2.0f);
+
+		add("bullets.velocity", &bullets.velocity, 400.0f);
+		add("bullets.rate", &bullets.rate, 0.2f);
 	}
 
 };

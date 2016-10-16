@@ -26,6 +26,10 @@ bomb_appearance {
     id : 7
     file : "bomb_appearance"
 }
+bullet_explosion { 
+    id : 8
+    file : "bullet_explosion"
+}
 groups {
 	bomb_explosion {
 		id : 1

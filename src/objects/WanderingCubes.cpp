@@ -4,11 +4,7 @@
 // ---------------------------------------
 // WanderingCubes
 // ---------------------------------------
-WanderingCubes::WanderingCubes(ds::World* world, CubeEmitter* emitter, GameSettings* settings) : BasicCubes(world, emitter, settings) {
-	_scale_path.add(0.0f, v3(0.1f, 0.1f, 0.0f));
-	_scale_path.add(0.5f, v3(1.2f, 1.2f, 0.0f));
-	_scale_path.add(0.75f, v3(0.75f, 0.75f, 0.0f));
-	_scale_path.add(1.0f, v3(1.0f, 1.0f, 0.0f));
+WanderingCubes::WanderingCubes(ds::World* world, CubeEmitter* emitter, GameSettings* settings) : BasicCubes(world, emitter, settings) {	
 }
 
 WanderingCubes::~WanderingCubes() {
@@ -46,9 +42,9 @@ void WanderingCubes::onEvent(const ds::ActionEvent& event, ID target, float dt) 
 // ---------------------------------------
 // create
 // ---------------------------------------
-void WanderingCubes::create() {
+void WanderingCubes::create(ID target) {
 	_emitter->next();
-	ID id = _world->create(_emitter->get(), math::buildTexture(80, 410, 40, 40), OT_WANDERER);
+	ID id = _world->create(_emitter->get(), math::buildTexture(250, 460, 44, 44), OT_WANDERER);
 	float ttl = math::random(_settings->wanderer.minScaleTTL, _settings->wanderer.maxScaleTTL);
 	_world->scaleByPath(id, &_scale_path, ttl);
 }

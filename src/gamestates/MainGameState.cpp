@@ -14,10 +14,19 @@ MainGameState::MainGameState(GameContext* context) : ds::GameState("MainGame"), 
 	_bombs = new Bombs(_context, _world);
 	//_stars = new Stars(_context);
 	
-	_player = _world->create(v2(512, 384), math::buildTexture(40, 0, 40, 40), OT_PLAYER);
+	//_world->setWorldDimension(v2(1600, 900));
+	_world->setBoundingRect(ds::Rect(50, 50, 1500, 800));
+
+	_player = _world->create(v2(800, 450), math::buildTexture(40, 0, 40, 40), OT_PLAYER);
 	_world->attachCollider(_player, ds::PST_CIRCLE, v2(40.f, 0.0));
 	_playerAngle = 0.0f;
 	_cursor = _world->create(v2(700, 384), math::buildTexture(40, 160, 20, 20), 100);
+
+	// test object
+	//_world->create(v2(60, 60), math::buildTexture(840, 360, 120, 120),-1);
+	//_world->create(v2(60, 840), math::buildTexture(840, 360, 120, 120), -1);
+	//_world->create(v2(1540, 60), math::buildTexture(840, 360, 120, 120), -1);
+	//_world->create(v2(1540, 840), math::buildTexture(840, 360, 120, 120), -1);
 
 	//_world->create(v2(200, 384), math::buildTexture(40, 0, 40, 42), 0.0f);
 	_playerRing = _world->create(v2(100, 384), math::buildTexture(440, 0, 152, 152), OT_RING);
@@ -43,12 +52,13 @@ MainGameState::MainGameState(GameContext* context) : ds::GameState("MainGame"), 
 
 	_testMode = false;
 	_testTimer = 0.0f;
-	//_viewport_id = ds::renderer::createViewport(1280, 720, 1600, 900);
-	//_basic_viewport = ds::renderer::createViewport(1280, 720, 1280, 720);
-	//ds::renderer::setViewportPosition(_viewport_id, v2(800, 450));
-
+	
+	ds::Viewport vw = ds::Viewport(1280, 720, 1600, 900);
+	_viewport_id = graphics::addViewport(vw);
 
 	_particles = ds::res::getParticleManager();
+
+	_bullets = new Bullets(_world, context->settings);
 
 	_number_definitions.define(0, ds::Rect(300,   0, 49, 33));
 	_number_definitions.define(1, ds::Rect(300,  49, 21, 33));
@@ -63,13 +73,14 @@ MainGameState::MainGameState(GameContext* context) : ds::GameState("MainGame"), 
 
 	_clock = new Numbers(_number_definitions, 2);
 	_points = new Numbers(_number_definitions, 6);
+
+	_border_color = ds::Color(181, 17, 68, 255);
 	
-	_bulletTimer = 0.0f;
-	_shooting = false;
 }
 
 
 MainGameState::~MainGameState() {
+	delete _bullets;
 	delete _points;
 	delete _clock;
 	delete _wanderingCubes;
@@ -92,8 +103,7 @@ void MainGameState::init() {
 // activate
 // -------------------------------------------------------
 void MainGameState::activate() {
-	_bulletTimer = 0.0f;
-	_shooting = false;
+	_bullets->stop();
 	/*
 	//_context->hudDialog->activate();
 
@@ -137,13 +147,7 @@ void MainGameState::deactivate() {
 // on button up
 // -------------------------------------------------------
 int MainGameState::onButtonUp(int button, int x, int y) {
-	/*
-	if (_grabbing) {
-		_grabbing = false;
-		//_bombs->burst(_bomb_id, 0.0f);
-	}
-	*/
-	_shooting = false;
+	_bullets->stop();
 	return 0;
 }
 
@@ -151,14 +155,7 @@ int MainGameState::onButtonUp(int button, int x, int y) {
 // on button up
 // -------------------------------------------------------
 int MainGameState::onButtonDown(int button, int x, int y) {
-	/*
-	v3 pos = _world->getPosition(_player);
-	if (_bombs->grab(pos.xy(), 75.0f, &_bomb_id)) {
-		_grabbing = true;
-	}
-	*/
-	_shooting = true;
-	_bulletTimer = 0.0f;
+	_bullets->start(_player);
 	return 0;
 }
 
@@ -192,17 +189,20 @@ void MainGameState::movePlayer(float dt) {
 		vel.y -= 1.0f;
 	}
 	v2 cp = ds::input::getMousePosition();	
-	_world->setPosition(_cursor, cp);
+	const ds::Viewport& vp = graphics::getViewport(_viewport_id);
+	v2 ncp = vp.convertToWorld(cp);
+	_world->setPosition(_cursor, ncp);
 	v2 wp = _world->getPosition(_player).xy();
 	v2 pos = wp;
 	float angle = 0.0f;
-	ds::math::followRelative(cp, wp, &_playerAngle, 5.0f, 1.1f * dt);
+	ds::math::followRelative(ncp, wp, &_playerAngle, 5.0f, 1.1f * dt);
 	_world->setRotation(_player, _playerAngle);
 	pos += vel * 250.0f * dt;
-	if (ds::math::isInside(pos, ds::Rect(0, 0, 1024, 768))) {			
+	if (ds::math::isInside(pos, ds::Rect(0, 0, 1600, 900))) {			
 		_world->setPosition(_player, pos);
 		_world->setPosition(_playerRing, pos);
 	}
+	graphics::setViewportPosition(_viewport_id, pos);
 }
 
 // -------------------------------------------------------
@@ -260,32 +260,18 @@ int MainGameState::update(float dt) {
 				data->velocity = *vel;
 			}
 			else if (event.action == ds::AT_MOVE_BY && event.type == OT_BULLET) {
-				_world->remove(event.id);
+				_bullets->kill(event.id);
 			}
 		}
 	}
 
-	if (_shooting) {
-		_bulletTimer += dt;
-		if (_bulletTimer >= 0.1f) {
-			_bulletTimer -= 0.1f;
-			v3 wp = _world->getPosition(_player);
-			v3 r = _world->getRotation(_player);
-			v2 pos = wp.xy();
-			math::addRadial(pos, 30.0f, r.x);
-			ID bullet = _world->create(pos, math::buildTexture(0, 390, 18, 12),OT_BULLET,r.x,v2(1.0f),ds::Color(192,0,0,255));
-			v2 vel = math::getRadialVelocity(r.x, 400.0f);
-			_world->setRotation(bullet, r.x);
-			_world->moveBy(bullet, vel, -1.0f, false);
-			_world->attachCollider(bullet, ds::PST_CIRCLE, v2(18.0f));
-		}
-	}
+	_bullets->tick(dt);
 
 	if (_testMode) {
 		_testTimer += dt;
 		if (_testTimer >= 5.0f) {
 			_testTimer -= 5.0f;
-			_followerCubes->create();
+			_followerCubes->create(_player);
 		}
 	}
 	return 0;
@@ -332,9 +318,9 @@ void MainGameState::handleCollisions(float dt) {
 				if (_world->contains(id)) {
 					v3 p = _world->getPosition(id);
 					_particles->start(5, p.xy());
-				}
-				_world->remove(c.firstID);
-				_world->remove(c.secondID);				
+					_world->remove(id);
+				}				
+				_bullets->kill(c.getIDByType(OT_BULLET));
 			}
 		}
 	}
@@ -352,40 +338,41 @@ void MainGameState::handleCollisions(float dt) {
 // draw border
 // -------------------------------------------------------
 void MainGameState::drawBorder() {
-	/*
+	ds::SpriteBuffer* sprites = graphics::getSpriteBuffer();
 	// background
-	ds::sprites::draw(v2(480, 306), ds::math::buildTexture(0, 512, 480, 306), 0.0f, 2.0f, 2.0f);
-	ds::sprites::draw(v2(1280, 306), ds::math::buildTexture(0, 512, 320, 306), 0.0f, 2.0f, 2.0f);
-	ds::sprites::draw(v2(480, 756), ds::math::buildTexture(0, 512, 480, 144), 0.0f, 2.0f, 2.0f);
-	ds::sprites::draw(v2(1280, 756), ds::math::buildTexture(0, 512, 320, 144), 0.0f, 2.0f, 2.0f);
+	sprites->draw(v2(480, 306), math::buildTexture(0, 512, 480, 306), 0.0f, v2(2.0f, 2.0f));
+	sprites->draw(v2(1280, 306), math::buildTexture(0, 512, 320, 306), 0.0f, v2(2.0f, 2.0f));
+	sprites->draw(v2(480, 756), math::buildTexture(0, 512, 480, 144), 0.0f, v2(2.0f, 2.0f));
+	sprites->draw(v2(1280, 756), math::buildTexture(0, 512, 320, 144), 0.0f, v2(2.0f, 2.0f));
 	// 4 corners
-	ds::sprites::draw(v2(40, 860), ds::math::buildTexture(840, 0, 40, 60), 0.0f, 1.0f, 1.0f, _border_color);
-	ds::sprites::draw(v2(40, 40), ds::math::buildTexture(940, 0, 40, 60), 0.0f, 1.0f, 1.0f, _border_color);
-	ds::sprites::draw(v2(1560, 860), ds::math::buildTexture(840, 280, 40, 60), 0.0f, 1.0f, 1.0f, _border_color);
-	ds::sprites::draw(v2(1560, 40), ds::math::buildTexture(940, 280, 40, 60), 0.0f, 1.0f, 1.0f, _border_color);
+	sprites->draw(v2(40, 860), math::buildTexture(840, 0, 40, 60), 0.0f, v2(1.0f, 1.0f), _border_color);
+	sprites->draw(v2(40, 40), math::buildTexture(940, 0, 40, 60), 0.0f, v2(1.0f, 1.0f), _border_color);
+	sprites->draw(v2(1560, 860), math::buildTexture(840, 280, 40, 60), 0.0f, v2(1.0f, 1.0f), _border_color);
+	sprites->draw(v2(1560, 40), math::buildTexture(940, 280, 40, 60), 0.0f, v2(1.0f, 1.0f), _border_color);
 	// left and right wall
 	for (int i = 0; i < 9; ++i) {
-		ds::sprites::draw(v2(40, 110 + i * 80), ds::math::buildTexture(880, 0, 40, 80), 0.0f, 1.0f, 1.0f, _border_color);
-		ds::sprites::draw(v2(1560, 110 + i * 80), ds::math::buildTexture(880, 280, 40, 80), 0.0f, 1.0f, 1.0f, _border_color);
+		sprites->draw(v2(40, 110 + i * 80), math::buildTexture(880, 0, 40, 80), 0.0f, v2(1.0f, 1.0f), _border_color);
+		sprites->draw(v2(1560, 110 + i * 80), math::buildTexture(880, 280, 40, 80), 0.0f, v2(1.0f, 1.0f), _border_color);
 	}
 	// bottom and top wall
 	for (int i = 0; i < 7; ++i) {
-		ds::sprites::draw(v2(160 + i * 200, 870), ds::math::buildTexture(840, 40, 200, 40), 0.0f, 1.0f, 1.0f, _border_color);
-		ds::sprites::draw(v2(160 + i * 200, 30), ds::math::buildTexture(960, 40, 200, 40), 0.0f, 1.0f, 1.0f, _border_color);
+		sprites->draw(v2(160 + i * 200, 870), math::buildTexture(840, 40, 200, 40), 0.0f, v2(1.0f, 1.0f), _border_color);
+		sprites->draw(v2(160 + i * 200, 30), math::buildTexture(960, 40, 200, 40), 0.0f, v2(1.0f, 1.0f), _border_color);
 	}
 	// missing left and right pieces
-	ds::sprites::draw(v2(40, 810), ds::math::buildTexture(880, 0, 40, 40), 0.0f, 1.0f, 1.0f, _border_color);
-	ds::sprites::draw(v2(1560, 810), ds::math::buildTexture(880, 280, 40, 40), 0.0f, 1.0f, 1.0f, _border_color);
+	sprites->draw(v2(40, 810), math::buildTexture(880, 0, 40, 40), 0.0f, v2(1.0f, 1.0f), _border_color);
+	sprites->draw(v2(1560, 810), math::buildTexture(880, 280, 40, 40), 0.0f, v2(1.0f, 1.0f), _border_color);
 	// missing top and bottom pieces
-	ds::sprites::draw(v2(1505, 870), ds::math::buildTexture(840, 40, 90, 40), 0.0f, 1.0f, 1.0f, _border_color);
-	ds::sprites::draw(v2(1505, 30), ds::math::buildTexture(960, 40, 90, 40), 0.0f, 1.0f, 1.0f, _border_color);
-	*/
+	sprites->draw(v2(1505, 870), math::buildTexture(840, 40, 90, 40), 0.0f, v2(1.0f, 1.0f), _border_color);
+	sprites->draw(v2(1505, 30), math::buildTexture(960, 40, 90, 40), 0.0f, v2(1.0f, 1.0f), _border_color);
 }
 
 // -------------------------------------------------------
 // render
 // -------------------------------------------------------
 void MainGameState::render() {	
+	graphics::selectViewport(_viewport_id);
+	drawBorder();
 	ds::SpriteBuffer* sprites = graphics::getSpriteBuffer();
 	ds::ChannelArray* array = _world->getChannelArray();
 	v3* positions = (v3*)array->get_ptr(ds::WEC_POSITION);
@@ -401,6 +388,7 @@ void MainGameState::render() {
 	}
 	sprites->end();
 	_particles->render();
+	graphics::selectViewport(0);
 	/*
 	ds::renderer::selectViewport(_viewport_id);
 	drawBorder();
@@ -424,19 +412,19 @@ void MainGameState::render() {
 		angle += PI;
 		ds::vector::addRadial(bp, 50.0f, angle);
 		// FIXME: pulsate color
-		ds::sprites::draw(bp, ds::math::buildTexture(40, 400, 40, 40),angle);
+		sprites->draw(bp, math::buildTexture(40, 400, 40, 40),angle);
 	}
 	_context->world->render();
 	_bombs->render();
 	
 	if (!_dying) {
-		//ds::sprites::draw(_context->world_pos, ds::math::buildTexture(40, 0, 40, 42), _context->playerAngle);
-		//ds::sprites::draw(_context->world_pos, ds::math::buildTexture(440, 0, 152, 152));
+		//sprites->draw(_context->world_pos, math::buildTexture(40, 0, 40, 42), _context->playerAngle);
+		//sprites->draw(_context->world_pos, math::buildTexture(440, 0, 152, 152));
 	}
 
 
 	ds::renderer::selectViewport(0);
-	ds::sprites::draw(_cursor_pos, ds::math::buildTexture(40, 160, 20, 20));
+	sprites->draw(_cursor_pos, math::buildTexture(40, 160, 20, 20));
 	
 	*/
 }
@@ -512,13 +500,13 @@ int MainGameState::onChar(int ascii) {
 		//_showDebug = !_showDebug;
 	//}
 	if (ascii == '1') {
-		_wanderingCubes->create();
+		_wanderingCubes->create(_player);
 	}
 	if (ascii == '2') {
-		_spottingCubes->create();
+		_spottingCubes->create(_player);
 	}
 	if (ascii == '3') {
-		_followerCubes->create();
+		_followerCubes->create(_player);
 	}
 	if (ascii == '4') {
 		addStar(v2(math::random(100,800), math::random(100,600)), 1);

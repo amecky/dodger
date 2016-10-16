@@ -12,6 +12,7 @@
 #include <core\lib\DataArray.h>
 #include <core\world\World.h>
 #include <particles\ParticleManager.h>
+#include "..\objects\Bullets.h"
 
 struct GameTimer {
 
@@ -77,9 +78,8 @@ private:
 	SpottingCubes* _spottingCubes;
 	FollowerCubes* _followerCubes;
 	
+	Bullets* _bullets;
 	Bombs* _bombs;
-	bool _shooting;
-	float _bulletTimer;
 
 	EventBuffer _buffer;
 	v2 _cursor_pos;

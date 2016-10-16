@@ -23,3 +23,7 @@ wanderer {
 	min_move_ttl : 2.0
 	max_move_ttl : 6.0
 }
+bullets {
+	velocity : 500
+	rate : 0.2
+}

@@ -21,6 +21,10 @@ v2 CircleCubeEmitter::get(int index, int total) {
 // BasicCubes
 // -------------------------------------------------
 BasicCubes::BasicCubes(ds::World* world, CubeEmitter* emitter, GameSettings* settings) : _world(world), _emitter(emitter), _settings(settings), _timer(0.0f), _emitted(0), _running(false), _spawnDelay(0.0f) {
+	_scale_path.add(0.0f, v3(0.1f, 0.1f, 0.0f));
+	_scale_path.add(0.5f, v3(1.2f, 1.2f, 0.0f));
+	_scale_path.add(0.75f, v3(0.75f, 0.75f, 0.0f));
+	_scale_path.add(1.0f, v3(1.0f, 1.0f, 0.0f));
 }
 
 BasicCubes::~BasicCubes() {
@@ -54,7 +58,7 @@ void BasicCubes::tick(ID target, float dt) {
 	if (_emitted < _spawnSettings.maxCubes && _running) {
 		_timer += dt;
 		if (_timer > _spawnDelay) {
-			create();
+			create(target);
 			++_emitted;
 			_spawnDelay = math::random(_spawnSettings.minDelay, _spawnSettings.maxDelay);
 		}
@@ -70,4 +74,14 @@ void BasicCubes::tick(ID target, float dt) {
 			}
 		}
 	}
+}
+
+// -------------------------------------------------
+// rotateTo
+// -------------------------------------------------
+void BasicCubes::rotateTo(ID id, ID target) {
+	v3 p = _world->getPosition(id);
+	v3 t = _world->getPosition(target);
+	float rotation = math::getAngle(p.xy(), t.xy());
+	_world->setRotation(id, rotation);
 }

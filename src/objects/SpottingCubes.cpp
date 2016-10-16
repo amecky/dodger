@@ -5,10 +5,6 @@
 // WanderingCubes
 // ---------------------------------------
 SpottingCubes::SpottingCubes(ds::World* world, CubeEmitter* emitter, GameSettings* settings) : BasicCubes(world, emitter, settings) {
-	_scale_path.add(0.0f, v3(0.1f, 0.1f, 0.0f));
-	_scale_path.add(0.5f, v3(1.2f, 1.2f, 0.0f));
-	_scale_path.add(0.75f, v3(0.75f, 0.75f, 0.0f));
-	_scale_path.add(1.0f, v3(1.0f, 1.0f, 0.0f));
 }
 
 SpottingCubes::~SpottingCubes() {
@@ -35,10 +31,11 @@ void SpottingCubes::onEvent(const ds::ActionEvent& event, ID target, float dt) {
 // ---------------------------------------
 // create
 // ---------------------------------------
-void SpottingCubes::create() {
+void SpottingCubes::create(ID target) {
 	_emitter->next();
-	ID id = _world->create(_emitter->get(), math::buildTexture(130, 410, 52, 52), OT_SPOTTER);
+	ID id = _world->create(_emitter->get(), math::buildTexture(190, 460, 48, 48), OT_SPOTTER);
 	_world->scaleByPath(id, &_scale_path, 0.8f);
+	rotateTo(id, target);
 
 }
 

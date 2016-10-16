@@ -82,10 +82,11 @@ public:
 	void reset();
 	void init(const SpawnSettings& spawnSettings);
 	void tick(ID target, float dt);
-	virtual void create() = 0;
+	virtual void create(ID target) = 0;
 	virtual ObjectType getObjectType() const = 0;
 	virtual void onEvent(const ds::ActionEvent& event, ID target, float dt) = 0;
 protected:
+	void rotateTo(ID id, ID target);
 	ds::World* _world;
 	GameSettings* _settings;
 	float _timer;
@@ -94,5 +95,6 @@ protected:
 	bool _running;
 	SpawnSettings _spawnSettings;
 	CubeEmitter* _emitter;
+	ds::V3Path _scale_path;
 };
 
