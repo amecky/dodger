@@ -74,6 +74,11 @@ struct SpawnSettings {
 	int emittCubes;
 };
 
+
+struct CubeData {	
+	int energy;
+};
+
 class BasicCubes {
 
 public:

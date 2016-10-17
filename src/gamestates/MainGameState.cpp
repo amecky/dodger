@@ -285,26 +285,6 @@ void MainGameState::handleCollisions(float dt) {
 		uint32_t n = _world->numCollisions();
 		for (uint32_t i = 0; i < n; ++i) {
 			const ds::Collision& c = _world->getCollision(i);
-			/*
-			if (c.isBetween(OT_BOMB, OT_BOMB)) {
-				v3 fp = _world->getPosition(c.firstID);
-				v3 sp = _world->getPosition(c.secondID);
-				v3 d = sp - fp;
-				float l = length(d);
-				v3 nd = normalize(d);
-
-				reflectVelocity(c.firstID, nd, dt);
-				reflectVelocity(c.secondID, nd, dt);
-			}
-			else if (c.isBetween(OT_PLAYER, OT_BOMB)) {
-				ID bid = c.getIDByType(OT_BOMB);
-				v3 fp = _world->getPosition(c.firstID);
-				v3 sp = _world->getPosition(c.secondID);
-				v3 d = sp - fp;
-				v3 nd = normalize(d);
-				reflectVelocity(bid, nd, dt);
-			}
-			else*/
 			if (c.isBetween(OT_PLAYER, OT_STAR)) {
 				ID id = c.getIDByType(OT_STAR);
 				_world->remove(id);
@@ -314,13 +294,13 @@ void MainGameState::handleCollisions(float dt) {
 				_world->remove(id);
 			}
 			else if (c.isBetween(OT_BULLET, OT_FOLLOWER)) {
-				ID id = c.getIDByType(OT_FOLLOWER);
-				if (_world->contains(id)) {
-					v3 p = _world->getPosition(id);
-					_particles->start(5, p.xy());
-					_world->remove(id);
-				}				
-				_bullets->kill(c.getIDByType(OT_BULLET));
+				killEnemy(c, OT_FOLLOWER);				
+			}
+			else if (c.isBetween(OT_BULLET, OT_WANDERER)) {
+				killEnemy(c, OT_WANDERER);
+			}
+			else if (c.isBetween(OT_BULLET, OT_SPOTTER)) {
+				killEnemy(c, OT_SPOTTER);				
 			}
 		}
 	}
@@ -332,6 +312,27 @@ void MainGameState::handleCollisions(float dt) {
 		}
 	}
 	*/
+}
+
+// -------------------------------------------------------
+// kill enemy
+// -------------------------------------------------------
+bool MainGameState::killEnemy(const ds::Collision& c, int objectType) {
+	bool ret = false;
+	ID id = c.getIDByType(objectType);
+	if (_world->contains(id)) {
+		CubeData* data = (CubeData*)_world->get_data(id);
+		--data->energy;
+		if (data->energy <= 0) {
+			v3 p = _world->getPosition(id);
+			_particles->start(5, p.xy());
+			_particles->start(6, p.xy());
+			_world->remove(id);
+			ret = true;
+		}
+	}
+	_bullets->kill(c.getIDByType(OT_BULLET));
+	return ret;
 }
 
 // -------------------------------------------------------
@@ -519,6 +520,7 @@ int MainGameState::onChar(int ascii) {
 			float x = math::random(100.0f, 900.0f);
 			float y = math::random(100.0f, 620.0f);
 			_particles->start(5, v2(x,y));
+			_particles->start(6, v2(x, y));
 		}
 	}
 	if (ascii == '7') {

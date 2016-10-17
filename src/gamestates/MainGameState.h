@@ -64,7 +64,7 @@ private:
 	void createStar(const v2& pos);
 	void addStar(const v2& pos, int count);
 	void reflectVelocity(ID id, const v3& normal, float dt);
-
+	bool killEnemy(const ds::Collision& c, int objectType);
 	ID _bomb_id;
 
 	bool _grabbing;

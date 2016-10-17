@@ -25,6 +25,7 @@ void WanderingCubes::onEvent(const ds::ActionEvent& event, ID target, float dt) 
 	if (event.action == ds::AT_SCALE_BY_PATH) {
 		float ttl = math::random(_settings->wanderer.minRotationTTL, _settings->wanderer.maxRotationTTL);
 		_world->rotateBy(event.id, getRotationAngle(), ttl);
+		_world->attachCollider(event.id, ds::PST_CIRCLE, v2(44.0f, 44.0f));
 	}
 	else if (event.action == ds::AT_ROTATE_BY) {
 		v3 rot = _world->getRotation(event.id);
@@ -47,5 +48,7 @@ void WanderingCubes::create(ID target) {
 	ID id = _world->create(_emitter->get(), math::buildTexture(250, 460, 44, 44), OT_WANDERER);
 	float ttl = math::random(_settings->wanderer.minScaleTTL, _settings->wanderer.maxScaleTTL);
 	_world->scaleByPath(id, &_scale_path, ttl);
+	CubeData* data = (CubeData*)_world->attach_data(id, sizeof(CubeData), OT_WANDERER);
+	data->energy = 5;
 }
 

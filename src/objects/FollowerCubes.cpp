@@ -32,6 +32,8 @@ void FollowerCubes::create(ID target) {
 		float ttl = math::random(0.5f, 0.8f);
 		_world->scaleByPath(id, &_scale_path, ttl);		
 		rotateTo(id, target);
+		CubeData* data = (CubeData*)_world->attach_data(id, sizeof(CubeData), OT_FOLLOWER);
+		data->energy = 1;
 	}
 
 }

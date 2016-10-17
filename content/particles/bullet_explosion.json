@@ -30,3 +30,8 @@ velocity {
 	radial_variance : 60
 	distribution : 0.0,1.0,1.0,1.0,0.0,0.0
 }
+acceleration {
+	radial : 100
+	radial_variance : 60
+	damping : 0.1
+}
