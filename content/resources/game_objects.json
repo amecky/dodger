@@ -1,0 +1,9 @@
+template {
+	name : "Test"
+	position : 100,200,0
+	scale : 1,1,1
+	rotation : 0,0,0
+	texture : 60,60,120,120
+	color : 128,0,0,255
+	type : 100
+}

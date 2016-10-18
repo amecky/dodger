@@ -103,37 +103,7 @@ void MainGameState::init() {
 // activate
 // -------------------------------------------------------
 void MainGameState::activate() {
-	_bullets->stop();
-	/*
-	//_context->hudDialog->activate();
-
-	_context->points = 0;
-	_context->hudDialog->setNumber(HUD_POINTS, 0);
-	_context->hudDialog->setNumber(HUD_LEVEL, 1);
-	_context->playerPosition = v2(640, 360);
-	_context->playerAngle = 0.0f;
-
-	_player_id = _world->create(_context->playerPosition, "Player");
-	_ring_id = _world->create(_context->playerPosition, "Ring");
-	_world->attachCollider(_player_id, OT_PLAYER, 0);
-
-	_dying = false;
-	_dying_timer = 0.0f;
-	_balls->activate();
-	_bombs->clear();
-	_bombs->activate();
-	_cursor_pos = v2(640, 360);
-
-	_game_timer.reset(60);
-	_context->hudDialog->setNumber(HUD_TIMER, _game_timer.seconds);
-	// FIXME: remove all stars
-	//_stars->clear();
-	_grabbing = false;
-	_border_color = ds::Color(192, 128, 0, 255);
-
-	_clock->set(v2(640,640), 60, ds::Color(64,64,64,255));
-	_points->set(v2(540, 60), 0, ds::Color(64, 64, 64, 255));
-	*/
+	_bullets->stop();	
 }
 
 // -------------------------------------------------------
@@ -304,14 +274,6 @@ void MainGameState::handleCollisions(float dt) {
 			}
 		}
 	}
-	/*
-	if (picked > 0) {
-		_game_timer.seconds += picked;
-		if (_game_timer.seconds > 60) {
-			_game_timer.seconds = 60;
-		}
-	}
-	*/
 }
 
 // -------------------------------------------------------

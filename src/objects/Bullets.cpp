@@ -3,6 +3,9 @@
 #include "..\Constants.h"
 #include <resources\ResourceContainer.h>
 
+// ---------------------------------------
+// Bullets
+// ---------------------------------------
 Bullets::Bullets(ds::World * world, GameSettings* settings) : _world(world) , _settings(settings), _active(false) , _timer(0.0f) {
 	_particles = ds::res::getParticleManager();
 }

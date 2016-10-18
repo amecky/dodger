@@ -23,5 +23,7 @@ font {
 particle_manager {
 	sprite_buffer : "xxxx"
 	name : "yyyy"
-
+}
+world_entity_templates {
+	name : "game_objects"
 }
