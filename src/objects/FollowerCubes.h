@@ -7,7 +7,7 @@ public:
 	FollowerCubes(ds::World* world, CubeEmitter* emitter, GameSettings* settings);
 	~FollowerCubes();
 	void onEvent(const ds::ActionEvent& event, ID target, float dt);
-	void create(ID target);
+	void create(ID target, int num);
 	ObjectType getObjectType() const {
 		return OT_FOLLOWER;
 	}

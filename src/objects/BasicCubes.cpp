@@ -17,6 +17,17 @@ v2 CircleCubeEmitter::get(int index, int total) {
 	float r = _radius * _ring;
 	return _position + math::getRadialVelocity(angle, _radius * _ring);
 }
+
+v2 LineCubeEmitter::get(int index, int total) {
+	v2 p = _position;
+	if (_vertical) {
+		p.x += index * _distance;
+	}
+	else {
+		p.y += index * _distance;
+	}
+	return p;
+}
 // -------------------------------------------------
 // BasicCubes
 // -------------------------------------------------
@@ -58,7 +69,7 @@ void BasicCubes::tick(ID target, float dt) {
 	if (_emitted < _spawnSettings.maxCubes && _running) {
 		_timer += dt;
 		if (_timer > _spawnDelay) {
-			create(target);
+			create(target, _spawnSettings.emittCubes);
 			++_emitted;
 			_spawnDelay = math::random(_spawnSettings.minDelay, _spawnSettings.maxDelay);
 		}

@@ -45,12 +45,14 @@ void WanderingCubes::onEvent(const ds::ActionEvent& event, ID target, float dt) 
 // ---------------------------------------
 // create
 // ---------------------------------------
-void WanderingCubes::create(ID target) {
+void WanderingCubes::create(ID target, int num) {
 	_emitter->next();
-	ID id = _world->create(_emitter->get(), math::buildTexture(250, 460, 44, 44), OT_WANDERER);
-	float ttl = math::random(_settings->wanderer.minScaleTTL, _settings->wanderer.maxScaleTTL);
-	_world->scaleByPath(id, &_scale_path, ttl);
-	CubeData* data = (CubeData*)_world->attach_data(id, sizeof(CubeData), OT_WANDERER);
-	data->energy = 5;
+	for (int i = 0; i < num; ++i) {
+		ID id = _world->create(_emitter->get(i,num), SID("Wanderer"));
+		float ttl = math::random(_settings->wanderer.minScaleTTL, _settings->wanderer.maxScaleTTL);
+		_world->scaleByPath(id, &_scale_path, ttl);
+		CubeData* data = (CubeData*)_world->attach_data(id, sizeof(CubeData), OT_WANDERER);
+		data->energy = 5;
+	}
 }
 

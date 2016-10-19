@@ -67,6 +67,25 @@ private:
 	float _offset;
 };
 
+class LineCubeEmitter : public CubeEmitter {
+
+public:
+	LineCubeEmitter(float distance) : _distance(distance) , _vertical(false) {}
+
+	void next() {
+		float x = math::random(150.0f, 900.0f);
+		float y = math::random(150.0f, 600.0f);
+		_position = v2(x, y);		
+		_vertical = math::chanceRoll(50);
+	}
+
+	v2 get(int index, int total);
+
+private:
+	bool _vertical;
+	float _distance;
+};
+
 struct SpawnSettings {
 	float minDelay;
 	float maxDelay;
@@ -92,7 +111,7 @@ public:
 	void reset();
 	void init(const SpawnSettings& spawnSettings);
 	void tick(ID target, float dt);
-	virtual void create(ID target) = 0;
+	virtual void create(ID target, int num) = 0;
 	virtual ObjectType getObjectType() const = 0;
 	virtual void onEvent(const ds::ActionEvent& event, ID target, float dt) = 0;
 protected:

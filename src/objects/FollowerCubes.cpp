@@ -24,11 +24,11 @@ void FollowerCubes::onEvent(const ds::ActionEvent& event, ID target, float dt) {
 // ---------------------------------------
 // create
 // ---------------------------------------
-void FollowerCubes::create(ID target) {
+void FollowerCubes::create(ID target, int num) {
 	_emitter->next();
-	for (int i = 0; i < 13; ++i) {
-		v2 p = _emitter->get(i, 13);
-		ID id = _world->create(_emitter->get(i, 13), SID("Follower")); //math::buildTexture(80, 460, 36, 36), OT_FOLLOWER);
+	for (int i = 0; i < num; ++i) {
+		v2 p = _emitter->get(i, num);
+		ID id = _world->create(_emitter->get(i, 13), SID("Follower")); 
 		float ttl = math::random(0.5f, 0.8f);
 		_world->scaleByPath(id, &_scale_path, ttl);		
 		rotateTo(id, target);

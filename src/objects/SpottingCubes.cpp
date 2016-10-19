@@ -32,12 +32,14 @@ void SpottingCubes::onEvent(const ds::ActionEvent& event, ID target, float dt) {
 // ---------------------------------------
 // create
 // ---------------------------------------
-void SpottingCubes::create(ID target) {
+void SpottingCubes::create(ID target, int num) {
 	_emitter->next();
-	ID id = _world->create(_emitter->get(), math::buildTexture(190, 460, 48, 48), OT_SPOTTER);
-	_world->scaleByPath(id, &_scale_path, 0.8f);
-	rotateTo(id, target);
-	CubeData* data = (CubeData*)_world->attach_data(id, sizeof(CubeData), OT_SPOTTER);
-	data->energy = 4;
+	for (int i = 0; i < num; ++i) {
+		ID id = _world->create(_emitter->get(i,num), SID("Spotter"));
+		_world->scaleByPath(id, &_scale_path, 0.8f);
+		rotateTo(id, target);
+		CubeData* data = (CubeData*)_world->attach_data(id, sizeof(CubeData), OT_SPOTTER);
+		data->energy = 4;
+	}
 }
 

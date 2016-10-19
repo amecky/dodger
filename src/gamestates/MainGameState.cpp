@@ -34,8 +34,9 @@ MainGameState::MainGameState(GameContext* context) : ds::GameState("MainGame"), 
 	_emitters.push_back(new TestCubeEmitter());
 	_emitters.push_back(new RandomCubeEmitter());
 	_emitters.push_back(new CircleCubeEmitter(40.0f));
+	_emitters.push_back(new LineCubeEmitter(50.0f));
 
-	_wanderingCubes = new WanderingCubes(_world, _emitters[1], context->settings);
+	_wanderingCubes = new WanderingCubes(_world, _emitters[3], context->settings);
 	_spottingCubes = new SpottingCubes(_world, _emitters[1], context->settings);
 	_followerCubes = new FollowerCubes(_world, _emitters[2], context->settings);
 
@@ -241,7 +242,7 @@ int MainGameState::update(float dt) {
 		_testTimer += dt;
 		if (_testTimer >= 5.0f) {
 			_testTimer -= 5.0f;
-			_followerCubes->create(_player);
+			_followerCubes->create(_player, 13);
 		}
 	}
 	return 0;
@@ -463,13 +464,13 @@ int MainGameState::onChar(int ascii) {
 		//_showDebug = !_showDebug;
 	//}
 	if (ascii == '1') {
-		_wanderingCubes->create(_player);
+		_wanderingCubes->create(_player,6);
 	}
 	if (ascii == '2') {
-		_spottingCubes->create(_player);
+		_spottingCubes->create(_player,1);
 	}
 	if (ascii == '3') {
-		_followerCubes->create(_player);
+		_followerCubes->create(_player,13);
 	}
 	if (ascii == '4') {
 		addStar(v2(math::random(100,800), math::random(100,600)), 1);
