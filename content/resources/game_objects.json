@@ -7,3 +7,30 @@ template {
 	color : 128,0,0,255
 	type : 100
 }
+template {
+	name : "Follower"
+	position : 100,200,0
+	scale : 1,1,1
+	rotation : 0,0,0
+	texture : 80,460,36,36
+	color : 255,255,255,255
+	type : 4
+}
+template {
+	name : "Wanderer"
+	position : 100,200,0
+	scale : 2,2,1
+	rotation : 0,0,0
+	texture : 80,460,36,36
+	color : 255,255,255,255
+	type : 4
+}
+template {
+	name : "Spotter"
+	position : 100,200,0
+	scale : 2,2,1
+	rotation : 0,0,0
+	texture : 80,460,36,36
+	color : 255,255,255,255
+	type : 4
+}

@@ -68,9 +68,11 @@ void BasicCubes::tick(ID target, float dt) {
 		uint32_t n = _world->numEvents();
 		for (uint32_t i = 0; i < n; ++i) {
 			const ds::ActionEvent& event = _world->getEvent(i);
-			int type = _world->getType(event.id);
-			if (type == getObjectType()) {
-				onEvent(event, target, dt);
+			if (_world->contains(event.id)) {
+				int type = _world->getType(event.id);
+				if (type == getObjectType()) {
+					onEvent(event, target, dt);
+				}
 			}
 		}
 	}

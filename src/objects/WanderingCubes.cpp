@@ -33,10 +33,12 @@ void WanderingCubes::onEvent(const ds::ActionEvent& event, ID target, float dt) 
 		v3 v = math::getRadialVelocity(rot.x, vel);
 		float ttl = math::random(_settings->wanderer.minMoveTTL, _settings->wanderer.maxMoveTTL);
 		_world->moveBy(event.id, v, ttl);
+		_world->scale(event.id, v3(1.0f, 1.0f, 1.0f), v3(0.9f, 0.9f, 0.9f), 0.2f);
 	}
 	else if (event.action == ds::AT_MOVE_BY) {
 		float ttl = math::random(_settings->wanderer.minRotationTTL, _settings->wanderer.maxRotationTTL);
 		_world->rotateBy(event.id, getRotationAngle(), ttl);
+		_world->scale(event.id, v3(0.9f, 0.9f, 0.9f), v3(1.0f, 1.0f, 1.0f), 0.2f);
 	}
 }
 

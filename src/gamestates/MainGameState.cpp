@@ -16,7 +16,7 @@ MainGameState::MainGameState(GameContext* context) : ds::GameState("MainGame"), 
 	
 	//_world->setWorldDimension(v2(1600, 900));
 	_world->setBoundingRect(ds::Rect(50, 50, 1500, 800));
-
+	_world->useTemplates(ds::res::getWorldEntityTemplates(SID("game_objects")));
 	_player = _world->create(v2(800, 450), math::buildTexture(40, 0, 40, 40), OT_PLAYER);
 	_world->attachCollider(_player, ds::PST_CIRCLE, v2(40.f, 0.0));
 	_playerAngle = 0.0f;
