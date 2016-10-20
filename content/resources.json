@@ -27,3 +27,8 @@ particle_manager {
 world_entity_templates {
 	name : "game_objects"
 }
+dialog {
+    name : "HUD"
+    file : "HUD" 
+    font : "nullshock"
+}

@@ -1,6 +1,6 @@
 numbers { 
-    id : 0 
-    pos : 290,700 
+    id : 1 
+    pos : 100,690 
     color : 255,255,255,255 
     centered : false 
     scale : 1,1
@@ -8,8 +8,8 @@ numbers {
     length : 3    
 }
 numbers { 
-    id : 1 
-    pos : 620,700 
+    id : 2 
+    pos : 640,690 
     color : 255,255,255,255 
     centered : false 
     scale : 1,1
@@ -17,8 +17,8 @@ numbers {
     length : 2    
 }
 timer { 
-    id : 2 
-    pos : 920,700 
+    id : 3
+    pos : 1120,690 
     color : 255,255,255,255 
     centered : false 
     scale : 1,1

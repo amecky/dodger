@@ -3,9 +3,6 @@
 #include <renderer\render_types.h>
 #include <imgui\IMGUI.h>
 #include "..\GameContext.h"
-#include "..\objects\WanderingCubes.h"
-#include "..\objects\SpottingCubes.h"
-#include "..\objects\FollowerCubes.h"
 #include "..\objects\Bombs.h"
 #include "..\EventBuffer.h"
 #include "..\utils\Numbers.h"
@@ -66,43 +63,25 @@ private:
 	void addStar(const v2& pos, int count);
 	void reflectVelocity(ID id, const v3& normal, float dt);
 	bool killEnemy(const ds::Collision& c, int objectType);
-	ID _bomb_id;
 
-	bool _grabbing;
 	GameContext* _context;
 	ds::World* _world;
 	ID _player;
 	ID _playerRing;
 	float _playerAngle;
 	ID _cursor;
-	WanderingCubes* _wanderingCubes;
-	SpottingCubes* _spottingCubes;
-	FollowerCubes* _followerCubes;
-	
+	ds::GUIDialog* _hud;
 	Bullets* _bullets;
-	Bombs* _bombs;
 
-	EventBuffer _buffer;
 	v2 _cursor_pos;
-	bool _showSettings;
-	bool _showDebug;
-	v2 _dialog_pos;
-	GameTimer _game_timer;
-	//KilledBall _killedBalls[MAX_BALLS];
 	bool _dying;
 	float _dying_timer;
 	int _viewport_id;
 	int _basic_viewport;
 	ds::Color _border_color;
-	NumberDefinitions _number_definitions;
-	Numbers* _clock;
-	Numbers* _points;
-	ds::Array<CubeEmitter*> _emitters;	
 	ds::ParticleManager* _particles;
 
-	bool _testMode;
-	float _testTimer;
-
-	Levels _levels;
+	Levels* _levels;
+	int _level;
 };
 

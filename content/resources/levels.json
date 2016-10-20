@@ -6,19 +6,27 @@ stage {
         delay : 5.0
         emitter : 2
         max : 130
+		energy : 1
+		behavior : 0
     }
     cubes {
         id : 1
         emitt : 3
-        delay : 10
+        delay : 8
         emitter : 3
         max : 12
+		initial_delay : 4.0
+		energy : 4
+		behavior : 1
     }
     cubes {
         id : 2
         emitt : 3
-        delay : 10
+        delay : 12
         emitter : 3
         max : 12
+		initial_delay : 6.0
+		energy : 5
+		behavior : 2
     }
 }

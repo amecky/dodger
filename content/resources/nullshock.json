@@ -1,6 +1,6 @@
 settings {
 	x_offset : 0
-	y_offset : 100
+	y_offset : 130
 	texture_size : 1024
 	axis_flipped : 1
 }

@@ -22,7 +22,7 @@ template {
 	scale : 2,2,1
 	rotation : 0,0,0
 	texture : 250,460,44,44
-	color : 128,64,0,255
+	color : 255,255,255,255
 	type : 8
 }
 template {

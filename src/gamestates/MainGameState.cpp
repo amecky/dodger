@@ -10,9 +10,6 @@
 
 MainGameState::MainGameState(GameContext* context) : ds::GameState("MainGame"), _context(context) {
 	_world = new ds::World;
-	//_balls = new Cubes(_context);
-	_bombs = new Bombs(_context, _world);
-	//_stars = new Stars(_context);
 	
 	//_world->setWorldDimension(v2(1600, 900));
 	_world->setBoundingRect(ds::Rect(50, 50, 1500, 800));
@@ -22,38 +19,15 @@ MainGameState::MainGameState(GameContext* context) : ds::GameState("MainGame"), 
 	_playerAngle = 0.0f;
 	_cursor = _world->create(v2(700, 384), math::buildTexture(40, 160, 20, 20), 100);
 
-	// test object
-	//_world->create(v2(60, 60), math::buildTexture(840, 360, 120, 120),-1);
-	//_world->create(v2(60, 840), math::buildTexture(840, 360, 120, 120), -1);
-	//_world->create(v2(1540, 60), math::buildTexture(840, 360, 120, 120), -1);
-	//_world->create(v2(1540, 840), math::buildTexture(840, 360, 120, 120), -1);
-
-	//_world->create(v2(200, 384), math::buildTexture(40, 0, 40, 42), 0.0f);
 	_playerRing = _world->create(v2(100, 384), math::buildTexture(440, 0, 152, 152), OT_RING);
-
-	_emitters.push_back(new TestCubeEmitter());
-	_emitters.push_back(new RandomCubeEmitter());
-	_emitters.push_back(new CircleCubeEmitter(40.0f));
-	_emitters.push_back(new LineCubeEmitter(50.0f));
-
-	_wanderingCubes = new WanderingCubes(_world, _emitters[3], context->settings);
-	_spottingCubes = new SpottingCubes(_world, _emitters[1], context->settings);
-	_followerCubes = new FollowerCubes(_world, _emitters[2], context->settings);
 
 	_world->ignoreCollisions(OT_FOLLOWER, OT_FOLLOWER);
 	_world->ignoreCollisions(OT_PLAYER, OT_BULLET);
 	_world->ignoreCollisions(OT_BULLET, OT_BULLET);
 
-	_showSettings = false;
-	_showDebug = false;
-	_dialog_pos = v2(10, 710);
-	_grabbing = false;
 	_dying = false;
 	_dying_timer = 0.0f;
 
-	_testMode = false;
-	_testTimer = 0.0f;
-	
 	ds::Viewport vw = ds::Viewport(1280, 720, 1600, 900);
 	_viewport_id = graphics::addViewport(vw);
 
@@ -61,37 +35,21 @@ MainGameState::MainGameState(GameContext* context) : ds::GameState("MainGame"), 
 
 	_bullets = new Bullets(_world, context->settings);
 
-	_number_definitions.define(0, ds::Rect(300,   0, 49, 33));
-	_number_definitions.define(1, ds::Rect(300,  49, 21, 33));
-	_number_definitions.define(2, ds::Rect(300,  70, 46, 33));
-	_number_definitions.define(3, ds::Rect(300, 116, 46, 33));
-	_number_definitions.define(4, ds::Rect(300, 162, 48, 33));
-	_number_definitions.define(5, ds::Rect(300, 210, 45, 33));
-	_number_definitions.define(6, ds::Rect(300, 255, 49, 33));
-	_number_definitions.define(7, ds::Rect(300, 304, 48, 33));
-	_number_definitions.define(8, ds::Rect(300, 352, 49, 33));
-	_number_definitions.define(9, ds::Rect(300, 401, 49, 33));
-
-	_clock = new Numbers(_number_definitions, 2);
-	_points = new Numbers(_number_definitions, 6);
-
 	_border_color = ds::Color(181, 17, 68, 255);
 	
-	_levels.load();
+	_levels = new Levels(_world, context->settings);
+	_levels->load();
+
+	_hud = ds::res::getGUIDialog("HUD");
+
+	_level = 1;
+	_hud->setNumber(2, _level);
 }
 
 
 MainGameState::~MainGameState() {
+	delete _levels;
 	delete _bullets;
-	delete _points;
-	delete _clock;
-	delete _wanderingCubes;
-	delete _spottingCubes;
-	delete _world;
-	_emitters.destroy_all();
-	//delete _stars;
-	//delete _bombs;
-	//delete _balls;
 }
 
 // -------------------------------------------------------
@@ -106,6 +64,7 @@ void MainGameState::init() {
 // -------------------------------------------------------
 void MainGameState::activate() {
 	_bullets->stop();	
+	_hud->activate();
 }
 
 // -------------------------------------------------------
@@ -134,11 +93,6 @@ int MainGameState::onButtonDown(int button, int x, int y) {
 void MainGameState::killPlayer() {
 	_dying = true;
 	_dying_timer = 0.0f;
-	//_balls->killAll();
-	//_bombs->killAll();
-	// FIXME: remove all stars
-	//_stars->clear();
-	//_context->particles->start(PLAYER_EXPLOSION, v3(_context->world_pos));
 	_world->remove(_player);
 	_world->remove(_playerRing);
 }
@@ -178,18 +132,6 @@ void MainGameState::movePlayer(float dt) {
 }
 
 // -------------------------------------------------------
-// reflect velocity
-// -------------------------------------------------------
-void MainGameState::reflectVelocity(ID id,const v3& normal, float dt) {
-	BombData* data = (BombData*)_world->get_data(id);
-	float mdt = dot(data->velocity, normal);
-	v3 ref = data->velocity - 2.0f * mdt * normal;
-	_world->moveBy(id, ref);
-	data->velocity = ref;
-	v3 bp = _world->getPosition(id) + data->velocity * dt * 4.0f;
-	_world->setPosition(id, bp.xy());
-}
-// -------------------------------------------------------
 // Update
 // -------------------------------------------------------
 int MainGameState::update(float dt) {
@@ -201,10 +143,6 @@ int MainGameState::update(float dt) {
 
 	_world->tick(dt);
 
-	if (_grabbing) {
-		_bombs->follow(_bomb_id, wp, dt);
-	}
-
 	uint32_t n = ds::events::num();
 	if (n > 0) {
 		for (uint32_t i = 0; i < n; ++i) {
@@ -215,10 +153,6 @@ int MainGameState::update(float dt) {
 			}
 		}
 	}
-
-	_wanderingCubes->tick(_player, dt);
-	_spottingCubes->tick(_player, dt);
-	_followerCubes->tick(_player, dt);
 	
 	handleCollisions(dt);
 
@@ -226,12 +160,7 @@ int MainGameState::update(float dt) {
 		uint32_t n = _world->numEvents();
 		for (uint32_t i = 0; i < n; ++i) {
 			const ds::ActionEvent& event = _world->getEvent(i);
-			if (event.action == ds::AT_BOUNCE && event.type == OT_BOMB) {
-				v3* vel = (v3*)_world->getEventData(i);
-				BombData* data = (BombData*)_world->get_data(event.id);
-				data->velocity = *vel;
-			}
-			else if (event.action == ds::AT_MOVE_BY && event.type == OT_BULLET) {
+			if (event.action == ds::AT_MOVE_BY && event.type == OT_BULLET) {
 				_bullets->kill(event.id);
 			}
 		}
@@ -239,13 +168,9 @@ int MainGameState::update(float dt) {
 
 	_bullets->tick(dt);
 
-	if (_testMode) {
-		_testTimer += dt;
-		if (_testTimer >= 5.0f) {
-			_testTimer -= 5.0f;
-			_followerCubes->create(_player, 13);
-		}
-	}
+	_hud->tick(dt);
+
+	_levels->tick(_player, dt);
 	return 0;
 }
 
@@ -354,6 +279,9 @@ void MainGameState::render() {
 	sprites->end();
 	_particles->render();
 	graphics::selectViewport(0);
+	sprites->begin();
+	_hud->render();
+	sprites->end();
 	/*
 	ds::renderer::selectViewport(_viewport_id);
 	drawBorder();
@@ -452,26 +380,25 @@ int MainGameState::onChar(int ascii) {
 	if (ascii == 'e') {
 		return 1;
 	}
-	if (ascii == 'q') {
-		_showSettings = !_showSettings;
-	}
-	if (ascii == 'b') {
-		_bombs->create();
-	}
 	if (ascii == 'x') {
 		//_balls->killAll();
 	}
 	//if (ascii == 'd') {
 		//_showDebug = !_showDebug;
 	//}
-	if (ascii == '1') {
-		_wanderingCubes->create(_player,6);
+	if (ascii == '+') {
+		++_level;
+		_hud->setNumber(2, _level);
 	}
-	if (ascii == '2') {
-		_spottingCubes->create(_player,1);
+	if (ascii == '-') {
+		--_level;
+		if (_level < 0) {
+			_level = 0;
+		}
+		_hud->setNumber(2, _level);
 	}
 	if (ascii == '3') {
-		_followerCubes->create(_player,13);
+		//_followerCubes->create(_player,13);
 	}
 	if (ascii == '4') {
 		addStar(v2(math::random(100,800), math::random(100,600)), 1);
@@ -487,11 +414,8 @@ int MainGameState::onChar(int ascii) {
 			//_particles->start(6, v2(x, y));
 		}
 	}
-	if (ascii == '7') {
-		_testMode = !_testMode;
-		if (_testMode) {
-			_testTimer = 0.0f;
-		}
+	if (ascii == '8') {
+		_levels->start(_level);
 	}
 	return 0;
 }
