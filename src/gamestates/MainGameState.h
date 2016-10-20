@@ -13,6 +13,7 @@
 #include <core\world\World.h>
 #include <particles\ParticleManager.h>
 #include "..\objects\Bullets.h"
+#include "..\Levels.h"
 
 struct GameTimer {
 
@@ -101,5 +102,7 @@ private:
 
 	bool _testMode;
 	float _testTimer;
+
+	Levels _levels;
 };
 

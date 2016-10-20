@@ -2,6 +2,7 @@
 #include <core\world\World.h>
 #include "..\GameSettings.h"
 #include "..\Constants.h"
+#include <particles\ParticleManager.h>
 
 class CubeEmitter {
 
@@ -100,6 +101,11 @@ struct CubeData {
 	int energy;
 };
 
+
+typedef void(*BehaviorFunc)(ds::World*, const ds::ActionEvent&, ID);
+
+void spotterBehavior(ds::World* world, const ds::ActionEvent& event, ID target);
+
 // ---------------------------------------
 // Basic cubes
 // ---------------------------------------
@@ -116,6 +122,7 @@ public:
 	virtual void onEvent(const ds::ActionEvent& event, ID target, float dt) = 0;
 protected:
 	void rotateTo(ID id, ID target);
+	void createCubes(StaticHash templateHash, ID target, int num, int energy);
 	ds::World* _world;
 	GameSettings* _settings;
 	float _timer;
@@ -124,6 +131,12 @@ protected:
 	bool _running;
 	SpawnSettings _spawnSettings;
 	CubeEmitter* _emitter;
+	ds::ParticleManager* _particles;
 	ds::V3Path _scale_path;
+	v2 _positions[64];
+	int _num;
+	bool _ready;
+	StaticHash _templateHash;
+	int _energy;
 };
 

@@ -77,6 +77,7 @@ MainGameState::MainGameState(GameContext* context) : ds::GameState("MainGame"), 
 
 	_border_color = ds::Color(181, 17, 68, 255);
 	
+	_levels.load();
 }
 
 
@@ -479,11 +480,11 @@ int MainGameState::onChar(int ascii) {
 		addStar(v2(math::random(100, 800), math::random(100, 600)), 5);
 	}
 	if (ascii == '6') {
-		for (int i = 0; i < 1; ++i) {
+		for (int i = 0; i < 5; ++i) {
 			float x = math::random(100.0f, 900.0f);
 			float y = math::random(100.0f, 620.0f);
-			_particles->start(5, v2(x,y));
-			_particles->start(6, v2(x, y));
+			_particles->start(9, v2(x,y));
+			//_particles->start(6, v2(x, y));
 		}
 	}
 	if (ascii == '7') {

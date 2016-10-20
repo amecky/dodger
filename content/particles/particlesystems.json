@@ -30,6 +30,10 @@ bullet_explosion {
     id : 8
     file : "bullet_explosion"
 }
+cube_appearance { 
+    id : 9
+    file : "cube_appearance"
+}
 groups {
 	bomb_explosion {
 		id : 1

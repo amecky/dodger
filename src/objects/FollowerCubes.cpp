@@ -25,16 +25,6 @@ void FollowerCubes::onEvent(const ds::ActionEvent& event, ID target, float dt) {
 // create
 // ---------------------------------------
 void FollowerCubes::create(ID target, int num) {
-	_emitter->next();
-	for (int i = 0; i < num; ++i) {
-		v2 p = _emitter->get(i, num);
-		ID id = _world->create(_emitter->get(i, 13), SID("Follower")); 
-		float ttl = math::random(0.5f, 0.8f);
-		_world->scaleByPath(id, &_scale_path, ttl);		
-		rotateTo(id, target);
-		CubeData* data = (CubeData*)_world->attach_data(id, sizeof(CubeData), OT_FOLLOWER);
-		data->energy = 1;
-	}
-
+	createCubes(SID("Follower"), target, num, 1);	
 }
 

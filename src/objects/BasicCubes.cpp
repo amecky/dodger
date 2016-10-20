@@ -1,5 +1,5 @@
 #include "BasicCubes.h"
-
+#include "resources\ResourceContainer.h"
 
 v2 CircleCubeEmitter::get(int index, int total) {
 	if (index == 0) {
@@ -28,6 +28,30 @@ v2 LineCubeEmitter::get(int index, int total) {
 	}
 	return p;
 }
+
+// -------------------------------------------------
+// Behavior
+// -------------------------------------------------
+
+// -------------------------------------------------
+// Spotter behavior
+// -------------------------------------------------
+void spotterBehavior(ds::World* world, const ds::ActionEvent& event, ID target) {
+	if (event.action == ds::AT_SCALE_BY_PATH) {
+		world->lookAt(event.id, target, 1.0f);
+		world->attachCollider(event.id, ds::PST_CIRCLE, v2(48.0f, 48.0f));
+	}
+	else if (event.action == ds::AT_LOOK_AT) {
+		v3 rot = world->getRotation(event.id);
+		v3 v = math::getRadialVelocity(rot.x, 150.0f);
+		float ttl = math::random(4.0f, 8.0f);
+		world->moveBy(event.id, v, ttl);
+	}
+	else if (event.action == ds::AT_MOVE_BY) {
+		world->lookAt(event.id, target, 1.0f);
+	}
+}
+
 // -------------------------------------------------
 // BasicCubes
 // -------------------------------------------------
@@ -36,6 +60,9 @@ BasicCubes::BasicCubes(ds::World* world, CubeEmitter* emitter, GameSettings* set
 	_scale_path.add(0.5f, v3(1.2f, 1.2f, 0.0f));
 	_scale_path.add(0.75f, v3(0.75f, 0.75f, 0.0f));
 	_scale_path.add(1.0f, v3(1.0f, 1.0f, 0.0f));
+
+	_particles = ds::res::getParticleManager();
+	_ready = false;
 }
 
 BasicCubes::~BasicCubes() {
@@ -66,6 +93,21 @@ void BasicCubes::init(const SpawnSettings& spawnSettings) {
 // tick
 // -------------------------------------------------
 void BasicCubes::tick(ID target, float dt) {
+	if (_ready) {
+		_timer += dt;
+		if (_timer > 0.3f) {
+			_ready = false;
+			for (int i = 0; i < _num; ++i) {
+				ID id = _world->create(_emitter->get(i, _num), _templateHash);
+				float ttl = math::random(0.5f, 0.8f);
+				_world->scaleByPath(id, &_scale_path, ttl);
+				rotateTo(id, target);
+				CubeData* data = (CubeData*)_world->attach_data(id, sizeof(CubeData), getObjectType());
+				data->energy = _energy;
+			}
+		}
+	}
+
 	if (_emitted < _spawnSettings.maxCubes && _running) {
 		_timer += dt;
 		if (_timer > _spawnDelay) {
@@ -97,4 +139,21 @@ void BasicCubes::rotateTo(ID id, ID target) {
 	v3 t = _world->getPosition(target);
 	float rotation = math::getAngle(p.xy(), t.xy());
 	_world->setRotation(id, rotation);
+}
+
+// ---------------------------------------
+// create
+// ---------------------------------------
+void BasicCubes::createCubes(StaticHash templateHash, ID target, int num, int energy) {
+	_emitter->next();
+	for (int i = 0; i < num; ++i) {
+		v2 p = _emitter->get(i, num);
+		_positions[i] = p;
+		_particles->start(9, p);
+	}
+	_num = num;
+	_energy = energy;
+	_templateHash = templateHash;
+	_timer = 0.0f;
+	_ready = true;
 }

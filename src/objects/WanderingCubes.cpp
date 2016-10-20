@@ -46,13 +46,6 @@ void WanderingCubes::onEvent(const ds::ActionEvent& event, ID target, float dt) 
 // create
 // ---------------------------------------
 void WanderingCubes::create(ID target, int num) {
-	_emitter->next();
-	for (int i = 0; i < num; ++i) {
-		ID id = _world->create(_emitter->get(i,num), SID("Wanderer"));
-		float ttl = math::random(_settings->wanderer.minScaleTTL, _settings->wanderer.maxScaleTTL);
-		_world->scaleByPath(id, &_scale_path, ttl);
-		CubeData* data = (CubeData*)_world->attach_data(id, sizeof(CubeData), OT_WANDERER);
-		data->energy = 5;
-	}
+	createCubes(SID("Wanderer"), target, num, 5);	
 }
 

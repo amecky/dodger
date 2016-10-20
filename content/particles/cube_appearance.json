@@ -1,0 +1,41 @@
+spawn { 
+	texture : 351,460,30,30
+    duration : 0
+    rate : 8
+    loop : 0
+    loop_delay : 0.0
+}
+ring_location {
+    radius : 8
+    variance : 7
+    angle_variance : 30
+    step : 0
+}
+lifecycle { 
+    ttl : 0.6
+    variance : 0.1
+}
+color {
+	hsv : 0,54,83
+    alpha : 255
+    hue_variance : 0
+    saturation_variance : 10
+    value_variance : 10
+}
+size { 
+	initial : 1,1
+	variance : 0.0,0.0
+	min : 0.8,0.8
+    max : 0.1,0.1
+}
+alpha { 
+	initial : 1.0
+	variance : 0.0
+	min : 1.0
+	max : 0.0
+}
+velocity {
+	radial : 20
+    radial_variance : 10
+	distribution : 0.0,1.0,1.0,1.0,0.0,0.0
+}
