@@ -97,8 +97,6 @@ void Levels::tick(ID target, float dt) {
 						ID id = _world->create(actor->emitter->get(i, num), actor->templateName);
 						actor->behavior->create(id);
 						actor->type = _world->getType(id);
-						//float ttl = math::random(0.5f, 0.8f);
-						//_world->scaleByPath(id, &_scale_path, ttl);
 						//rotateTo(id, target);
 						CubeData* data = (CubeData*)_world->attach_data(id, sizeof(CubeData), actor->type);
 						data->energy = actor->energy;
