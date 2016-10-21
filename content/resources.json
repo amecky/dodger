@@ -32,3 +32,8 @@ dialog {
     file : "HUD" 
     font : "nullshock"
 }
+dialog {
+    name : "GameOver"
+    file : "GameOver" 
+    font : "nullshock"
+}

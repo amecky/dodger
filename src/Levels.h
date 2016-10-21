@@ -71,12 +71,16 @@ public:
 	int getNumberToKill() const {
 		return _total;
 	}
+	bool isActive() const {
+		return _active;
+	}
 private:
 	Level _levels[16];
 	ds::Array<StageActor*> _actors;
 	float _timer;
 	bool _active;
 	int _total;
+	bool _emitting;
 	ds::Array<CubeEmitter*> _emitters;
 	ds::Array<CubeBehavior*> _behaviors;
 	ds::World* _world;

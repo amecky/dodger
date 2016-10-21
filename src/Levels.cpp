@@ -78,8 +78,10 @@ int Levels::getNumberOfItems(int index) const {
 // -------------------------------------------------------
 void Levels::tick(ID target, float dt) {
 	_timer += dt;
+	int all = 0;
 	for (uint32_t i = 0; i < _actors.size(); ++i) {
 		StageActor* actor = _actors[i];
+		all += actor->emitted;
 		actor->timer += dt;
 		if (actor->mode == SAM_STARTED) {
 			if (actor->timer > actor->initialDelay) {
@@ -88,21 +90,21 @@ void Levels::tick(ID target, float dt) {
 			}
 		}
 		else {
-			if (actor->timer > actor->delay) {
+			if (_emitting && (actor->timer > actor->delay)) {
 				actor->timer = 0.0f;
 				int num = actor->num;
 				if (actor->emitted < actor->total) {
 					actor->emitter->next();
-					for (int i = 0; i < num; ++i) {
-						ID id = _world->create(actor->emitter->get(i, num), actor->templateName);
+					for (int j = 0; j < num; ++j) {
+						ID id = _world->create(actor->emitter->get(j, num), actor->templateName);
 						actor->behavior->create(id);
 						actor->type = _world->getType(id);
 						//rotateTo(id, target);
 						CubeData* data = (CubeData*)_world->attach_data(id, sizeof(CubeData), actor->type);
 						data->energy = actor->energy;
-					}
-					LOG << "starting enemies - idx: " << i << " num: " << num << " emitted: " << actor->emitted;
+					}					
 					actor->emitted += num;
+					LOG << "starting enemies - idx: " << i << " num: " << num << " emitted: " << actor->emitted;
 				}
 			}
 			if (_world->hasEvents()) {
@@ -118,6 +120,10 @@ void Levels::tick(ID target, float dt) {
 				}
 			}
 		}
+	}
+	if (all == _total && _emitting) {
+		LOG << "ALL EMITTED!!!!!!!";
+		_emitting = false;
 	}
 }
 
@@ -136,7 +142,7 @@ void Levels::start(int index) {
 	LOG << "enemies to kill: " << _total;
 	_timer = 0.0f;
 	_active = true;
-	
+	_emitting = true;
 }
 
 // -------------------------------------------------------

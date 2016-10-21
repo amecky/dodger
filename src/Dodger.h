@@ -27,10 +27,10 @@ public:
 	void init();
 	void update(float dt);
 	void render();
-	//void draw();
-	//void onGUIButton(ds::DialogID dlgID, int button);
 protected:
+	void createBorder();
 	void prepare(ds::Settings* settings);
 private:
 	GameContext* _context;
+	ds::Color _border_color;
 };

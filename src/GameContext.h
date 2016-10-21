@@ -1,18 +1,18 @@
 #pragma once
-//#include <dialogs\GUIDialog.h>
+#include <dialogs\GUIDialog.h>
 #include "Constants.h"
 #include "GameSettings.h"
-//#include <particles\ParticleManager.h>
-//#include <ui\DebugPanel.h>
-//#include <world\World.h>
+#include <particles\ParticleManager.h>
+#include <core\world\World.h>
 
 struct GameContext {
 
 	GameSettings* settings;
-	//ds::GUIDialog* hudDialog;
-	//ds::ParticleManager* particles;
-	//ds::DebugPanel debugPanel;
+	ds::ParticleManager* particles;	
 	int points;
-	//ds::World* world;
+	ds::World* world;
+	RID additiveBlendState; //
+	int viewport_id; //
+	int basic_viewport; //
 };
 

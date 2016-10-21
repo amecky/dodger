@@ -5,9 +5,49 @@ stage {
         emitt : 13
         delay : 5.0
         emitter : 2
+        max : 65
+		energy : 1
+		behavior : 0
+		initial_delay : 0.0
+    }
+}
+stage {
+    id : 2
+    cubes {
+        id : 1
+        emitt : 3
+        delay : 8
+        emitter : 3
+        max : 12
+		initial_delay : 4.0
+		energy : 4
+		behavior : 1
+    }
+}
+stage {
+    id : 3
+    cubes {
+        id : 2
+        emitt : 3
+        delay : 12
+        emitter : 3
+        max : 12
+		initial_delay : 6.0
+		energy : 5
+		behavior : 2
+    }
+}
+stage {
+    id : 4
+    cubes {
+        id : 0
+        emitt : 13
+        delay : 5.0
+        emitter : 2
         max : 130
 		energy : 1
 		behavior : 0
+		initial_delay : 0.0
     }
     cubes {
         id : 1

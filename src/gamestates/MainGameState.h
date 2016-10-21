@@ -3,9 +3,7 @@
 #include <renderer\render_types.h>
 #include <imgui\IMGUI.h>
 #include "..\GameContext.h"
-#include "..\objects\Bombs.h"
 #include "..\EventBuffer.h"
-#include "..\utils\Numbers.h"
 #include <core\lib\DataArray.h>
 #include <core\world\World.h>
 #include <particles\ParticleManager.h>
@@ -58,29 +56,20 @@ private:
 	void killPlayer();
 	void movePlayer(float dt);
 	void handleCollisions(float dt);
-	void moveStars(const v2& target, float dt);
-	void createStar(const v2& pos);
-	void addStar(const v2& pos, int count);
-	void reflectVelocity(ID id, const v3& normal, float dt);
 	bool killEnemy(const ds::Collision& c, int objectType);
 
 	GameContext* _context;
-	ds::World* _world;
 	ID _player;
 	ID _playerRing;
 	float _playerAngle;
 	ID _cursor;
 	ds::GUIDialog* _hud;
 	Bullets* _bullets;
-
+	int _kills;
 	v2 _cursor_pos;
 	bool _dying;
 	float _dying_timer;
-	int _viewport_id;
-	int _basic_viewport;
-	ds::Color _border_color;
-	ds::ParticleManager* _particles;
-
+	
 	Levels* _levels;
 	int _level;
 };
