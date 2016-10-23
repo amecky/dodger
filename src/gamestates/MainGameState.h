@@ -52,10 +52,9 @@ public:
 	int onButtonUp(int button, int x, int y);
 	int onButtonDown(int button, int x, int y);
 private:
-	void drawBorder();
 	void killPlayer();
 	void movePlayer(float dt);
-	void handleCollisions(float dt);
+	bool handleCollisions(float dt);
 	bool killEnemy(const ds::Collision& c, int objectType);
 
 	GameContext* _context;

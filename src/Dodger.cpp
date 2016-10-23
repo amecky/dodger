@@ -5,6 +5,7 @@
 #include <gamestates\GameStateMachine.h>
 #include "gamestates\MainGameState.h"
 #include "gamestates\GameOverState.h"
+#include <particles\ParticlesTestState.h>
 //#include "gamestates\MainMenuState.h"
 //#include "gamestates\HighscoreState.h"
 #include "GameContext.h"
@@ -60,14 +61,19 @@ bool Dodger::loadContent() {
 	_context->particles = ds::res::getParticleManager();
 	_context->additiveBlendState = ds::res::findBlendState("AdditiveBlendState");
 
-
+	ds::ParticlesTestSettings pts;
+	pts.render = false;
+	pts.blendState = _context->additiveBlendState;
+	pts.screenSize = v2(1600, 1200);
 	addGameState(new MainGameState(_context));
 	addGameState(new GameOverState(_context));
+	addGameState(new ds::ParticlesTestState(pts));
 	//addGameState(new HighscoreState(gui, _context));
 	//addGameState(new MainMenuState(gui, _context));
 	//connectGameStates("GameOver", 1, "MainGame");
 	//connectGameStates("GameOver", 2, "MainMenuState");
 	connectGameStates("MainGame", 1, "GameOver");
+	connectGameStates("GameOver", 1, "MainGame");
 	//connectGameStates("MainMenuState", 3, "MainGame");
 
 	addShortcut("Save world", '0', 100);
@@ -79,7 +85,7 @@ bool Dodger::loadContent() {
 
 void Dodger::init() {
 	// for testing
-	activate("MainGame");
+	activate("ParticlesTestState");
 }
 
 

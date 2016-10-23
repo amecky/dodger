@@ -21,7 +21,7 @@ template {
 	position : 100,200,0
 	scale : 2,2,1
 	rotation : 0,0,0
-	texture : 250,460,44,44
+	texture : 300,460,52,52
 	color : 255,255,255,255
 	type : 8
 }

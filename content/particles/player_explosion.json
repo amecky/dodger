@@ -1,5 +1,5 @@
 spawn { 
-	texture : 40,120,10,10
+	texture : 40,120,20,20
     duration : 0
     rate : 64
     loop : 0

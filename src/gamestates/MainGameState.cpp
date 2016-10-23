@@ -53,7 +53,6 @@ void MainGameState::activate() {
 // -------------------------------------------------------
 void MainGameState::deactivate() {
 	_hud->deactivate();
-	killPlayer();
 }
 
 // -------------------------------------------------------
@@ -73,6 +72,8 @@ int MainGameState::onButtonDown(int button, int x, int y) {
 }
 
 void MainGameState::killPlayer() {
+	v2 wp = _context->world->getPosition(_player).xy();
+	_context->particles->start(1, wp);
 	_context->world->remove(_player);
 	_context->world->remove(_playerRing);
 	_context->world->remove(_cursor);
@@ -134,7 +135,9 @@ int MainGameState::update(float dt) {
 		}
 	}
 	
-	handleCollisions(dt);
+	if (handleCollisions(dt)) {
+		return 1;
+	}
 
 	if (_context->world->hasEvents()) {
 		uint32_t n = _context->world->numEvents();
@@ -161,13 +164,15 @@ int MainGameState::update(float dt) {
 // -------------------------------------------------------
 // handle collisions
 // -------------------------------------------------------
-void MainGameState::handleCollisions(float dt) {
+bool MainGameState::handleCollisions(float dt) {
 	if (_context->world->hasCollisions()) {
 		uint32_t n = _context->world->numCollisions();
 		for (uint32_t i = 0; i < n; ++i) {
 			const ds::Collision& c = _context->world->getCollision(i);
 			if (c.isBetween(OT_PLAYER, OT_FOLLOWER)) {
 				killEnemy(c, OT_FOLLOWER);
+				killPlayer();
+				return true;
 			}
 			else if (c.isBetween(OT_BULLET, OT_FOLLOWER)) {
 				killEnemy(c, OT_FOLLOWER);				
@@ -180,6 +185,7 @@ void MainGameState::handleCollisions(float dt) {
 			}
 		}
 	}
+	return false;
 }
 
 // -------------------------------------------------------
@@ -200,7 +206,9 @@ bool MainGameState::killEnemy(const ds::Collision& c, int objectType) {
 			ret = true;
 		}
 	}
-	_bullets->kill(c.getIDByType(OT_BULLET));
+	if (c.containsType(OT_BULLET)) {
+		_bullets->kill(c.getIDByType(OT_BULLET));
+	}
 	return ret;
 }
 
@@ -236,8 +244,9 @@ int MainGameState::onChar(int ascii) {
 		for (int i = 0; i < 5; ++i) {
 			float x = math::random(100.0f, 900.0f);
 			float y = math::random(100.0f, 620.0f);
-			_context->particles->start(9, v2(x, y));
-			//_particles->start(6, v2(x, y));
+			//_context->particles->start(1, v2(x, y));
+			_context->particles->start(5, v2(x, y));
+			_context->particles->start(6, v2(x, y));
 		}
 	}
 	if (ascii == '1') {
