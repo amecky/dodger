@@ -74,6 +74,20 @@ int Levels::getNumberOfItems(int index) const {
 }
 
 // -------------------------------------------------------
+// kill all
+// -------------------------------------------------------
+void Levels::killAll() {
+	ID ids[256];
+	for (uint32_t i = 0; i < _actors.size(); ++i) {
+		StageActor* actor = _actors[i];
+		int num = _world->find_by_type(actor->type, ids, 256);
+		for (int j = 0; j < num; ++j) {
+			_world->remove(ids[j]);
+		}
+	}
+}
+
+// -------------------------------------------------------
 // tick
 // -------------------------------------------------------
 void Levels::tick(ID target, float dt) {

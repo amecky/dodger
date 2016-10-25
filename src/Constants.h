@@ -40,5 +40,6 @@ enum ObjectType {
 	OT_SPOTTER,
 	OT_BULLET,
 	OT_WALL,
+	OT_BULLET_TRAIL,
 	OT_EOL
 };

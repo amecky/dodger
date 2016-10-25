@@ -73,6 +73,8 @@ int MainGameState::onButtonDown(int button, int x, int y) {
 
 void MainGameState::killPlayer() {
 	v2 wp = _context->world->getPosition(_player).xy();
+	_bullets->killAll();
+	_levels->killAll();
 	_context->particles->start(1, wp);
 	_context->world->remove(_player);
 	_context->world->remove(_playerRing);

@@ -74,6 +74,7 @@ public:
 	bool isActive() const {
 		return _active;
 	}
+	void killAll();
 private:
 	Level _levels[16];
 	ds::Array<StageActor*> _actors;
