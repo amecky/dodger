@@ -15,18 +15,42 @@ Bullets::Bullets(ds::World * world, GameSettings* settings) : _world(world) , _s
 // ---------------------------------------------
 void Bullets::tick(float dt) {
 	if (_active) {
-		_timer += dt;
-		if (_timer >= _settings->bullets.rate) {
-			_timer -= _settings->bullets.rate;
-			v3 wp = _world->getPosition(_player);
-			v3 r = _world->getRotation(_player);
-			v2 pos = wp.xy();
-			math::addRadial(pos, 30.0f, r.x);
-			ID bullet = _world->create(pos, math::buildTexture(0, 410, 22, 8), OT_BULLET, r.x, v2(1.0f), ds::Color(249, 246, 194, 255));
-			v2 vel = math::getRadialVelocity(r.x, _settings->bullets.velocity);
-			_world->setRotation(bullet, r.x);
-			_world->moveBy(bullet, vel, -1.0f, false);
-			_world->attachCollider(bullet, ds::PST_CIRCLE, v2(18.0f));
+		{
+			ZoneTracker u2("Bullets:emitt");
+			_timer += dt;
+			if (_timer >= _settings->bullets.rate) {
+				_timer -= _settings->bullets.rate;
+				v3 wp = _world->getPosition(_player);
+				v3 r = _world->getRotation(_player);
+				v2 pos = wp.xy();
+				math::addRadial(pos, 30.0f, r.x);
+				ID bullet = _world->create(pos, math::buildTexture(0, 410, 22, 8), OT_BULLET, r.x, v2(1.0f), ds::Color(249, 246, 194, 255));
+				BulletData* data = (BulletData*)_world->attach_data(bullet, sizeof(BulletData), OT_BULLET);
+				data->previous = pos;
+				data->sqrDist = 20.0f * 20.0f;
+				v2 vel = math::getRadialVelocity(r.x, _settings->bullets.velocity);
+				_world->setRotation(bullet, r.x);
+				_world->moveBy(bullet, vel, -1.0f, false);
+				_world->attachCollider(bullet, ds::PST_CIRCLE, v2(18.0f));
+			}
+		}
+		{
+			ZoneTracker u2("Bullets:trail");
+			ID ids[64];
+			int num = _world->find_by_type(OT_BULLET, ids, 64);
+			for (int i = 0; i < num; ++i) {
+				BulletData* data = (BulletData*)_world->get_data(ids[i]);
+				const v3& p = _world->getPosition(ids[i]);
+				v3 d = p - data->previous;
+				if (sqr_length(d) > data->sqrDist) {
+					//LOG << "emitting trail";
+					//LOG << "id: " << ids[i] << " p: " << DBG_V3(p) << " prev: " << DBG_V3(data->previous);
+					const v3& r = _world->getRotation(ids[i]);
+					ID trail = _world->create(p.xy(), math::buildTexture(0, 410, 22, 8), 200, r.x, v2(0.5f), ds::Color(255, 0, 0, 255));
+					_world->removeAfter(trail, 0.1f);
+					data->previous = p;
+				}
+			}
 		}
 	}
 }

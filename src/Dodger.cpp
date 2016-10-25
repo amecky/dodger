@@ -85,7 +85,7 @@ bool Dodger::loadContent() {
 
 void Dodger::init() {
 	// for testing
-	activate("ParticlesTestState");
+	activate("MainGame");
 }
 
 

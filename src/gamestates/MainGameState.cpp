@@ -83,6 +83,7 @@ void MainGameState::killPlayer() {
 // move player
 // -------------------------------------------------------
 void MainGameState::movePlayer(float dt) {
+	ZoneTracker u2("MainGameState::movePlayer");
 	v2 vel = v2(0.0f);
 	if (ds::input::getKeyState('A')) {
 		vel.x -= 1.0f;
@@ -117,38 +118,41 @@ void MainGameState::movePlayer(float dt) {
 // Update
 // -------------------------------------------------------
 int MainGameState::update(float dt) {
-	
+	ZoneTracker u2("MainGameState::update");
 	movePlayer(dt);
 
 	const v2 wp = _context->world->getPosition(_player).xy();
 
 	_context->world->tick(dt);
 
-	uint32_t n = ds::events::num();
-	if (n > 0) {
-		for (uint32_t i = 0; i < n; ++i) {
-			if (ds::events::getType(i) == 100) {
-				LOG << "writing report now";
-				ds::ReportWriter writer("reports\\world.html");
-				_context->world->saveReport(writer);
+	{
+		ZoneTracker u2("MainGameState::events");
+		uint32_t n = ds::events::num();
+		if (n > 0) {
+			for (uint32_t i = 0; i < n; ++i) {
+				if (ds::events::getType(i) == 100) {
+					LOG << "writing report now";
+					ds::ReportWriter writer("reports\\world.html");
+					_context->world->saveReport(writer);
+				}
 			}
 		}
 	}
-	
 	if (handleCollisions(dt)) {
 		return 1;
 	}
-
-	if (_context->world->hasEvents()) {
-		uint32_t n = _context->world->numEvents();
-		for (uint32_t i = 0; i < n; ++i) {
-			const ds::ActionEvent& event = _context->world->getEvent(i);
-			if (event.action == ds::AT_MOVE_BY && event.type == OT_BULLET) {
-				_bullets->kill(event.id);
+	{
+		ZoneTracker u2("MainGameState::worldEvents");
+		if (_context->world->hasEvents()) {
+			uint32_t n = _context->world->numEvents();
+			for (uint32_t i = 0; i < n; ++i) {
+				const ds::ActionEvent& event = _context->world->getEvent(i);
+				if (event.action == ds::AT_MOVE_BY && event.type == OT_BULLET) {
+					_bullets->kill(event.id);
+				}
 			}
 		}
 	}
-
 	_bullets->tick(dt);
 
 	_hud->tick(dt);
@@ -165,6 +169,7 @@ int MainGameState::update(float dt) {
 // handle collisions
 // -------------------------------------------------------
 bool MainGameState::handleCollisions(float dt) {
+	ZoneTracker u2("MainGameState::handleCollisions");
 	if (_context->world->hasCollisions()) {
 		uint32_t n = _context->world->numCollisions();
 		for (uint32_t i = 0; i < n; ++i) {

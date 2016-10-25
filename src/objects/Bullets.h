@@ -2,6 +2,12 @@
 #include <core\world\World.h>
 #include <particles\ParticleManager.h>
 #include "..\GameSettings.h"
+#include "..\actions\BulletTrailAction.h"
+
+struct BulletData {
+	v3 previous;
+	float sqrDist;
+};
 
 class Bullets {
 

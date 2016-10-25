@@ -77,6 +77,7 @@ int Levels::getNumberOfItems(int index) const {
 // tick
 // -------------------------------------------------------
 void Levels::tick(ID target, float dt) {
+	ZoneTracker z("Levels::tick");
 	_timer += dt;
 	int all = 0;
 	for (uint32_t i = 0; i < _actors.size(); ++i) {
