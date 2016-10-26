@@ -30,6 +30,13 @@ struct StageActor {
 	float timer;
 	int energy;
 	int type;
+
+	StageActor() : behavior(0), emitter(0), templateName(SID("UNKNOWN")), num(0), emitted(0), total(0), delay(0.0f), initialDelay(0.0f), mode(SAM_STARTED), timer(0.0f), energy(0), type(0) {}
+	~StageActor() {
+		if (emitter != 0) {
+			delete emitter;
+		}
+	}
 };
 
 // ---------------------------------------
@@ -78,11 +85,12 @@ public:
 private:
 	Level _levels[16];
 	ds::Array<StageActor*> _actors;
+	CubeEmitter* getEmitter(int type, int total);
 	float _timer;
 	bool _active;
 	int _total;
 	bool _emitting;
-	ds::Array<CubeEmitter*> _emitters;
+	//ds::Array<CubeEmitter*> _emitters;
 	ds::Array<CubeBehavior*> _behaviors;
 	ds::World* _world;
 	ds::V3Path _scale_path;

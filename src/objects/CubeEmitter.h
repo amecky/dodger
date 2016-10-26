@@ -1,63 +1,68 @@
 #pragma once
 #include <core\math\math.h>
 
+struct EmitterData {
+	v2 pos;
+	float rotation;
+
+	EmitterData() : pos(0.0f), rotation(0.0f) {}
+};
+// -----------------------------------------------
+// cube emitter
+// -----------------------------------------------
 class CubeEmitter {
 
 public:
-	virtual void next() = 0;
-	const v2& get() const {
-		return _position;
-	}
-	virtual v2 get(int index, int total) = 0;
+	virtual void prepare(int total) = 0;
+	virtual EmitterData next(int index = 0) = 0;
 protected:
-	v2 _position;
+	EmitterData _data;
+	uint32_t _total;
 };
 
+// -----------------------------------------------
+// test cube emitter
+// -----------------------------------------------
 class TestCubeEmitter : public CubeEmitter {
 
 public:
-	void next() {
-		_position = v2(512, 384);
+	void prepare(int total) {
+		_total = total;
+		_data.pos = v2(640, 360);
 	}
-
-	v2 get(int index, int total) {
-		return _position;
+	EmitterData next(int index = 0) {
+		return _data;
 	}
 };
 
+// -----------------------------------------------
+// random cube emitter
+// -----------------------------------------------
 class RandomCubeEmitter : public CubeEmitter {
 
 public:
-
-	void next() {
+	void prepare(int total) {
+		_total = total;
 		float x = math::random(150.0f, 900.0f);
 		float y = math::random(150.0f, 600.0f);
-		_position = v2(x, y);
+		_data.pos = v2(x, y);
 	}
-
-	v2 get(int index, int total) {
-		return _position;
+	EmitterData next(int index = 0) {
+		return _data;
 	}
 };
 
+// -----------------------------------------------
+// circle cube emitter
+// -----------------------------------------------
 class CircleCubeEmitter : public CubeEmitter {
 
 public:
 	CircleCubeEmitter(float radius) : _radius(radius) {}
-
-	void next() {
-		float x = math::random(150.0f, 900.0f);
-		float y = math::random(150.0f, 600.0f);
-		_position = v2(x, y);
-		_threshold = 4;
-		_ring = 1;
-		_cnt = 0;
-		_offset = math::random(0.0f, DEGTORAD(45.0f));
-	}
-
-	v2 get(int index, int total);
-
+	void prepare(int total);
+	EmitterData next(int index = 0);
 private:
+	v2 _position;
 	float _radius;
 	int _threshold;
 	int _cnt;
@@ -65,23 +70,49 @@ private:
 	float _offset;
 };
 
+// -----------------------------------------------
+// line cube emitter
+// -----------------------------------------------
 class LineCubeEmitter : public CubeEmitter {
 
 public:
 	LineCubeEmitter(float distance) : _distance(distance), _vertical(false) {}
-
+	void prepare(int total) {
+		_total = total;
+		float x = math::random(150.0f, 900.0f);
+		float y = math::random(150.0f, 600.0f);
+		_data.pos = v2(x, y);
+		_vertical = math::chanceRoll(50);
+	}
+	EmitterData next(int index = 0);
 	void next() {
 		float x = math::random(150.0f, 900.0f);
 		float y = math::random(150.0f, 600.0f);
-		_position = v2(x, y);
+		_data.pos = v2(x, y);
 		_vertical = math::chanceRoll(50);
 	}
-
-	v2 get(int index, int total);
-
 private:
 	bool _vertical;
 	float _distance;
+};
+
+// -----------------------------------------------
+// corner cube emitter
+// -----------------------------------------------
+class CornerCircleCubeEmitter : public CubeEmitter {
+
+public:
+	CornerCircleCubeEmitter(float radius) : _radius(radius) {}
+	void prepare(int total);
+	EmitterData next(int index = 0);
+private:
+	float _outerRadius;
+	v2 _position;
+	float _radius;
+	int _threshold;
+	int _cnt;
+	int _ring;
+	float _offset;
 };
 
 

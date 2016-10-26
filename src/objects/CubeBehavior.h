@@ -29,7 +29,7 @@ public:
 		_world->scaleByPath(id, &_scale_path, ttl);
 	}
 	virtual void tick(const ds::ActionEvent& event, ID target, int objectType) {}
-private:
+protected:
 	ds::V3Path _scale_path;
 };
 
@@ -38,8 +38,16 @@ class FollowerBehavior : public BaseBehavior {
 public:
 	FollowerBehavior(ds::World* world, GameSettings* settings) : BaseBehavior(world, settings) {}
 	virtual ~FollowerBehavior() {}
+	virtual void create(ID id) {
+		float ttl = math::random(1.25f, 1.5f);
+		//_world->scaleByPath(id, &_scale_path, ttl);
+		_world->scale(id, v3(0.2f, 0.2f, 0.0f), v3(1.0f), ttl);
+		v3 r = _world->getRotation(id);
+		v2 vel = math::getRadialVelocity(r.x, 20.0f);
+		_world->moveBy(id, vel, ttl);
+	}
 	virtual void tick(const ds::ActionEvent& event, ID target, int objectType) {
-		if (event.action == ds::AT_SCALE_BY_PATH) {
+		if (event.action == ds::AT_SCALE) {
 			_world->attachCollider(event.id, ds::PST_CIRCLE, v2(42.0f, 42.0f));
 			_world->seek(event.id, target, 150.0f);
 			_world->separate(event.id, objectType, 30.0f, 0.9f);

@@ -32,6 +32,7 @@ void Dodger::prepare(ds::Settings* settings) {
 	settings->fullScreen = false;
 	settings->reportingDirectory = "reports";
 	settings->synched = true;
+	settings->reloading = false;
 }
 // -------------------------------------------------------
 // Load content and prepare game

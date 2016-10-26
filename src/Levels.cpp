@@ -4,12 +4,7 @@
 const StaticHash NAMES[] = { SID("Follower"), SID("Wanderer"), SID("Spotter") };
 
 Levels::Levels(ds::World* world, GameSettings* settings) : _world(world), _active(false) , _timer(0.0f) {
-
-	_emitters.push_back(new TestCubeEmitter());
-	_emitters.push_back(new RandomCubeEmitter());
-	_emitters.push_back(new CircleCubeEmitter(40.0f));
-	_emitters.push_back(new LineCubeEmitter(50.0f));
-
+	
 	_scale_path.add(0.0f, v3(0.1f, 0.1f, 0.0f));
 	_scale_path.add(0.5f, v3(1.2f, 1.2f, 0.0f));
 	_scale_path.add(0.75f, v3(0.75f, 0.75f, 0.0f));
@@ -22,10 +17,19 @@ Levels::Levels(ds::World* world, GameSettings* settings) : _world(world), _activ
 
 
 Levels::~Levels() {
-	_emitters.destroy_all();
 	_behaviors.destroy_all();
 }
 
+CubeEmitter* Levels::getEmitter(int type, int total) {
+	switch (type) {
+		case 0: return new TestCubeEmitter(); break;
+		case 1: return new RandomCubeEmitter(); break;
+		case 2: return new CircleCubeEmitter(20.0f); break;
+		case 3: return new LineCubeEmitter(50.0f); break;
+		case 4: return new CornerCircleCubeEmitter(50.0f); break;
+		default: return new RandomCubeEmitter();
+	}
+}
 // -------------------------------------------------------
 // load
 // -------------------------------------------------------
@@ -109,9 +113,11 @@ void Levels::tick(ID target, float dt) {
 				actor->timer = 0.0f;
 				int num = actor->num;
 				if (actor->emitted < actor->total) {
-					actor->emitter->next();
+					actor->emitter->prepare(num);
 					for (int j = 0; j < num; ++j) {
-						ID id = _world->create(actor->emitter->get(j, num), actor->templateName);
+						const EmitterData ed = actor->emitter->next(j);
+						ID id = _world->create(ed.pos, actor->templateName);
+						_world->setRotation(id, ed.rotation);
 						actor->behavior->create(id);
 						actor->type = _world->getType(id);
 						//rotateTo(id, target);
@@ -175,7 +181,7 @@ StageActor* Levels::create(int level, int offset) {
 	actor->templateName = NAMES[li.cubeType];
 	actor->timer = 0.0f;
 	actor->initialDelay = li.initialDelay;
-	actor->emitter = _emitters[li.emitter];
+	actor->emitter = getEmitter(li.emitter,li.emitt);
 	actor->energy = li.energy;
 	actor->behavior = _behaviors[li.behavior];
 	return actor;

@@ -4,7 +4,7 @@ stage {
         id : 0
         emitt : 13
         delay : 5.0
-        emitter : 2
+        emitter : 4
         max : 65
 		energy : 1
 		behavior : 0
