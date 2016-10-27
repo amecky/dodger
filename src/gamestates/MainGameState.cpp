@@ -16,7 +16,7 @@ MainGameState::MainGameState(GameContext* context) : ds::GameState("MainGame"), 
 	_levels->load();
 
 	_hud = ds::res::getGUIDialog("HUD");
-
+	_levelRunning = false;
 	_level = 1;
 	_hud->setNumber(2, _level);
 }
@@ -161,8 +161,9 @@ int MainGameState::update(float dt) {
 
 	_levels->tick(_player, dt);
 
-	if (_levels->isActive() && (_kills == _levels->getNumberToKill())) {
+	if (_levelRunning && _levels->isActive() && (_kills == _levels->getNumberToKill())) {
 		LOG << "ALL KILLED - NEXT LEVEL!!!";
+		_levelRunning = false;
 	}
 	return 0;
 }
@@ -258,6 +259,7 @@ int MainGameState::onChar(int ascii) {
 	}
 	if (ascii == '1') {
 		_levels->start(_level);
+		_levelRunning = true;
 		_kills = 0;
 	}
 	return 0;

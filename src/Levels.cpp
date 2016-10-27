@@ -125,7 +125,7 @@ void Levels::tick(ID target, float dt) {
 						data->energy = actor->energy;
 					}					
 					actor->emitted += num;
-					LOG << "starting enemies - idx: " << i << " num: " << num << " emitted: " << actor->emitted;
+					//LOG << "starting enemies - idx: " << i << " num: " << num << " emitted: " << actor->emitted;
 				}
 			}
 			if (_world->hasEvents()) {

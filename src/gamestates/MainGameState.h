@@ -68,7 +68,7 @@ private:
 	v2 _cursor_pos;
 	bool _dying;
 	float _dying_timer;
-	
+	bool _levelRunning;
 	Levels* _levels;
 	int _level;
 	
