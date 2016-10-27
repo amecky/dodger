@@ -79,6 +79,7 @@ void MainGameState::killPlayer() {
 	_context->world->remove(_player);
 	_context->world->remove(_playerRing);
 	_context->world->remove(_cursor);
+	_levelRunning = false;
 }
 
 // -------------------------------------------------------
@@ -100,20 +101,17 @@ void MainGameState::movePlayer(float dt) {
 		vel.y -= 1.0f;
 	}
 	v2 cp = ds::input::getMousePosition();	
-	const ds::Viewport& vp = graphics::getViewport(_context->viewport_id);
-	v2 ncp = vp.convertToWorld(cp);
-	_context->world->setPosition(_cursor, ncp);
+	_context->world->setPosition(_cursor, cp);
 	v2 wp = _context->world->getPosition(_player).xy();
 	v2 pos = wp;
 	float angle = 0.0f;
-	ds::math::followRelative(ncp, wp, &_playerAngle, 5.0f, 1.1f * dt);
+	ds::math::followRelative(cp, wp, &_playerAngle, 5.0f, 1.1f * dt);
 	_context->world->setRotation(_player, _playerAngle);
 	pos += vel * 250.0f * dt;
 	if (ds::math::isInside(pos, ds::Rect(0, 0, 1600, 900))) {			
 		_context->world->setPosition(_player, pos);
 		_context->world->setPosition(_playerRing, pos);
 	}
-	graphics::setViewportPosition(_context->viewport_id, pos);
 }
 
 // -------------------------------------------------------
@@ -224,7 +222,6 @@ bool MainGameState::killEnemy(const ds::Collision& c, int objectType) {
 // render
 // -------------------------------------------------------
 void MainGameState::render() {	
-	graphics::selectViewport(_context->basic_viewport);
 	ds::SpriteBuffer* sprites = graphics::getSpriteBuffer();
 	sprites->begin();
 	_hud->render();
@@ -258,9 +255,14 @@ int MainGameState::onChar(int ascii) {
 		}
 	}
 	if (ascii == '1') {
-		_levels->start(_level);
-		_levelRunning = true;
-		_kills = 0;
+		if (!_levelRunning) {
+			_levels->start(_level);
+			_levelRunning = true;
+			_kills = 0;
+		}
+		else {
+			LOG << "There is already a level in progress";
+		}
 	}
 	return 0;
 }

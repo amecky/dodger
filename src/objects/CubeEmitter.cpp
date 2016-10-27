@@ -74,23 +74,23 @@ void CornerCircleCubeEmitter::prepare(int total) {
 			c = 0;
 		}
 	}
-	_outerRadius = r * _radius + 20.0f;
+	_outerRadius = r * _radius + 100.0f;
 	float angle = DEGTORAD(45.0f);
 	v2 p = v2(0, 0);
 	bool left = math::chanceRoll(50);
 	bool bottom = math::chanceRoll(50);
 	if (!left && bottom) {
 		angle += HALF_PI;
-		p = v2(1600, 0);
+		p = v2(WORLD_RECT.right, 0);
 	}
 	else if (!left && !bottom) {
 		angle += PI;
-		p = v2(1600, 720);
+		p = v2(WORLD_RECT.right, WORLD_RECT.bottom);
 	}
 	else if (left && !bottom) {
 		angle += PI;
 		angle += HALF_PI;
-		p = v2(0, 720);
+		p = v2(0, WORLD_RECT.bottom);
 	}
 	_position = p + math::getRadialVelocity(angle, _outerRadius);
 }

@@ -3,9 +3,9 @@ stage {
     cubes {
         id : 0
         emitt : 13
-        delay : 5.0
+        delay : 2.5
         emitter : 4
-        max : 65
+        max : 130
 		energy : 1
 		behavior : 0
 		initial_delay : 0.0

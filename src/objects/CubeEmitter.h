@@ -1,6 +1,8 @@
 #pragma once
 #include <core\math\math.h>
 
+const ds::Rect WORLD_RECT = ds::Rect(25, 20, 1230, 640);
+
 struct EmitterData {
 	v2 pos;
 	float rotation;

@@ -12,7 +12,5 @@ struct GameContext {
 	int points;
 	ds::World* world;
 	RID additiveBlendState; //
-	int viewport_id; //
-	int basic_viewport; //
 };
 
