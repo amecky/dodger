@@ -2,7 +2,7 @@
 #include <core\math\math.h>
 #include "..\Constants.h"
 #include <resources\ResourceContainer.h>
-
+#include <particles\modules\PointEmitterModule.h>
 // ---------------------------------------
 // Bullets
 // ---------------------------------------
@@ -27,7 +27,7 @@ void Bullets::tick(float dt) {
 				ID bullet = _world->create(pos, math::buildTexture(0, 410, 22, 8), OT_BULLET, r.x, v2(1.0f), ds::Color(249, 246, 194, 255));
 				BulletData* data = (BulletData*)_world->attach_data(bullet, sizeof(BulletData), OT_BULLET);
 				data->previous = pos;
-				data->sqrDist = 10.0f * 10.0f;
+				data->sqrDist = 4.0f * 4.0f;
 				v2 vel = math::getRadialVelocity(r.x, _settings->bullets.velocity);
 				_world->setRotation(bullet, r.x);
 				_world->moveBy(bullet, vel, -1.0f, false);
@@ -44,13 +44,17 @@ void Bullets::tick(float dt) {
 		const v3& p = _world->getPosition(ids[i]);
 		v3 d = p - data->previous;
 		if (sqr_length(d) > data->sqrDist) {
-			//LOG << "emitting trail";
-			//LOG << "id: " << ids[i] << " p: " << DBG_V3(p) << " prev: " << DBG_V3(data->previous);
 			const v3& r = _world->getRotation(ids[i]);
+			/*
 			ID trail = _world->create(data->previous.xy(), math::buildTexture(10, 407, 30, 14), OT_BULLET_TRAIL, r.x, v2(1.0f), ds::Color(249, 246, 194, 255));
 			_world->alphaFadeTo(trail, 1.0f, 0.0f, TTL);
 			_world->scale(trail, v3(1.0f, 0.5f, 0.0f), v3(1.5f, 0.2f, 0.0f), TTL);
 			_world->removeAfter(trail, TTL);
+			*/
+			ds::ParticleSystem* system = _particles->getParticleSystem(11);
+			ds::PointEmitterModuleData* peData = (ds::PointEmitterModuleData*)system->getData(ds::PM_POINT);
+			peData->rotation = r.x;
+			_particles->start(11, data->previous.xy());
 			data->previous = p;
 		}
 	}

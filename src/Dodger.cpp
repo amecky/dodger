@@ -32,7 +32,7 @@ void Dodger::prepare(ds::Settings* settings) {
 	settings->fullScreen = false;
 	settings->reportingDirectory = "reports";
 	settings->synched = true;
-	settings->reloading = false;
+	settings->reloading = true;
 }
 // -------------------------------------------------------
 // Load content and prepare game
@@ -71,6 +71,7 @@ bool Dodger::loadContent() {
 	//connectGameStates("GameOver", 1, "MainGame");
 	//connectGameStates("GameOver", 2, "MainMenuState");
 	connectGameStates("MainGame", 1, "GameOver");
+	connectGameStates("MainGame", 2, "ParticlesTestState");
 	connectGameStates("GameOver", 1, "MainGame");
 	//connectGameStates("MainMenuState", 3, "MainGame");
 

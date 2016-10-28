@@ -34,6 +34,14 @@ cube_appearance {
     id : 9
     file : "cube_appearance"
 }
+player_trail { 
+    id : 10
+    file : "player_trail"
+}
+bullet_trail { 
+    id : 11
+    file : "bullet_trail"
+}
 groups {
 	bomb_explosion {
 		id : 1

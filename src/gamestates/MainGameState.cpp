@@ -38,12 +38,12 @@ void MainGameState::init() {
 // activate
 // -------------------------------------------------------
 void MainGameState::activate() {
-	_player = _context->world->create(v2(800, 450), math::buildTexture(40, 0, 40, 40), OT_PLAYER);
+	_player = _context->world->create(v2(640, 360), math::buildTexture(40, 0, 40, 40), OT_PLAYER);
 	_context->world->attachCollider(_player, ds::PST_CIRCLE, v2(40.f, 0.0));
 	_playerAngle = 0.0f;
 	_cursor = _context->world->create(v2(700, 384), math::buildTexture(40, 160, 20, 20), 100);
-
-	_playerRing = _context->world->create(v2(100, 384), math::buildTexture(440, 0, 152, 152), OT_RING);
+	_playerPrevious = v2(640, 360);
+	_playerRing = _context->world->create(v2(640, 360), math::buildTexture(440, 0, 152, 152), OT_RING);
 	_bullets->stop();	
 	_hud->activate();
 }
@@ -111,6 +111,12 @@ void MainGameState::movePlayer(float dt) {
 	if (ds::math::isInside(pos, ds::Rect(0, 0, 1600, 900))) {			
 		_context->world->setPosition(_player, pos);
 		_context->world->setPosition(_playerRing, pos);
+		float distSqr = sqr_distance(pos, _playerPrevious);
+		float dmin = 10.0f;
+		if (distSqr > (dmin * dmin)) {
+			_context->particles->start(10, _playerPrevious);
+			_playerPrevious = pos;
+		}
 	}
 }
 
@@ -233,6 +239,9 @@ void MainGameState::render() {
 int MainGameState::onChar(int ascii) {	
 	if (ascii == 'e') {
 		return 1;
+	}
+	if (ascii == 'p') {
+		return 2;
 	}
 	if (ascii == '+') {
 		++_level;

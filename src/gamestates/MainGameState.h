@@ -60,6 +60,7 @@ private:
 	GameContext* _context;
 	ID _player;
 	ID _playerRing;
+	v2 _playerPrevious;
 	float _playerAngle;
 	ID _cursor;
 	ds::GUIDialog* _hud;
