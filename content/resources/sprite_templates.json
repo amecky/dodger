@@ -2,7 +2,7 @@ sprite {
     name : "Follower"
     texture_id : 0
     position : 640,360
-    rect : 80,280,25,25
+    rect : 140,300,60,60
     scale : 1,1
     rotation : 0
     color : 90,184,196,255

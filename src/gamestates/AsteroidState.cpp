@@ -1,4 +1,4 @@
-#include "MainGameState.h"
+#include "AsteroidState.h"
 #include <renderer\sprites.h>
 #include "..\Constants.h"
 #include <Vector.h>
@@ -8,42 +8,83 @@
 #include <core\math\GameMath.h>
 #include <core\io\ReportWriter.h>
 
-MainGameState::MainGameState(GameContext* context) : ds::GameState("MainGame"), _context(context) {
+const StaticHash ASTEROID_NAMES[] = { SID("HugeAsteroid"),SID("BigAsteroid"), SID("MediumAsteroid") };
+
+struct AsteroidInfo {
+	int energy;
+	float minVelocity;
+	float maxVelocity;
+	float radius;
+
+	AsteroidInfo(int e, float minVel, float maxVel, float r) : energy(e), minVelocity(minVel), maxVelocity(maxVel) , radius(r) {}
+};
+
+const AsteroidInfo ASTEROID_INFOS[] = {
+	{15,40.0f,60.0f, 180.0f},
+	{10,80.0f,100.0f, 120.0f},
+	{6,120.0f,150.0f, 90.0f}
+};
+
+AsteroidState::AsteroidState(GameContext* context) : ds::GameState("AsteroidState"), _context(context) {
 	
 	_bullets = new Bullets(_context->world, context->settings);
 
-	_levels = new Levels(_context->world, context->settings);
-	_levels->load();
-
 	_hud = ds::res::getGUIDialog("HUD");
-	_levelRunning = false;
-	_level = 1;
-	_hud->setNumber(2, _level);
 }
 
 
-MainGameState::~MainGameState() {
-	delete _levels;
+AsteroidState::~AsteroidState() {
 	delete _bullets;
 }
 
 // -------------------------------------------------------
 // init
 // -------------------------------------------------------
-void MainGameState::init() {
+void AsteroidState::init() {
 	
 }
 
+void AsteroidState::splitAsteroid(ID id) {
+	AsteroidData* data = (AsteroidData*)_context->world->get_data(id);
+	const AsteroidInfo& info = ASTEROID_INFOS[data->type];
+	if (data->type < 2) {
+		// FIXME: get angle between bullet and this one
+		v3 r = _context->world->getRotation(id);
+		v3 p = _context->world->getPosition(id);
+		float angle = r.x + HALF_PI;
+		v2 np = p.xy();
+		math::addRadial(np, 60.0f, angle);
+		startAsteroid(data->type + 1,np,angle);
+		angle += PI;
+		np = p.xy();
+		math::addRadial(np, 60.0f, angle);
+		startAsteroid(data->type + 1,np,angle);
+	}
+}
+
+void AsteroidState::startAsteroid(int type, const v2& pos, float angle) {
+	//ID id = _context->world->create(v2(240, 160), math::buildTexture(220, 40, 150, 150), OT_BIG_ASTEROID);
+	ID id = _context->world->create(pos, ASTEROID_NAMES[type]);
+	const AsteroidInfo& info = ASTEROID_INFOS[type];
+	//float a = math::random(0.0f, TWO_PI);
+	v2 vel = math::getRadialVelocity(angle, math::random(info.minVelocity,info.maxVelocity));
+	_context->world->moveBy(id, vel);
+	//_context->world->scaleAxes(id, 0, 1.0f, 0.8f, 1.5f, -1, tweening::easeSinus);
+	//_context->world->scaleAxes(id, 1, 1.0f, 1.2f, 2.5f, -1, tweening::easeSinus);
+	_context->world->attachCollider(id, ds::ShapeType::PST_CIRCLE, v2(info.radius));
+	AsteroidData* data = (AsteroidData*)_context->world->attach_data(id, sizeof(AsteroidData), type);
+	data->energy = info.energy;
+	data->type = type;
+}
 // -------------------------------------------------------
 // activate
 // -------------------------------------------------------
-void MainGameState::activate() {
+void AsteroidState::activate() {
 	_player = _context->world->create(v2(640, 360), math::buildTexture(40, 0, 40, 40), OT_PLAYER);
 	_context->world->attachCollider(_player, ds::PST_CIRCLE, v2(40.f, 0.0));
 	_playerAngle = 0.0f;
 	_cursor = _context->world->create(v2(700, 384), math::buildTexture(40, 160, 20, 20), 100);
 	_playerPrevious = v2(640, 360);
-	_playerRing = _context->world->create(v2(640, 360), math::buildTexture(440, 0, 152, 152), OT_RING);
 	_bullets->stop();	
 	_hud->activate();
 }
@@ -51,15 +92,14 @@ void MainGameState::activate() {
 // -------------------------------------------------------
 // dactivate
 // -------------------------------------------------------
-void MainGameState::deactivate() {
-	killPlayer();
+void AsteroidState::deactivate() {
 	_hud->deactivate();
 }
 
 // -------------------------------------------------------
 // on button up
 // -------------------------------------------------------
-int MainGameState::onButtonUp(int button, int x, int y) {
+int AsteroidState::onButtonUp(int button, int x, int y) {
 	_bullets->stop();
 	return 0;
 }
@@ -67,26 +107,23 @@ int MainGameState::onButtonUp(int button, int x, int y) {
 // -------------------------------------------------------
 // on button up
 // -------------------------------------------------------
-int MainGameState::onButtonDown(int button, int x, int y) {
+int AsteroidState::onButtonDown(int button, int x, int y) {
 	_bullets->start(_player);
 	return 0;
 }
 
-void MainGameState::killPlayer() {
+void AsteroidState::killPlayer() {
 	v2 wp = _context->world->getPosition(_player).xy();
 	_bullets->killAll();
-	_levels->killAll();
 	_context->particles->start(1, wp);
 	_context->world->remove(_player);
-	_context->world->remove(_playerRing);
 	_context->world->remove(_cursor);
-	_levelRunning = false;
 }
 
 // -------------------------------------------------------
 // move player
 // -------------------------------------------------------
-void MainGameState::movePlayer(float dt) {
+void AsteroidState::movePlayer(float dt) {
 	ZoneTracker u2("MainGameState::movePlayer");
 	v2 vel = v2(0.0f);
 	if (ds::input::getKeyState('A')) {
@@ -111,7 +148,6 @@ void MainGameState::movePlayer(float dt) {
 	pos += vel * 250.0f * dt;
 	if (ds::math::isInside(pos, ds::Rect(0, 0, 1600, 900))) {			
 		_context->world->setPosition(_player, pos);
-		_context->world->setPosition(_playerRing, pos);
 		float distSqr = sqr_distance(pos, _playerPrevious);
 		float dmin = 10.0f;
 		if (distSqr > (dmin * dmin)) {
@@ -124,7 +160,7 @@ void MainGameState::movePlayer(float dt) {
 // -------------------------------------------------------
 // Update
 // -------------------------------------------------------
-int MainGameState::update(float dt) {
+int AsteroidState::update(float dt) {
 	ZoneTracker u2("MainGameState::update");
 	movePlayer(dt);
 
@@ -163,37 +199,32 @@ int MainGameState::update(float dt) {
 	_bullets->tick(dt);
 
 	_hud->tick(dt);
-
-	_levels->tick(_player, dt);
-
-	if (_levelRunning && _levels->isActive() && (_kills == _levels->getNumberToKill())) {
-		LOG << "ALL KILLED - NEXT LEVEL!!!";
-		_levelRunning = false;
-	}
+	
 	return 0;
 }
 
 // -------------------------------------------------------
 // handle collisions
 // -------------------------------------------------------
-bool MainGameState::handleCollisions(float dt) {
+bool AsteroidState::handleCollisions(float dt) {
 	ZoneTracker u2("MainGameState::handleCollisions");
 	if (_context->world->hasCollisions()) {
 		uint32_t n = _context->world->numCollisions();
 		for (uint32_t i = 0; i < n; ++i) {
 			const ds::Collision& c = _context->world->getCollision(i);
-			if (c.isBetween(OT_PLAYER, OT_FOLLOWER)) {
-				killEnemy(c, OT_FOLLOWER);				
+			if (c.isBetween(OT_PLAYER, OT_BIG_ASTEROID)) {
+				killEnemy(c, OT_BIG_ASTEROID);
+				killPlayer();
 				return true;
 			}
-			else if (c.isBetween(OT_BULLET, OT_FOLLOWER)) {
-				killEnemy(c, OT_FOLLOWER);				
+			else if (c.isBetween(OT_BULLET, OT_BIG_ASTEROID)) {
+				killEnemy(c, OT_BIG_ASTEROID);
 			}
-			else if (c.isBetween(OT_BULLET, OT_WANDERER)) {
-				killEnemy(c, OT_WANDERER);
+			else if (c.isBetween(OT_BULLET, OT_HUGE_ASTEROID)) {
+				killEnemy(c, OT_HUGE_ASTEROID);
 			}
-			else if (c.isBetween(OT_BULLET, OT_SPOTTER)) {
-				killEnemy(c, OT_SPOTTER);				
+			else if (c.isBetween(OT_BULLET, OT_MEDIUM_ASTEROID)) {
+				killEnemy(c, OT_MEDIUM_ASTEROID);
 			}
 		}
 	}
@@ -203,16 +234,17 @@ bool MainGameState::handleCollisions(float dt) {
 // -------------------------------------------------------
 // kill enemy
 // -------------------------------------------------------
-bool MainGameState::killEnemy(const ds::Collision& c, int objectType) {
+bool AsteroidState::killEnemy(const ds::Collision& c, int objectType) {
 	bool ret = false;
 	ID id = c.getIDByType(objectType);
 	if (_context->world->contains(id)) {
-		CubeData* data = (CubeData*)_context->world->get_data(id);
+		AsteroidData* data = (AsteroidData*)_context->world->get_data(id);
 		--data->energy;
 		if (data->energy <= 0) {
 			v3 p = _context->world->getPosition(id);
 			_context->particles->start(5, p.xy());
 			_context->particles->start(6, p.xy());
+			splitAsteroid(id);
 			_context->world->remove(id);
 			++_kills;
 			ret = true;
@@ -227,7 +259,7 @@ bool MainGameState::killEnemy(const ds::Collision& c, int objectType) {
 // -------------------------------------------------------
 // render
 // -------------------------------------------------------
-void MainGameState::render() {	
+void AsteroidState::render() {
 	ds::SpriteBuffer* sprites = graphics::getSpriteBuffer();
 	sprites->begin();
 	_hud->render();
@@ -236,42 +268,18 @@ void MainGameState::render() {
 // -------------------------------------------------------
 // on char
 // -------------------------------------------------------
-int MainGameState::onChar(int ascii) {	
+int AsteroidState::onChar(int ascii) {
 	if (ascii == 'e') {
 		return 1;
 	}
-	if (ascii == 'p') {
-		return 2;
-	}
-	if (ascii == '+') {
-		++_level;
-		_hud->setNumber(2, _level);
-	}
-	if (ascii == '-') {
-		--_level;
-		if (_level < 0) {
-			_level = 0;
-		}
-		_hud->setNumber(2, _level);
+	if (ascii == '1') {
+		startAsteroid(0, v2(240, 160),math::random(0.0f,TWO_PI));
 	}
 	if (ascii == '2') {
-		for (int i = 0; i < 5; ++i) {
-			float x = math::random(100.0f, 900.0f);
-			float y = math::random(100.0f, 620.0f);
-			//_context->particles->start(1, v2(x, y));
-			_context->particles->start(5, v2(x, y));
-			_context->particles->start(6, v2(x, y));
-		}
+		startAsteroid(1, v2(240, 160), math::random(0.0f, TWO_PI));
 	}
-	if (ascii == '1') {
-		if (!_levelRunning) {
-			_levels->start(_level);
-			_levelRunning = true;
-			_kills = 0;
-		}
-		else {
-			LOG << "There is already a level in progress";
-		}
+	if (ascii == '3') {
+		startAsteroid(2, v2(240, 160), math::random(0.0f, TWO_PI));
 	}
 	return 0;
 }

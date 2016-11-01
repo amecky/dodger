@@ -12,7 +12,7 @@ template {
 	position : 100,200,0
 	scale : 1,1,1
 	rotation : 0,0,0
-	texture : 80,460,36,36
+	texture : 140,300,60,60
 	color : 255,255,255,255
 	type : 4
 }
@@ -33,4 +33,31 @@ template {
 	texture : 190,460,48,48
 	color : 255,255,255,255
 	type : 9
+}
+template {
+	name : "HugeAsteroid"
+	position : 100,200,0
+	scale : 1,1,1
+	rotation : 0,0,0
+	texture : 263,201,210,210
+	color : 255,255,255,255
+	type : 14
+}
+template {
+	name : "BigAsteroid"
+	position : 100,200,0
+	scale : 1,1,1
+	rotation : 0,0,0
+	texture : 220,40,150,150
+	color : 255,255,255,255
+	type : 13
+}
+template {
+	name : "MediumAsteroid"
+	position : 100,200,0
+	scale : 1,1,1
+	rotation : 0,0,0
+	texture : 510,196,120,120
+	color : 255,255,255,255
+	type : 15
 }

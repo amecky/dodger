@@ -6,7 +6,7 @@
 #include "gamestates\MainGameState.h"
 #include "gamestates\GameOverState.h"
 #include <particles\ParticlesTestState.h>
-//#include "gamestates\MainMenuState.h"
+#include "gamestates\AsteroidState.h"
 //#include "gamestates\HighscoreState.h"
 #include "GameContext.h"
 #include "GameSettings.h"
@@ -65,6 +65,7 @@ bool Dodger::loadContent() {
 	pts.screenSize = v2(1280, 720);
 	addGameState(new MainGameState(_context));
 	addGameState(new GameOverState(_context));
+	addGameState(new AsteroidState(_context));
 	addGameState(new ds::ParticlesTestState(pts));
 	//addGameState(new HighscoreState(gui, _context));
 	//addGameState(new MainMenuState(gui, _context));
@@ -84,7 +85,7 @@ bool Dodger::loadContent() {
 
 void Dodger::init() {
 	// for testing
-	activate("MainGame");
+	activate("AsteroidState");
 }
 
 
@@ -117,6 +118,14 @@ void Dodger::render() {
 	_context->particles->render();
 	graphics::selectViewport(0);
 	graphics::selectBlendState(0);
+	/*
+	v2 p(40, 700);
+	int s = 1;
+	gui::start(1, &p);
+	gui::begin("Test",&s);
+	gui::Label("Hello world");
+	gui::end();
+	*/
 }
 
 // -------------------------------------------------------

@@ -12,6 +12,10 @@ texture {
 	name : "TextureArray" 
 	file : "TextureArray.png"
 }
+texture {
+	name : "gui" 
+	file : "gui.png"
+}
 font {
 	name : "nullshock"
 	file : "nullshock.json"
@@ -19,6 +23,10 @@ font {
 font {
 	name : "gui_font"
 	file : "gui_font.json"
+}
+imgui {
+	font : "gui_font"
+	texture : "gui"
 }
 particle_manager {
 	sprite_buffer : "xxxx"
