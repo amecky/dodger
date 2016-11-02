@@ -9,6 +9,7 @@
 #include <particles\ParticleManager.h>
 #include "..\objects\Bullets.h"
 #include "..\Levels.h"
+#include "AsteroidDefinitions.h"
 
 struct AsteroidData {
 	int energy;
@@ -45,5 +46,6 @@ private:
 	Bullets* _bullets;
 	int _kills;
 	v2 _cursor_pos;
+	AsteroidDefinitions _definitions;
 };
 

@@ -8,28 +8,12 @@
 #include <core\math\GameMath.h>
 #include <core\io\ReportWriter.h>
 
-const StaticHash ASTEROID_NAMES[] = { SID("HugeAsteroid"),SID("BigAsteroid"), SID("MediumAsteroid") };
-
-struct AsteroidInfo {
-	int energy;
-	float minVelocity;
-	float maxVelocity;
-	float radius;
-
-	AsteroidInfo(int e, float minVel, float maxVel, float r) : energy(e), minVelocity(minVel), maxVelocity(maxVel) , radius(r) {}
-};
-
-const AsteroidInfo ASTEROID_INFOS[] = {
-	{15,40.0f,60.0f, 180.0f},
-	{10,80.0f,100.0f, 120.0f},
-	{6,120.0f,150.0f, 90.0f}
-};
-
 AsteroidState::AsteroidState(GameContext* context) : ds::GameState("AsteroidState"), _context(context) {
 	
 	_bullets = new Bullets(_context->world, context->settings);
 
 	_hud = ds::res::getGUIDialog("HUD");
+	_definitions.load();
 }
 
 
@@ -44,11 +28,13 @@ void AsteroidState::init() {
 	
 }
 
+// -------------------------------------------------------
+// split asteroid
+// -------------------------------------------------------
 void AsteroidState::splitAsteroid(ID id) {
 	AsteroidData* data = (AsteroidData*)_context->world->get_data(id);
-	const AsteroidInfo& info = ASTEROID_INFOS[data->type];
-	if (data->type < 2) {
-		// FIXME: get angle between bullet and this one
+	const AsteroidInfo& info = _definitions.getDefinition(data->type);
+	if (data->type < 3) {
 		v3 r = _context->world->getRotation(id);
 		v3 p = _context->world->getPosition(id);
 		float angle = r.x + HALF_PI;
@@ -62,11 +48,12 @@ void AsteroidState::splitAsteroid(ID id) {
 	}
 }
 
-void AsteroidState::startAsteroid(int type, const v2& pos, float angle) {
-	//ID id = _context->world->create(v2(240, 160), math::buildTexture(220, 40, 150, 150), OT_BIG_ASTEROID);
-	ID id = _context->world->create(pos, ASTEROID_NAMES[type]);
-	const AsteroidInfo& info = ASTEROID_INFOS[type];
-	//float a = math::random(0.0f, TWO_PI);
+// -------------------------------------------------------
+// start asteroid
+// -------------------------------------------------------
+void AsteroidState::startAsteroid(int type, const v2& pos, float angle) {	
+	const AsteroidInfo& info = _definitions.getDefinition(type);
+	ID id = _context->world->create(pos, info.objectHash);
 	v2 vel = math::getRadialVelocity(angle, math::random(info.minVelocity,info.maxVelocity));
 	_context->world->moveBy(id, vel);
 	//_context->world->scaleAxes(id, 0, 1.0f, 0.8f, 1.5f, -1, tweening::easeSinus);
@@ -76,6 +63,7 @@ void AsteroidState::startAsteroid(int type, const v2& pos, float angle) {
 	data->energy = info.energy;
 	data->type = type;
 }
+
 // -------------------------------------------------------
 // activate
 // -------------------------------------------------------
@@ -112,6 +100,9 @@ int AsteroidState::onButtonDown(int button, int x, int y) {
 	return 0;
 }
 
+// -------------------------------------------------------
+// kill player
+// -------------------------------------------------------
 void AsteroidState::killPlayer() {
 	v2 wp = _context->world->getPosition(_player).xy();
 	_bullets->killAll();
@@ -226,6 +217,9 @@ bool AsteroidState::handleCollisions(float dt) {
 			else if (c.isBetween(OT_BULLET, OT_MEDIUM_ASTEROID)) {
 				killEnemy(c, OT_MEDIUM_ASTEROID);
 			}
+			else if (c.isBetween(OT_BULLET, OT_SMALL_ASTEROID)) {
+				killEnemy(c, OT_SMALL_ASTEROID);
+			}
 		}
 	}
 	return false;
@@ -241,9 +235,9 @@ bool AsteroidState::killEnemy(const ds::Collision& c, int objectType) {
 		AsteroidData* data = (AsteroidData*)_context->world->get_data(id);
 		--data->energy;
 		if (data->energy <= 0) {
+			const AsteroidInfo& info = _definitions.getDefinition(data->type);
 			v3 p = _context->world->getPosition(id);
-			_context->particles->start(5, p.xy());
-			_context->particles->start(6, p.xy());
+			_context->particles->start(info.particlesID, p.xy());
 			splitAsteroid(id);
 			_context->world->remove(id);
 			++_kills;

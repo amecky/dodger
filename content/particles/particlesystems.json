@@ -42,6 +42,18 @@ bullet_trail {
     id : 11
     file : "bullet_trail"
 }
+huge_asteroid_explosion {
+	id : 12
+	file : "huge_asteroid_explosion"
+}
+big_asteroid_explosion {
+	id : 13
+	file : "big_asteroid_explosion"
+}
+medium_asteroid_explosion {
+	id : 14
+	file : "medium_asteroid_explosion"
+}
 groups {
 	bomb_explosion {
 		id : 1

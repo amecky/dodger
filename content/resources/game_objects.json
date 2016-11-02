@@ -39,7 +39,7 @@ template {
 	position : 100,200,0
 	scale : 1,1,1
 	rotation : 0,0,0
-	texture : 263,201,210,210
+	texture : 480,360,272,272
 	color : 255,255,255,255
 	type : 14
 }
@@ -48,7 +48,7 @@ template {
 	position : 100,200,0
 	scale : 1,1,1
 	rotation : 0,0,0
-	texture : 220,40,150,150
+	texture : 263,201,210,210
 	color : 255,255,255,255
 	type : 13
 }
@@ -57,7 +57,16 @@ template {
 	position : 100,200,0
 	scale : 1,1,1
 	rotation : 0,0,0
-	texture : 510,196,120,120
+	texture : 220,40,150,150
 	color : 255,255,255,255
 	type : 15
+}
+template {
+	name : "SmallAsteroid"
+	position : 100,200,0
+	scale : 1,1,1
+	rotation : 0,0,0
+	texture : 510,196,120,120
+	color : 255,255,255,255
+	type : 16
 }

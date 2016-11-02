@@ -1,0 +1,32 @@
+asteroid {
+    energy : 15
+	min_velocity : 40
+	max_velocity : 60
+	radius : 240
+	particlesID : 12
+	object_name : "HugeAsteroid"
+}
+asteroid {
+    energy : 10
+	min_velocity : 80
+	max_velocity : 100
+	radius : 180
+	particlesID : 13
+	object_name : "BigAsteroid"
+}
+asteroid {
+    energy : 6
+	min_velocity : 120
+	max_velocity : 150
+	radius : 120
+	particlesID : 14
+	object_name : "MediumAsteroid"
+}
+asteroid {
+    energy : 2
+	min_velocity : 200
+	max_velocity : 250
+	radius : 90
+	particlesID : 14
+	object_name : "SmallAsteroid"
+}
