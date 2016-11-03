@@ -28,7 +28,7 @@ void Bullets::tick(float dt) {
 				BulletData* data = (BulletData*)_world->attach_data(bullet, sizeof(BulletData), OT_BULLET);
 				data->previous = pos;
 				data->sqrDist = 4.0f * 4.0f;
-				v2 vel = math::getRadialVelocity(r.x, _settings->bullets.velocity);
+				v2 vel = math::getRadialVelocity(math::randomRange(r.x, DEGTORAD(5.0f)), _settings->bullets.velocity);
 				_world->setRotation(bullet, r.x);
 				_world->moveBy(bullet, vel, -1.0f, false);
 				_world->attachCollider(bullet, ds::PST_CIRCLE, v2(18.0f));

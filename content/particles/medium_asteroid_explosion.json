@@ -6,7 +6,7 @@ spawn {
     loop_delay : 0.0
 }
 ring_location {
-    radius : 45
+    radius : 60
     variance : 10
     angle_variance : 30
     step : 0

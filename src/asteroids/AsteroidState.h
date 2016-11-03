@@ -9,12 +9,7 @@
 #include <particles\ParticleManager.h>
 #include "..\objects\Bullets.h"
 #include "..\Levels.h"
-#include "AsteroidDefinitions.h"
-
-struct AsteroidData {
-	int energy;
-	int type;
-};
+#include "Asteroids.h"
 
 class AsteroidState : public ds::GameState {
 
@@ -34,8 +29,6 @@ private:
 	void movePlayer(float dt);
 	bool handleCollisions(float dt);
 	bool killEnemy(const ds::Collision& c, int objectType);
-	void startAsteroid(int type, const v2& pos,float angle);
-	void splitAsteroid(ID id);
 
 	GameContext* _context;
 	ID _player;
@@ -46,6 +39,6 @@ private:
 	Bullets* _bullets;
 	int _kills;
 	v2 _cursor_pos;
-	AsteroidDefinitions _definitions;
+	Asteroids* _asteroids;
 };
 

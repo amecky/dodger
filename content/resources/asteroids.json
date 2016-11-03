@@ -27,6 +27,6 @@ asteroid {
 	min_velocity : 200
 	max_velocity : 250
 	radius : 90
-	particlesID : 14
+	particlesID : 15
 	object_name : "SmallAsteroid"
 }

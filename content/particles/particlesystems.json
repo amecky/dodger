@@ -54,6 +54,10 @@ medium_asteroid_explosion {
 	id : 14
 	file : "medium_asteroid_explosion"
 }
+small_asteroid_explosion {
+	id : 15
+	file : "small_asteroid_explosion"
+}
 groups {
 	bomb_explosion {
 		id : 1

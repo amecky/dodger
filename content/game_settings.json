@@ -25,5 +25,5 @@ wanderer {
 }
 bullets {
 	velocity : 500
-	rate : 0.2
+	rate : 0.4
 }

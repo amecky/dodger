@@ -6,7 +6,7 @@
 #include "gamestates\MainGameState.h"
 #include "gamestates\GameOverState.h"
 #include <particles\ParticlesTestState.h>
-#include "gamestates\AsteroidState.h"
+#include "asteroids\AsteroidState.h"
 //#include "gamestates\HighscoreState.h"
 #include "GameContext.h"
 #include "GameSettings.h"
