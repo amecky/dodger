@@ -14,9 +14,11 @@ public:
 	Asteroids(GameContext* context);
 	~Asteroids();
 	void splitAsteroid(ID id);
+	void startAsteroid(int type);
 	void startAsteroid(int type, const v2& pos, float angle);
 	bool kill(ID id);
-private:
+	v2 pickStartPoint(float minRadius);
+private:	
 	AsteroidDefinitions _definitions;
 	GameContext* _context;
 };

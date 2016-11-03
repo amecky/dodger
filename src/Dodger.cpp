@@ -54,6 +54,9 @@ bool Dodger::loadContent() {
 	_context->world->ignoreCollisions(OT_FOLLOWER, OT_FOLLOWER);
 	_context->world->ignoreCollisions(OT_PLAYER, OT_BULLET);
 	_context->world->ignoreCollisions(OT_BULLET, OT_BULLET);
+	_context->world->ignoreCollisions(OT_HUGE_ASTEROID, OT_BIG_ASTEROID);
+	_context->world->ignoreCollisions(OT_HUGE_ASTEROID, OT_MEDIUM_ASTEROID);
+	_context->world->ignoreCollisions(OT_HUGE_ASTEROID, OT_SMALL_ASTEROID);
 	createBorder();
 
 	_context->particles = ds::res::getParticleManager();

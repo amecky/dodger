@@ -80,7 +80,7 @@ void AsteroidState::killPlayer() {
 // move player
 // -------------------------------------------------------
 void AsteroidState::movePlayer(float dt) {
-	ZoneTracker u2("MainGameState::movePlayer");
+	ZoneTracker u2("AsteroidState::movePlayer");
 	v2 vel = v2(0.0f);
 	if (ds::input::getKeyState('A')) {
 		vel.x -= 1.0f;
@@ -117,15 +117,16 @@ void AsteroidState::movePlayer(float dt) {
 // Update
 // -------------------------------------------------------
 int AsteroidState::update(float dt) {
-	ZoneTracker u2("MainGameState::update");
+	int idx = perf::startTimer("ASTEROID");
+	ZoneTracker u2("AsteroidState::update");
 	movePlayer(dt);
 
 	const v2 wp = _context->world->getPosition(_player).xy();
 
 	_context->world->tick(dt);
-
+	perf::endTimer(idx);
 	{
-		ZoneTracker u2("MainGameState::events");
+		ZoneTracker u2("AsteroidState::events");
 		uint32_t n = ds::events::num();
 		if (n > 0) {
 			for (uint32_t i = 0; i < n; ++i) {
@@ -141,7 +142,7 @@ int AsteroidState::update(float dt) {
 		return 1;
 	}
 	{
-		ZoneTracker u2("MainGameState::worldEvents");
+		ZoneTracker u2("AsteroidState::worldEvents");
 		if (_context->world->hasEvents()) {
 			uint32_t n = _context->world->numEvents();
 			for (uint32_t i = 0; i < n; ++i) {
@@ -153,9 +154,10 @@ int AsteroidState::update(float dt) {
 		}
 	}
 	_bullets->tick(dt);
-
-	_hud->tick(dt);
-	
+	{
+		ZoneTracker u2("AsteroidState::HUD");
+		_hud->tick(dt);
+	}
 	return 0;
 }
 
@@ -163,17 +165,18 @@ int AsteroidState::update(float dt) {
 // handle collisions
 // -------------------------------------------------------
 bool AsteroidState::handleCollisions(float dt) {
-	ZoneTracker u2("MainGameState::handleCollisions");
+	ZoneTracker u2("AsteroidState::handleCollisions");
 	if (_context->world->hasCollisions()) {
 		uint32_t n = _context->world->numCollisions();
 		for (uint32_t i = 0; i < n; ++i) {
 			const ds::Collision& c = _context->world->getCollision(i);
-			if (c.isBetween(OT_PLAYER, OT_BIG_ASTEROID)) {
-				killEnemy(c, OT_BIG_ASTEROID);
-				killPlayer();
-				return true;
-			}
-			else if (c.isBetween(OT_BULLET, OT_BIG_ASTEROID)) {
+			//if (c.isBetween(OT_PLAYER, OT_BIG_ASTEROID)) {
+				//killEnemy(c, OT_BIG_ASTEROID);
+				//killPlayer();
+				//return true;
+			//}
+			//else 
+			if (c.isBetween(OT_BULLET, OT_BIG_ASTEROID)) {
 				killEnemy(c, OT_BIG_ASTEROID);
 			}
 			else if (c.isBetween(OT_BULLET, OT_HUGE_ASTEROID)) {
@@ -222,14 +225,20 @@ int AsteroidState::onChar(int ascii) {
 	if (ascii == 'e') {
 		return 1;
 	}
+	if (ascii == 'q') {
+		v2 p = _asteroids->pickStartPoint(210.0f);
+	}
 	if (ascii == '1') {
-		_asteroids->startAsteroid(0, v2(240, 160),math::random(0.0f,TWO_PI));
+		_asteroids->startAsteroid(0);
 	}
 	if (ascii == '2') {
-		_asteroids->startAsteroid(1, v2(240, 160), math::random(0.0f, TWO_PI));
+		_asteroids->startAsteroid(1);
 	}
 	if (ascii == '3') {
-		_asteroids->startAsteroid(2, v2(240, 160), math::random(0.0f, TWO_PI));
+		_asteroids->startAsteroid(2);
+	}
+	if (ascii == '4') {
+		_asteroids->startAsteroid(3);
 	}
 	return 0;
 }

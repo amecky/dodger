@@ -1,5 +1,6 @@
 #include "Asteroids.h"
 
+const v2 CORNERS[] = { v2(40,90),v2(640,90),v2(1240,90),v2(1240,360),v2(1240,630),v2(640,630),v2(40,630),v2(40,360) };
 
 Asteroids::Asteroids(GameContext* context) : _context(context) {
 	_definitions.load();
@@ -29,6 +30,19 @@ void Asteroids::splitAsteroid(ID id) {
 	}
 }
 
+void Asteroids::startAsteroid(int type) {
+	const AsteroidInfo& info = _definitions.getDefinition(type);
+	int idx = math::random(0, 7);
+	float start = (idx + 1) * DEGTORAD(45.0f) - DEGTORAD(22.5f);
+	float end = (idx + 1) * DEGTORAD(45.0f) + DEGTORAD(22.5f);
+	float angle = math::random(start, end);
+	//LOG << "idx: " << idx << " start: " << RADTODEG(start) << " end: " << RADTODEG(end);
+	v2 p = CORNERS[idx];
+	float r = info.radius + math::random(0.0f, 0.4f) * info.radius;
+	math::addRadial(p, r, angle);
+	//LOG << "angle: " << RADTODEG(angle) << " pos: " << DBG_V2(p);
+	startAsteroid(type, p, angle);
+}
 // -------------------------------------------------------
 // start asteroid
 // -------------------------------------------------------
@@ -59,4 +73,19 @@ bool Asteroids::kill(ID id) {
 		}
 	}
 	return false;
+}
+
+
+
+v2 Asteroids::pickStartPoint(float minRadius) {
+	int idx = math::random(0, 7);
+	float start = (idx + 1) * DEGTORAD(45.0f) - DEGTORAD(22.5f);
+	float end = (idx + 1) * DEGTORAD(45.0f) + DEGTORAD(22.5f);
+	float angle = math::random(start, end);
+	LOG << "idx: " << idx << " start: " << RADTODEG(start) << " end: " << RADTODEG(end);
+	v2 p = CORNERS[idx];
+	float r = minRadius + math::random(0.0f, 0.4f) * minRadius;
+	math::addRadial(p, r, angle);
+	LOG << "angle: " << RADTODEG(angle) << " pos: " << DBG_V2(p);
+	return p;
 }
