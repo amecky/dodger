@@ -40,7 +40,7 @@ template {
 	scale : 1,1,1
 	rotation : 0,0,0
 	texture : 480,360,272,272
-	color : 255,255,255,255
+	color : 192,0,0,255
 	type : 14
 }
 template {
@@ -49,7 +49,7 @@ template {
 	scale : 1,1,1
 	rotation : 0,0,0
 	texture : 263,201,210,210
-	color : 255,255,255,255
+	color : 192,0,0,255
 	type : 13
 }
 template {
@@ -58,7 +58,7 @@ template {
 	scale : 1,1,1
 	rotation : 0,0,0
 	texture : 220,40,150,150
-	color : 255,255,255,255
+	color : 192,0,0,255
 	type : 15
 }
 template {
@@ -67,6 +67,6 @@ template {
 	scale : 1,1,1
 	rotation : 0,0,0
 	texture : 510,196,120,120
-	color : 255,255,255,255
+	color : 192,0,0,255
 	type : 16
 }

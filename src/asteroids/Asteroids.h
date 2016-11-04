@@ -5,6 +5,7 @@
 struct AsteroidData {
 	int energy;
 	int type;
+	float startAngle;
 };
 
 
@@ -17,9 +18,10 @@ public:
 	void startAsteroid(int type);
 	void startAsteroid(int type, const v2& pos, float angle);
 	bool kill(ID id);
-	v2 pickStartPoint(float minRadius);
+	void handleEvent(const ds::ActionEvent& event);
 private:	
 	AsteroidDefinitions _definitions;
 	GameContext* _context;
+	ds::V3Path _scale_path;
 };
 

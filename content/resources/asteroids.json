@@ -5,6 +5,7 @@ asteroid {
 	radius : 240
 	particlesID : 12
 	object_name : "HugeAsteroid"
+	rotation_velocity : 45
 }
 asteroid {
     energy : 10
@@ -13,6 +14,7 @@ asteroid {
 	radius : 180
 	particlesID : 13
 	object_name : "BigAsteroid"
+	rotation_velocity : 90
 }
 asteroid {
     energy : 6
@@ -21,6 +23,7 @@ asteroid {
 	radius : 120
 	particlesID : 14
 	object_name : "MediumAsteroid"
+	rotation_velocity : 120
 }
 asteroid {
     energy : 2
@@ -29,4 +32,5 @@ asteroid {
 	radius : 90
 	particlesID : 15
 	object_name : "SmallAsteroid"
+	rotation_velocity : 180
 }

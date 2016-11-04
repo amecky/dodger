@@ -150,6 +150,7 @@ int AsteroidState::update(float dt) {
 				if (event.action == ds::AT_MOVE_BY && event.type == OT_BULLET) {
 					_bullets->kill(event.id);
 				}
+				_asteroids->handleEvent(event);
 			}
 		}
 	}
@@ -224,9 +225,6 @@ void AsteroidState::render() {
 int AsteroidState::onChar(int ascii) {
 	if (ascii == 'e') {
 		return 1;
-	}
-	if (ascii == 'q') {
-		v2 p = _asteroids->pickStartPoint(210.0f);
 	}
 	if (ascii == '1') {
 		_asteroids->startAsteroid(0);

@@ -6,6 +6,7 @@ struct AsteroidInfo {
 	int energy;
 	float minVelocity;
 	float maxVelocity;
+	float rotationVelocity;
 	float radius;
 	int particlesID;
 	StaticHash objectHash;

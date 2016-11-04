@@ -4,8 +4,11 @@ const v2 CORNERS[] = { v2(40,90),v2(640,90),v2(1240,90),v2(1240,360),v2(1240,630
 
 Asteroids::Asteroids(GameContext* context) : _context(context) {
 	_definitions.load();
+	_scale_path.add(0.0f, v3(0.8f, 0.8f, 0.0f));
+	_scale_path.add(0.5f, v3(1.1f, 1.1f, 0.0f));
+	_scale_path.add(0.75f, v3(0.9f, 0.9f, 0.0f));
+	_scale_path.add(1.0f, v3(1.0f, 1.0f, 0.0f));
 }
-
 
 Asteroids::~Asteroids() {
 }
@@ -30,35 +33,54 @@ void Asteroids::splitAsteroid(ID id) {
 	}
 }
 
+// -------------------------------------------------------
+// start asteroid
+// -------------------------------------------------------
 void Asteroids::startAsteroid(int type) {
 	const AsteroidInfo& info = _definitions.getDefinition(type);
 	int idx = math::random(0, 7);
 	float start = (idx + 1) * DEGTORAD(45.0f) - DEGTORAD(22.5f);
 	float end = (idx + 1) * DEGTORAD(45.0f) + DEGTORAD(22.5f);
 	float angle = math::random(start, end);
-	//LOG << "idx: " << idx << " start: " << RADTODEG(start) << " end: " << RADTODEG(end);
 	v2 p = CORNERS[idx];
-	float r = info.radius + math::random(0.0f, 0.4f) * info.radius;
+	float r = info.radius * 0.2f;
 	math::addRadial(p, r, angle);
-	//LOG << "angle: " << RADTODEG(angle) << " pos: " << DBG_V2(p);
 	startAsteroid(type, p, angle);
 }
+
 // -------------------------------------------------------
 // start asteroid
 // -------------------------------------------------------
 void Asteroids::startAsteroid(int type, const v2& pos, float angle) {
 	const AsteroidInfo& info = _definitions.getDefinition(type);
-	ID id = _context->world->create(pos, info.objectHash);
-	v2 vel = math::getRadialVelocity(angle, math::random(info.minVelocity, info.maxVelocity));
-	_context->world->moveBy(id, vel);
-	//_context->world->scaleAxes(id, 0, 1.0f, 0.8f, 1.5f, -1, tweening::easeSinus);
-	//_context->world->scaleAxes(id, 1, 1.0f, 1.2f, 2.5f, -1, tweening::easeSinus);
-	_context->world->attachCollider(id, ds::ShapeType::PST_CIRCLE, v2(info.radius));
+	ID id = _context->world->create(pos, info.objectHash);	
+	float ttl = math::random(0.2f, 0.4f);
+	_context->world->scaleByPath(id, &_scale_path, ttl);
 	AsteroidData* data = (AsteroidData*)_context->world->attach_data(id, sizeof(AsteroidData), type);
 	data->energy = info.energy;
 	data->type = type;
+	data->startAngle = angle;
 }
 
+// -------------------------------------------------------
+// handle event
+// -------------------------------------------------------
+void Asteroids::handleEvent(const ds::ActionEvent& event) {
+	if (event.action == ds::AT_SCALE_BY_PATH) {
+		if (event.type == OT_HUGE_ASTEROID || event.type == OT_BIG_ASTEROID || event.type == OT_MEDIUM_ASTEROID || event.type == OT_SMALL_ASTEROID) {
+			AsteroidData* data = (AsteroidData*)_context->world->get_data(event.id);
+			const AsteroidInfo& info = _definitions.getDefinition(data->type);
+			v2 vel = math::getRadialVelocity(data->startAngle, math::random(info.minVelocity, info.maxVelocity));
+			_context->world->moveBy(event.id, vel);
+			_context->world->rotate(event.id, v3(info.rotationVelocity, 0.0f, 0.0f), -1.0f);
+			_context->world->attachCollider(event.id, ds::ShapeType::PST_CIRCLE, v2(info.radius));
+		}
+	}
+}
+
+// -------------------------------------------------------
+// kill
+// -------------------------------------------------------
 bool Asteroids::kill(ID id) {
 	if (_context->world->contains(id)) {
 		AsteroidData* data = (AsteroidData*)_context->world->get_data(id);
@@ -75,17 +97,3 @@ bool Asteroids::kill(ID id) {
 	return false;
 }
 
-
-
-v2 Asteroids::pickStartPoint(float minRadius) {
-	int idx = math::random(0, 7);
-	float start = (idx + 1) * DEGTORAD(45.0f) - DEGTORAD(22.5f);
-	float end = (idx + 1) * DEGTORAD(45.0f) + DEGTORAD(22.5f);
-	float angle = math::random(start, end);
-	LOG << "idx: " << idx << " start: " << RADTODEG(start) << " end: " << RADTODEG(end);
-	v2 p = CORNERS[idx];
-	float r = minRadius + math::random(0.0f, 0.4f) * minRadius;
-	math::addRadial(p, r, angle);
-	LOG << "angle: " << RADTODEG(angle) << " pos: " << DBG_V2(p);
-	return p;
-}
