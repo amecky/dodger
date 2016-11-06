@@ -10,6 +10,7 @@
 //#include "gamestates\HighscoreState.h"
 #include "GameContext.h"
 #include "GameSettings.h"
+#include "asteroids\WarpingGrid.h"
 
 ds::BaseApp *app = new Dodger();
 
@@ -19,6 +20,7 @@ Dodger::Dodger() : ds::BaseApp() {
 Dodger::~Dodger() {
 	delete _context->settings;
 	delete _context->world;
+	delete _context->grid;
 	delete _context;
 }
 
@@ -47,6 +49,8 @@ bool Dodger::loadContent() {
 	_context = new GameContext;
 	_context->settings = new GameSettings;
 	_context->settings->load();
+	_context->grid = new WarpingGrid;
+	_context->grid->createGrid();
 
 	_context->world = new ds::World;
 	_context->world->setBoundingRect(ds::Rect(25, 20, 1230, 640));
@@ -96,6 +100,7 @@ void Dodger::init() {
 // Update
 // -------------------------------------------------------
 void Dodger::update(float dt) {
+	_context->grid->tick(dt);
 }
 
 // -------------------------------------------------------
@@ -103,6 +108,7 @@ void Dodger::update(float dt) {
 // -------------------------------------------------------
 void Dodger::render() {
 	//drawBorder();
+	_context->grid->render();
 	ds::SpriteBuffer* sprites = graphics::getSpriteBuffer();
 	ds::ChannelArray* array = _context->world->getChannelArray();
 	v3* positions = (v3*)array->get_ptr(ds::WEC_POSITION);
@@ -136,10 +142,10 @@ void Dodger::render() {
 // -------------------------------------------------------
 void Dodger::createBorder() {
 	// background
-	_context->world->create(v2(480, 306), math::buildTexture(0, 512, 480, 306), OT_WALL, 0.0f, v2(2.0f, 2.0f));
-	_context->world->create(v2(1120, 306), math::buildTexture(0, 512, 160, 306), OT_WALL, 0.0f, v2(2.0f, 2.0f));
-	_context->world->create(v2(480, 756), math::buildTexture(0, 512, 480, 144), OT_WALL, 0.0f, v2(2.0f, 2.0f));
-	_context->world->create(v2(1280, 756), math::buildTexture(0, 512, 320, 144), OT_WALL, 0.0f, v2(2.0f, 2.0f));
+	//_context->world->create(v2(480, 306), math::buildTexture(0, 512, 480, 306), OT_WALL, 0.0f, v2(2.0f, 2.0f));
+	//_context->world->create(v2(1120, 306), math::buildTexture(0, 512, 160, 306), OT_WALL, 0.0f, v2(2.0f, 2.0f));
+	//_context->world->create(v2(480, 756), math::buildTexture(0, 512, 480, 144), OT_WALL, 0.0f, v2(2.0f, 2.0f));
+	//_context->world->create(v2(1280, 756), math::buildTexture(0, 512, 320, 144), OT_WALL, 0.0f, v2(2.0f, 2.0f));
 	// 4 corners
 	_context->world->create(v2(40, 640), math::buildTexture(840, 0, 40, 60), OT_WALL, 0.0f, v2(1.0f, 1.0f), _border_color);
 	_context->world->create(v2(40, 40), math::buildTexture(940, 0, 40, 60), OT_WALL, 0.0f, v2(1.0f, 1.0f), _border_color);

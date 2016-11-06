@@ -3,13 +3,19 @@
 #include <renderer\render_types.h>
 #include <imgui\IMGUI.h>
 #include "..\GameContext.h"
-#include "..\EventBuffer.h"
 #include <core\lib\DataArray.h>
 #include <core\world\World.h>
 #include <particles\ParticleManager.h>
 #include "..\objects\Bullets.h"
 #include "..\Levels.h"
 #include "Asteroids.h"
+#include "Stages.h"
+
+struct Player {
+	ID id;
+	v2 previous;
+	float angle;
+};
 
 class AsteroidState : public ds::GameState {
 
@@ -31,14 +37,15 @@ private:
 	bool killEnemy(const ds::Collision& c, int objectType);
 
 	GameContext* _context;
-	ID _player;
-	v2 _playerPrevious;
-	float _playerAngle;
+	Player _player;
 	ID _cursor;
 	ds::GUIDialog* _hud;
 	Bullets* _bullets;
 	int _kills;
 	v2 _cursor_pos;
 	Asteroids* _asteroids;
+	Stages _stages;
+	int _activeStage;
+	
 };
 

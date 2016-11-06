@@ -5,6 +5,8 @@
 #include <particles\ParticleManager.h>
 #include <core\world\World.h>
 
+class WarpingGrid;
+
 struct GameContext {
 
 	GameSettings* settings;
@@ -12,5 +14,6 @@ struct GameContext {
 	int points;
 	ds::World* world;
 	RID additiveBlendState; //
+	WarpingGrid* grid;
 };
 

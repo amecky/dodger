@@ -3,7 +3,6 @@
 #include <renderer\render_types.h>
 #include <imgui\IMGUI.h>
 #include "..\GameContext.h"
-#include "..\EventBuffer.h"
 #include <core\lib\DataArray.h>
 #include <core\world\World.h>
 #include <particles\ParticleManager.h>

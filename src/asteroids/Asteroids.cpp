@@ -1,4 +1,5 @@
 #include "Asteroids.h"
+#include "WarpingGrid.h"
 
 const v2 CORNERS[] = { v2(40,90),v2(640,90),v2(1240,90),v2(1240,360),v2(1240,630),v2(640,630),v2(40,630),v2(40,360) };
 
@@ -89,11 +90,20 @@ bool Asteroids::kill(ID id) {
 			const AsteroidInfo& info = _definitions.getDefinition(data->type);
 			v3 p = _context->world->getPosition(id);
 			_context->particles->start(info.particlesID, p.xy());
+			_context->grid->applyForce(p.xy(), 0.1f, info.radius - 20.0f, info.radius + 20.0f);
 			splitAsteroid(id);
 			_context->world->remove(id);
 			return true;
 		}
 	}
 	return false;
+}
+
+// -------------------------------------------------------
+// get info
+// -------------------------------------------------------
+const AsteroidInfo& Asteroids::getInfo(ID id) const {
+	AsteroidData* data = (AsteroidData*)_context->world->get_data(id);
+	return _definitions.getDefinition(data->type);
 }
 

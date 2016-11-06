@@ -19,6 +19,7 @@ public:
 	void startAsteroid(int type, const v2& pos, float angle);
 	bool kill(ID id);
 	void handleEvent(const ds::ActionEvent& event);
+	const AsteroidInfo& getInfo(ID id) const;
 private:	
 	AsteroidDefinitions _definitions;
 	GameContext* _context;

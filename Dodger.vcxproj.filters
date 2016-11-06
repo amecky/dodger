@@ -5,21 +5,34 @@
     <ClCompile Include="src\gamestates\MainGameState.cpp">
       <Filter>gamestates</Filter>
     </ClCompile>
+    <ClCompile Include="src\objects\Bullets.cpp">
+      <Filter>objects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Levels.cpp" />
+    <ClCompile Include="src\objects\CubeBehavior.cpp">
+      <Filter>objects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\objects\CubeEmitter.cpp">
+      <Filter>objects</Filter>
+    </ClCompile>
     <ClCompile Include="src\gamestates\GameOverState.cpp">
       <Filter>gamestates</Filter>
     </ClCompile>
-    <ClCompile Include="src\gamestates\HighscoreState.cpp">
-      <Filter>gamestates</Filter>
+    <ClCompile Include="src\asteroids\AsteroidDefinitions.cpp">
+      <Filter>asteroids</Filter>
     </ClCompile>
-    <ClCompile Include="src\gamestates\MainMenuState.cpp">
-      <Filter>gamestates</Filter>
+    <ClCompile Include="src\asteroids\Asteroids.cpp">
+      <Filter>asteroids</Filter>
     </ClCompile>
-    <ClCompile Include="src\BallEmitter.cpp" />
-    <ClCompile Include="src\Bombs.cpp" />
-    <ClCompile Include="src\utils\Numbers.cpp">
-      <Filter>utils</Filter>
+    <ClCompile Include="src\asteroids\AsteroidState.cpp">
+      <Filter>asteroids</Filter>
     </ClCompile>
-    <ClCompile Include="src\Cubes.cpp" />
+    <ClCompile Include="src\asteroids\Stages.cpp">
+      <Filter>asteroids</Filter>
+    </ClCompile>
+    <ClCompile Include="src\asteroids\WarpingGrid.cpp">
+      <Filter>asteroids</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -28,38 +41,41 @@
     <ClInclude Include="src\gamestates\MainGameState.h">
       <Filter>gamestates</Filter>
     </ClInclude>
+    <ClInclude Include="src\GameContext.h" />
+    <ClInclude Include="src\GameSettings.h" />
+    <ClInclude Include="src\objects\Bullets.h">
+      <Filter>objects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Levels.h" />
+    <ClInclude Include="src\objects\CubeBehavior.h">
+      <Filter>objects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\objects\CubeEmitter.h">
+      <Filter>objects</Filter>
+    </ClInclude>
     <ClInclude Include="src\gamestates\GameOverState.h">
       <Filter>gamestates</Filter>
     </ClInclude>
-    <ClInclude Include="src\GameContext.h" />
-    <ClInclude Include="src\gamestates\HighscoreState.h">
-      <Filter>gamestates</Filter>
+    <ClInclude Include="src\asteroids\AsteroidDefinitions.h">
+      <Filter>asteroids</Filter>
     </ClInclude>
-    <ClInclude Include="src\gamestates\MainMenuState.h">
-      <Filter>gamestates</Filter>
+    <ClInclude Include="src\asteroids\Asteroids.h">
+      <Filter>asteroids</Filter>
     </ClInclude>
-    <ClInclude Include="src\GameSettings.h" />
-    <ClInclude Include="src\BallEmitter.h" />
-    <ClInclude Include="src\Bombs.h" />
-    <ClInclude Include="src\EventBuffer.h" />
-    <ClInclude Include="src\utils\Numbers.h">
-      <Filter>utils</Filter>
+    <ClInclude Include="src\asteroids\AsteroidState.h">
+      <Filter>asteroids</Filter>
     </ClInclude>
-    <ClInclude Include="src\Cubes.h" />
+    <ClInclude Include="src\asteroids\Stages.h">
+      <Filter>asteroids</Filter>
+    </ClInclude>
+    <ClInclude Include="src\asteroids\WarpingGrid.h">
+      <Filter>asteroids</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Dodger.manifest" />
     <None Include="README.md" />
     <None Include="TODO.md" />
-    <None Include="content\resources\gui.json">
-      <Filter>content\resources</Filter>
-    </None>
-    <None Include="content\resources\xscale.json">
-      <Filter>content\resources</Filter>
-    </None>
-    <None Include="content\resources\hud.json">
-      <Filter>content\resources</Filter>
-    </None>
     <None Include="content\engine_settings.json">
       <Filter>content</Filter>
     </None>
@@ -108,9 +124,6 @@
     <None Include="content\resources\sprite_templates.json">
       <Filter>content\resources</Filter>
     </None>
-    <None Include="content\particles\bomb_ring_explosion.json">
-      <Filter>content\particles</Filter>
-    </None>
     <None Include="content\game_settings.json">
       <Filter>content</Filter>
     </None>
@@ -118,6 +131,24 @@
       <Filter>content\particles</Filter>
     </None>
     <None Include="content\particles\bomb_appearance.json">
+      <Filter>content\particles</Filter>
+    </None>
+    <None Include="content\resources.json">
+      <Filter>content</Filter>
+    </None>
+    <None Include="content\particles\bullet_explosion.json">
+      <Filter>content\particles</Filter>
+    </None>
+    <None Include="content\resources\game_objects.json">
+      <Filter>content\resources</Filter>
+    </None>
+    <None Include="content\resources\nullshock.json">
+      <Filter>content\resources</Filter>
+    </None>
+    <None Include="content\resources\levels.json">
+      <Filter>content\resources</Filter>
+    </None>
+    <None Include="content\particles\bomb_ring_explosion.json">
       <Filter>content\particles</Filter>
     </None>
   </ItemGroup>
@@ -137,11 +168,14 @@
     <Filter Include="content\dialogs">
       <UniqueIdentifier>{737affd4-15f5-4960-acb2-a51b81da8eef}</UniqueIdentifier>
     </Filter>
-    <Filter Include="utils">
-      <UniqueIdentifier>{2b47d801-95d7-4908-8099-c65ffae203b1}</UniqueIdentifier>
-    </Filter>
     <Filter Include="content\particles">
       <UniqueIdentifier>{14b057e9-2797-4cc1-ad83-f4a130ff52b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="objects">
+      <UniqueIdentifier>{0aa8c48c-6919-4804-9637-dac155ac0137}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="asteroids">
+      <UniqueIdentifier>{2751a97d-7205-41f6-b831-cf0d414388b3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

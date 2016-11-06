@@ -2,10 +2,29 @@ stage {
     index : 0
     entry {
         type : 2
-        initial_delay : 4
+        initial_delay : 0
         delay : 4
         delay_variance : 2
         total : 10
         emitt : 2
+    }
+}
+stage {
+    index : 1
+    entry {
+        type : 3
+        initial_delay : 0
+        delay : 4
+        delay_variance : 2
+        total : 10
+        emitt : 2
+    }
+    entry {
+        type : 1
+        initial_delay : 4
+        delay : 4
+        delay_variance : 2
+        total : 6
+        emitt : 1
     }
 }
