@@ -58,6 +58,14 @@ small_asteroid_explosion {
 	id : 15
 	file : "small_asteroid_explosion"
 }
+asteroid_streaks {
+	id : 16
+	file : "asteroid_streaks"
+}
+asteroid_explosion {
+	id : 17
+	file : "asteroid_explosion"
+}
 groups {
 	bomb_explosion {
 		id : 1

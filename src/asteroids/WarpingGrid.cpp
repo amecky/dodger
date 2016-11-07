@@ -5,6 +5,8 @@
 const float TIME_STEPSIZE2 = 0.95f * 0.95f;
 
 WarpingGrid::WarpingGrid(GameSettings* settings) : _settings(settings) {
+	_dotTex = math::buildTexture(40, 120, 4, 4);
+	_lineTex = math::buildTexture(42, 122, 10, 2);
 }
 
 WarpingGrid::~WarpingGrid() {
@@ -174,16 +176,17 @@ void WarpingGrid::applyForce(p2i p, const v2& f) {
 // render
 // -------------------------------------------------------
 void WarpingGrid::render() {
+	ZoneTracker z("WarpingGrid::render");
 	ds::SpriteBuffer* sprites = graphics::getSpriteBuffer();
 	for (int y = 0; y < GRID_DIM_Y; ++y) {
 		for (int x = 0; x < GRID_DIM_X; ++x) {
 			const GridPoint& gp = _grid[x][y];
-			sprites->draw(gp.pos, math::buildTexture(40, 120, 4, 4),0.0f,v2(1,1), gp.color);
+			sprites->draw(gp.pos, _dotTex,0.0f,v2(1,1), gp.color);
 			if (x > 0) {
-				sprites->drawLine(_grid[x-1][y].pos, gp.pos, math::buildTexture(42, 122, 10, 2), gp.color);
+				sprites->drawLine(_grid[x-1][y].pos, gp.pos, _lineTex, gp.color);
 			}
 			if (y > 0) {
-				sprites->drawLine(_grid[x][y-1].pos, gp.pos, math::buildTexture(42, 122, 10, 2), gp.color);
+				sprites->drawLine(_grid[x][y-1].pos, gp.pos, _lineTex, gp.color);
 			}
 		}
 	}

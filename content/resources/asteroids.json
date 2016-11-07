@@ -3,7 +3,7 @@ asteroid {
 	min_velocity : 40
 	max_velocity : 60
 	radius : 240
-	particlesID : 12
+	particles : 128
 	object_name : "HugeAsteroid"
 	rotation_velocity : 45
 }
@@ -12,7 +12,7 @@ asteroid {
 	min_velocity : 80
 	max_velocity : 100
 	radius : 180
-	particlesID : 13
+	particles : 96
 	object_name : "BigAsteroid"
 	rotation_velocity : 90
 }
@@ -21,7 +21,7 @@ asteroid {
 	min_velocity : 120
 	max_velocity : 150
 	radius : 120
-	particlesID : 14
+	particles : 64
 	object_name : "MediumAsteroid"
 	rotation_velocity : 120
 }
@@ -30,7 +30,7 @@ asteroid {
 	min_velocity : 200
 	max_velocity : 250
 	radius : 90
-	particlesID : 15
+	particles : 48
 	object_name : "SmallAsteroid"
 	rotation_velocity : 180
 }

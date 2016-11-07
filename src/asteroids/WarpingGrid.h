@@ -43,5 +43,7 @@ private:
 	GridPoint _grid[GRID_DIM_X][GRID_DIM_Y];
 	ds::Array<Spring> _springs;
 	GameSettings* _settings;
+	ds::Texture _dotTex;
+	ds::Texture _lineTex;
 };
 

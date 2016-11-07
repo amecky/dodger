@@ -21,6 +21,7 @@ public:
 	void handleEvent(const ds::ActionEvent& event);
 	const AsteroidInfo& getInfo(ID id) const;
 private:	
+	void startParticles(int id, const AsteroidInfo& info, const v2& pos);
 	AsteroidDefinitions _definitions;
 	GameContext* _context;
 	ds::V3Path _scale_path;

@@ -24,7 +24,7 @@ bool AsteroidDefinitions::loadData(const ds::JSONReader& loader) {
 		float rv = 0.0f;
 		loader.get(categories[i], "rotation_velocity", &rv);
 		info.rotationVelocity = DEGTORAD(rv);
-		loader.get_int(categories[i], "particlesID", &info.particlesID);
+		loader.get_int(categories[i], "particles", &info.particles);
 		const char* objectName = loader.get_string(categories[i], "object_name");
 		info.objectHash = StaticHash(objectName);
 		_infos.push_back(info);

@@ -25,6 +25,8 @@ const int BALL_EXPLOSION      = 7;
 const int BOMB_STARTUP        = 11;
 const int BIG_CUBE_EXPLOSION  = 6;
 const int HUGE_CUBE_EXPLOSION = 6;
+const int ASTEROID_EXPLOSION = 17;
+const int ASTEROID_STREAKS = 16;
 
 // objects types
 enum ObjectType {

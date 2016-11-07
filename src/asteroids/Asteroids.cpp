@@ -1,5 +1,6 @@
 #include "Asteroids.h"
 #include "WarpingGrid.h"
+#include <particles\modules\RingEmitterModule.h>
 
 const v2 CORNERS[] = { v2(40,90),v2(640,90),v2(1240,90),v2(1240,360),v2(1240,630),v2(640,630),v2(40,630),v2(40,360) };
 
@@ -80,6 +81,18 @@ void Asteroids::handleEvent(const ds::ActionEvent& event) {
 }
 
 // -------------------------------------------------------
+// start particles
+// -------------------------------------------------------
+void Asteroids::startParticles(int id, const AsteroidInfo& info, const v2& pos) {
+	ds::ParticleSystem* system = _context->particles->getParticleSystem(id);
+	ds::ParticleSpawner* spawner = system->getSpawner();
+	spawner->rate = info.particles;
+	ds::RingEmitterModuleData* emitter = (ds::RingEmitterModuleData*)system->getData(ds::ParticleModuleType::PM_RING);
+	emitter->radius = info.radius * 0.5f;
+	_context->particles->start(id, pos);
+}
+
+// -------------------------------------------------------
 // kill
 // -------------------------------------------------------
 bool Asteroids::kill(ID id) {
@@ -89,7 +102,10 @@ bool Asteroids::kill(ID id) {
 		if (data->energy <= 0) {
 			const AsteroidInfo& info = _definitions.getDefinition(data->type);
 			v3 p = _context->world->getPosition(id);
-			_context->particles->start(info.particlesID, p.xy());
+
+			startParticles(ASTEROID_EXPLOSION, info, p.xy());
+			startParticles(ASTEROID_STREAKS, info, p.xy());
+
 			_context->grid->applyForce(p.xy(), 0.1f, info.radius - 20.0f, info.radius + 20.0f);
 			splitAsteroid(id);
 			_context->world->remove(id);
