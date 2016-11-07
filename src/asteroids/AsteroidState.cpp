@@ -114,7 +114,7 @@ void AsteroidState::movePlayer(float dt) {
 			_player.previous = pos;
 		}
 	}
-	_context->grid->applyForce(pos, 0.2f, 20.0f);
+	//_context->grid->applyForce(pos, 0.2f, 20.0f);
 }
 
 // -------------------------------------------------------

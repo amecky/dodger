@@ -4,7 +4,7 @@
 
 const float TIME_STEPSIZE2 = 0.95f * 0.95f;
 
-WarpingGrid::WarpingGrid() {
+WarpingGrid::WarpingGrid(GameSettings* settings) : _settings(settings) {
 }
 
 WarpingGrid::~WarpingGrid() {
@@ -28,6 +28,9 @@ void WarpingGrid::createGrid() {
 			gp.velocity = v2(0.0f);
 			gp.pos = v2(20.0f + x * GRID_SIZE, 20.0f + y * GRID_SIZE);
 			gp.old_pos = gp.pos;
+			gp.color = _settings->grid.regular;
+			gp.fading = false;
+			gp.timer = 0.0f;
 		}
 	}
 
@@ -79,6 +82,14 @@ void WarpingGrid::tick(float dt) {
 				gp.pos = gp.pos + (gp.pos - gp.old_pos) * gp.damping + gp.acceleration * TIME_STEPSIZE2;
 				gp.old_pos = temp;
 				gp.acceleration = v2(0.0f);
+			}
+			if (gp.fading) {
+				gp.timer += dt;
+				gp.color = ds::color::lerp(_settings->grid.flash, _settings->grid.regular, gp.timer/_settings->grid.ttl);
+				if (gp.timer >= _settings->grid.ttl) {
+					gp.fading = false;
+					gp.color = _settings->grid.regular;
+				}
 			}
 		}
 	}
@@ -142,6 +153,9 @@ void WarpingGrid::applyForce(const v2& pos, float force, float innerRadius, floa
 				v2 d = gp.pos - pos;
 				if (sqr_length(d) > isr && sqr_length(d) < osr) {
 					applyForce(p2i(x, y), d * force);
+					gp.color = ds::Color(128, 0, 0, 255);
+					gp.fading = true;
+					gp.timer = 0.2f;
 				}
 			}
 		}
@@ -164,12 +178,12 @@ void WarpingGrid::render() {
 	for (int y = 0; y < GRID_DIM_Y; ++y) {
 		for (int x = 0; x < GRID_DIM_X; ++x) {
 			const GridPoint& gp = _grid[x][y];
-			sprites->draw(gp.pos, math::buildTexture(40, 120, 4, 4),0.0f,v2(1,1),ds::Color(32, 32, 32,255));
+			sprites->draw(gp.pos, math::buildTexture(40, 120, 4, 4),0.0f,v2(1,1), gp.color);
 			if (x > 0) {
-				sprites->drawLine(_grid[x-1][y].pos, gp.pos, math::buildTexture(42, 122, 10, 2),ds::Color(32, 32, 32,255));
+				sprites->drawLine(_grid[x-1][y].pos, gp.pos, math::buildTexture(42, 122, 10, 2), gp.color);
 			}
 			if (y > 0) {
-				sprites->drawLine(_grid[x][y-1].pos, gp.pos, math::buildTexture(42, 122, 10, 2), ds::Color(32, 32, 32, 255));
+				sprites->drawLine(_grid[x][y-1].pos, gp.pos, math::buildTexture(42, 122, 10, 2), gp.color);
 			}
 		}
 	}

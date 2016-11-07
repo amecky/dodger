@@ -32,6 +32,12 @@ struct GameSettings : public ds::DynamicGameSettings {
 		float rate;
 	} bullets;
 
+	struct Grid {
+		float ttl;
+		ds::Color flash;
+		ds::Color regular;
+	} grid;
+
 	GameSettings() : ds::DynamicGameSettings("content\\game_settings.json") {
 		add("settings.bomb_flashing_ttl", &bombFlashingTTL, 0.8f);
 		add("settings.star_ttl", &starTTL, 3.0f);
@@ -55,6 +61,10 @@ struct GameSettings : public ds::DynamicGameSettings {
 
 		add("bullets.velocity", &bullets.velocity, 400.0f);
 		add("bullets.rate", &bullets.rate, 0.2f);
+
+		add("grid.ttl", &grid.ttl, 0.2f);
+		add("grid.regular_color", &grid.regular, ds::Color(32, 32, 32, 255));
+		add("grid.flash_color", &grid.flash, ds::Color(32, 32, 32, 255));
 	}
 
 };

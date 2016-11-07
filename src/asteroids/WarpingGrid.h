@@ -1,9 +1,9 @@
 #pragma once
 #include "..\GameContext.h"
 
-const int GRID_DIM_X = 32;
-const int GRID_DIM_Y = 17;
-const float GRID_SIZE = 40.0f;
+const int GRID_DIM_X = 42;
+const int GRID_DIM_Y = 23;
+const float GRID_SIZE = 30.0f;
 
 struct GridPoint {
 	v2 pos;
@@ -13,6 +13,9 @@ struct GridPoint {
 	float damping;
 	v2 acceleration;
 	bool movable;
+	float timer;
+	ds::Color color;
+	bool fading;
 };
 
 struct Spring {
@@ -27,7 +30,7 @@ struct Spring {
 class WarpingGrid {
 
 public:
-	WarpingGrid();
+	WarpingGrid(GameSettings* settings);
 	~WarpingGrid();
 	void createGrid();
 	void tick(float dt);
@@ -39,5 +42,6 @@ private:
 	void addSpring(p2i start, p2i end, float stiffness, float damping);
 	GridPoint _grid[GRID_DIM_X][GRID_DIM_Y];
 	ds::Array<Spring> _springs;
+	GameSettings* _settings;
 };
 

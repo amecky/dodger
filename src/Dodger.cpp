@@ -49,7 +49,7 @@ bool Dodger::loadContent() {
 	_context = new GameContext;
 	_context->settings = new GameSettings;
 	_context->settings->load();
-	_context->grid = new WarpingGrid;
+	_context->grid = new WarpingGrid(_context->settings);
 	_context->grid->createGrid();
 
 	_context->world = new ds::World;
