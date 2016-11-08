@@ -66,6 +66,10 @@ asteroid_explosion {
 	id : 17
 	file : "asteroid_explosion"
 }
+asteroid_ring {
+	id : 18
+	file : "asteroid_ring"
+}
 groups {
 	bomb_explosion {
 		id : 1

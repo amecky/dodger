@@ -98,18 +98,22 @@ void Asteroids::startParticles(int id, const AsteroidInfo& info, const v2& pos) 
 bool Asteroids::kill(ID id) {
 	if (_context->world->contains(id)) {
 		AsteroidData* data = (AsteroidData*)_context->world->get_data(id);
-		--data->energy;
+		--data->energy;		
 		if (data->energy <= 0) {
 			const AsteroidInfo& info = _definitions.getDefinition(data->type);
 			v3 p = _context->world->getPosition(id);
 
 			startParticles(ASTEROID_EXPLOSION, info, p.xy());
 			startParticles(ASTEROID_STREAKS, info, p.xy());
+			startParticles(ASTEROID_RING, info, p.xy());
 
 			_context->grid->applyForce(p.xy(), 0.1f, info.radius - 20.0f, info.radius + 20.0f);
 			splitAsteroid(id);
 			_context->world->remove(id);
 			return true;
+		}
+		else {
+			_context->world->flashColor(id, ds::Color(192, 64, 0, 255), ds::Color(192, 0, 0, 255), 0.1f);
 		}
 	}
 	return false;

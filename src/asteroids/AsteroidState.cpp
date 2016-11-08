@@ -249,7 +249,7 @@ int AsteroidState::onChar(int ascii) {
 	if (ascii == '5') {
 		ds::ParticleSpawner* spawner = _context->particles->getParticleSystem(16)->getSpawner();
 		spawner->rate = math::random(5, 64);
-		_context->particles->start(16, v2(640, 360));
+		_context->particles->start(18, v2(640, 360));
 	}
 	if (ascii == '6') {
 		_context->grid->applyForce(p2i(2, 2), v2(2.5f, 2.5f));
