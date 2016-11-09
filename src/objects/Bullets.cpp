@@ -45,12 +45,6 @@ void Bullets::tick(float dt) {
 		v3 d = p - data->previous;
 		if (sqr_length(d) > data->sqrDist) {
 			const v3& r = _world->getRotation(ids[i]);
-			/*
-			ID trail = _world->create(data->previous.xy(), math::buildTexture(10, 407, 30, 14), OT_BULLET_TRAIL, r.x, v2(1.0f), ds::Color(249, 246, 194, 255));
-			_world->alphaFadeTo(trail, 1.0f, 0.0f, TTL);
-			_world->scale(trail, v3(1.0f, 0.5f, 0.0f), v3(1.5f, 0.2f, 0.0f), TTL);
-			_world->removeAfter(trail, TTL);
-			*/
 			ds::ParticleSystem* system = _particles->getParticleSystem(11);
 			ds::PointEmitterModuleData* peData = (ds::PointEmitterModuleData*)system->getData(ds::PM_POINT);
 			peData->rotation = r.x;
@@ -60,6 +54,9 @@ void Bullets::tick(float dt) {
 	}
 }
 
+// ---------------------------------------------
+// kill all
+// ---------------------------------------------
 void Bullets::killAll() {
 	ID ids[256];
 	int num = _world->find_by_type(OT_BULLET, ids, 256);
@@ -70,6 +67,8 @@ void Bullets::killAll() {
 	for (int i = 0; i < num; ++i) {
 		_world->remove(ids[i]);
 	}
+	_active = false;
+	_player = INVALID_ID;
 }
 
 // ---------------------------------------------

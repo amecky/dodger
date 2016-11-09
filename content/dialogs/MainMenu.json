@@ -7,12 +7,12 @@ image {
     rect : 0,0,50,50
 }
 button { 
-    id : 1 
+    id : 666 
     pos : 400.00,200.00 
     color : 255,255,255,255 
     centered : true 
     scale : 1.00 
-    rect : 370,0,340,60 
+    rect : 660,0,340,60 
     text : "Exit"
 }
 button { 
@@ -21,7 +21,7 @@ button {
     color : 255,255,255,255 
     centered : true 
     scale : 1.00 
-    rect : 370,0,340,60 
+    rect : 660,0,340,60 
     text : "Play"
 }
 button { 
@@ -30,6 +30,6 @@ button {
     color : 255,255,255,255 
     centered : true 
     scale : 1.00 
-    rect : 370,0,340,60 
+    rect : 660,0,340,60 
     text : "Highscores"
 }

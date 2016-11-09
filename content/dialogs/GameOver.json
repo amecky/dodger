@@ -12,7 +12,7 @@ button {
     color : 255,255,255,255 
     centered : true 
     scale : 1,1
-    rect : 370,0,340,60 
+    rect : 660,0,340,60 
     text : "Restart"
 }
 button { 
@@ -21,7 +21,7 @@ button {
     color : 255,255,255,255 
     centered : true 
     scale : 1,1
-    rect : 370,0,340,60 
+    rect : 660,0,340,60 
     text : "Main Menu"
 }
 numbers { 

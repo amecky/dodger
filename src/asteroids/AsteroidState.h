@@ -34,6 +34,7 @@ private:
 	void killPlayer();
 	void movePlayer(float dt);
 	bool handleCollisions(float dt);
+	bool handlePlayerCollision(const ds::Collision& c, int objectType);
 	bool killEnemy(const ds::Collision& c, int objectType);
 
 	GameContext* _context;
@@ -42,6 +43,8 @@ private:
 	ds::GUIDialog* _hud;
 	Bullets* _bullets;
 	int _kills;
+	int _health;
+	int _points;
 	v2 _cursor_pos;
 	Asteroids* _asteroids;
 	Stages _stages;

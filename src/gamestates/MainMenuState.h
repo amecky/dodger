@@ -2,11 +2,11 @@
 #include "..\GameContext.h"
 #include <gamestates\GameState.h>
 
-class GameOverState : public ds::BasicMenuGameState {
+class MainMenuState : public ds::BasicMenuGameState {
 
 public:
-	GameOverState(GameContext* context);
-	~GameOverState();
+	MainMenuState(GameContext* context);
+	~MainMenuState();
 	void activate();
 	void deactivate();
 	virtual int update(float dt);

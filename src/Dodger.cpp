@@ -5,6 +5,7 @@
 #include <gamestates\GameStateMachine.h>
 #include "gamestates\MainGameState.h"
 #include "gamestates\GameOverState.h"
+#include "gamestates\MainMenuState.h"
 #include <particles\ParticlesTestState.h>
 #include "asteroids\AsteroidState.h"
 //#include "gamestates\HighscoreState.h"
@@ -75,12 +76,14 @@ bool Dodger::loadContent() {
 	addGameState(new AsteroidState(_context));
 	addGameState(new ds::ParticlesTestState(pts));
 	//addGameState(new HighscoreState(gui, _context));
-	//addGameState(new MainMenuState(gui, _context));
+	addGameState(new MainMenuState(_context));
 	//connectGameStates("GameOver", 1, "MainGame");
 	//connectGameStates("GameOver", 2, "MainMenuState");
 	connectGameStates("MainGame", 1, "GameOver");
+	connectGameStates("AsteroidState", 1, "GameOver");
 	connectGameStates("MainGame", 2, "ParticlesTestState");
 	connectGameStates("GameOver", 1, "MainGame");
+	connectGameStates("GameOver", 2, "MainMenuState");
 	//connectGameStates("MainMenuState", 3, "MainGame");
 
 	addShortcut("Save world", '0', 100);

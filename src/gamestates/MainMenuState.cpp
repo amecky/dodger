@@ -1,4 +1,4 @@
-#include "GameOverState.h"
+#include "MainMenuState.h"
 #include <core\log\Log.h>
 #include <core\base\EventStream.h>
 #include "..\asteroids\WarpingGrid.h"
@@ -6,22 +6,22 @@
 
 const float SELECTION_MENU_TRANSITION = 0.4f;
 
-GameOverState::GameOverState(GameContext* context) : ds::BasicMenuGameState("GameOver", "GameOver"), _context(context) {
+MainMenuState::MainMenuState(GameContext* context) : ds::BasicMenuGameState("MainMenuState", "MainMenu"), _context(context) {
 }
 
 
-GameOverState::~GameOverState() {
+MainMenuState::~MainMenuState() {
 }
 
-void GameOverState::activate() {
+void MainMenuState::activate() {
 	_dialog->activate();
 }
 
-void GameOverState::deactivate() {
+void MainMenuState::deactivate() {
 	_dialog->deactivate();
 }
 
-int GameOverState::update(float dt) {
+int MainMenuState::update(float dt) {
 	_dialog->tick(dt);
 	v2 cp = ds::input::getMousePosition();
 	_context->grid->applyForce(cp, 0.2f, 15.0f);	
