@@ -6,12 +6,14 @@
 #pragma warning(disable : 4995)
 
 #pragma once
+#include <core\net\GameServer.h>
 #include "base\BaseApp.h"
 #include <renderer\render_types.h>
 
+
 struct GameContext;
 
-class Dodger : public ds::BaseApp {
+class Dodger : public ds::BaseApp , public ds::HTTPCallback {
 
 
 public:	
@@ -27,10 +29,13 @@ public:
 	void init();
 	void update(float dt);
 	void render();
+
+	virtual void get(const ds::HTTPRequest& request, ds::HTTPResponse* response);
 protected:
 	void createBorder();
 	void prepare(ds::Settings* settings);
 private:
 	GameContext* _context;
 	ds::Color _border_color;
+	ds::GameServer* _server;
 };

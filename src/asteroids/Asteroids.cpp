@@ -113,7 +113,10 @@ bool Asteroids::kill(ID id) {
 			return true;
 		}
 		else {
-			_context->world->flashColor(id, ds::Color(255, 128, 0, 255), ds::Color(192, 0, 0, 255), 0.1f);
+			if (!_context->world->isActive(id, ds::ActionType::AT_COLOR_FLASH)) {
+				_context->world->flashColor(id, ds::Color(255, 128, 0, 255), ds::Color(192, 0, 0, 255), 0.1f);
+				_context->world->scale(id, v3(1, 1, 1), v3(0.9f, 0.9f, 0.0f), 0.1f, 0, tweening::easeSinus);
+			}
 		}
 	}
 	return false;
@@ -127,3 +130,9 @@ const AsteroidInfo& Asteroids::getInfo(ID id) const {
 	return _definitions.getDefinition(data->type);
 }
 
+// -------------------------------------------------------
+// get info by type
+// -------------------------------------------------------
+const AsteroidInfo& Asteroids::getInfoByType(int type) const {
+	return _definitions.getDefinition(type);
+}

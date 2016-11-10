@@ -88,7 +88,16 @@ void AsteroidState::killPlayer() {
 	_context->particles->start(1, wp);
 	_context->world->remove(pid);
 	_context->world->remove(_cursor);
-	_player.id = INVALID_ID;
+	_player.id = INVALID_ID;	
+	int types[32];
+	ID ids[256];
+	int num = _stages.getActiveTypes(types, 32);
+	for (int i = 0; i < num; ++i) {
+		int n = _context->world->find_by_type(types[i],ids, 256);
+		for (int j = 0; j < n; ++j) {
+			_context->world->remove(ids[j]);
+		}
+	}
 	_activeStage = -1;
 }
 
@@ -119,7 +128,7 @@ void AsteroidState::movePlayer(float dt) {
 		ds::math::followRelative(cp, wp, &_player.angle, 5.0f, 1.1f * dt);
 		_context->world->setRotation(_player.id, _player.angle);
 		pos += vel * 250.0f * dt;
-		if (ds::math::isInside(pos, ds::Rect(0, 0, 1600, 900))) {
+		if (ds::math::isInside(pos, ds::Rect(40, 40, 1200, 640))) {
 			_context->world->setPosition(_player.id, pos);
 			float distSqr = sqr_distance(pos, _player.previous);
 			float dmin = 10.0f;
@@ -206,6 +215,7 @@ bool AsteroidState::handlePlayerCollision(const ds::Collision& c, int objectType
 		}
 		_health -= 10;
 		if (_health <= 0) {
+			killPlayer();
 			// player died
 			return true;
 		}

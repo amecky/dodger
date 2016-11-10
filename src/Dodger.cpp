@@ -16,9 +16,12 @@
 ds::BaseApp *app = new Dodger();
 
 Dodger::Dodger() : ds::BaseApp() {
+	_server = new ds::GameServer('127', '0', '0', '1', 9000);
 }
 
 Dodger::~Dodger() {
+	_server->close();
+	delete _server;
 	delete _context->settings;
 	delete _context->world;
 	delete _context->grid;
@@ -75,26 +78,23 @@ bool Dodger::loadContent() {
 	addGameState(new GameOverState(_context));
 	addGameState(new AsteroidState(_context));
 	addGameState(new ds::ParticlesTestState(pts));
-	//addGameState(new HighscoreState(gui, _context));
 	addGameState(new MainMenuState(_context));
-	//connectGameStates("GameOver", 1, "MainGame");
-	//connectGameStates("GameOver", 2, "MainMenuState");
+	// connect game states
 	connectGameStates("MainGame", 1, "GameOver");
 	connectGameStates("AsteroidState", 1, "GameOver");
 	connectGameStates("MainGame", 2, "ParticlesTestState");
 	connectGameStates("GameOver", 1, "MainGame");
 	connectGameStates("GameOver", 2, "MainMenuState");
-	//connectGameStates("MainMenuState", 3, "MainGame");
+	connectGameStates("MainMenuState", 3, "MainGame");
 
 	addShortcut("Save world", '0', 100);
 
-	
+	_server->connect(this);
 
 	return true;
 }
 
 void Dodger::init() {
-	// for testing
 	activate("AsteroidState");
 }
 
@@ -104,13 +104,13 @@ void Dodger::init() {
 // -------------------------------------------------------
 void Dodger::update(float dt) {
 	_context->grid->tick(dt);
+	_server->poll();
 }
 
 // -------------------------------------------------------
 // Draw
 // -------------------------------------------------------
 void Dodger::render() {
-	//drawBorder();
 	_context->grid->render();
 	ds::SpriteBuffer* sprites = graphics::getSpriteBuffer();
 	ds::ChannelArray* array = _context->world->getChannelArray();
@@ -130,25 +130,12 @@ void Dodger::render() {
 	_context->particles->render();
 	graphics::selectViewport(0);
 	graphics::selectBlendState(0);
-	/*
-	v2 p(40, 700);
-	int s = 1;
-	gui::start(1, &p);
-	gui::begin("Test",&s);
-	gui::Label("Hello world");
-	gui::end();
-	*/
 }
 
 // -------------------------------------------------------
 // create border
 // -------------------------------------------------------
 void Dodger::createBorder() {
-	// background
-	//_context->world->create(v2(480, 306), math::buildTexture(0, 512, 480, 306), OT_WALL, 0.0f, v2(2.0f, 2.0f));
-	//_context->world->create(v2(1120, 306), math::buildTexture(0, 512, 160, 306), OT_WALL, 0.0f, v2(2.0f, 2.0f));
-	//_context->world->create(v2(480, 756), math::buildTexture(0, 512, 480, 144), OT_WALL, 0.0f, v2(2.0f, 2.0f));
-	//_context->world->create(v2(1280, 756), math::buildTexture(0, 512, 320, 144), OT_WALL, 0.0f, v2(2.0f, 2.0f));
 	// 4 corners
 	_context->world->create(v2(40, 640), math::buildTexture(840, 0, 40, 60), OT_WALL, 0.0f, v2(1.0f, 1.0f), _border_color);
 	_context->world->create(v2(40, 40), math::buildTexture(940, 0, 40, 60), OT_WALL, 0.0f, v2(1.0f, 1.0f), _border_color);
@@ -170,4 +157,11 @@ void Dodger::createBorder() {
 	// missing top and bottom pieces
 	_context->world->create(v2(1140, 650), math::buildTexture(840, 40, 160, 40), OT_WALL, 0.0f, v2(1.0f, 1.0f), _border_color);
 	_context->world->create(v2(1140, 30), math::buildTexture(960, 40, 160, 40), OT_WALL, 0.0f, v2(1.0f, 1.0f), _border_color);
+}
+
+
+void Dodger::get(const ds::HTTPRequest& request, ds::HTTPResponse* response) {
+	LOG << "requesting: " << request.path;
+	_context->world->generateJSON(response->data);
+	response->size = 100;
 }

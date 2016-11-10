@@ -44,6 +44,22 @@ bool Stages::reloadData(const ds::JSONReader& loader) {
 }
 
 // -------------------------------------------------------
+// clear
+// -------------------------------------------------------
+int Stages::getActiveTypes(int* types, int max) {
+	int cnt = 0;
+	if (!_activeStages.empty()) {
+		for (uint32_t i = 0; i < _activeStages.size(); ++i) {
+			ActiveStageEntry& ase = _activeStages[i];
+			if (cnt < max) {
+				types[cnt++] = ase.entry.type;
+			}
+		}
+	}
+	return cnt;
+}
+
+// -------------------------------------------------------
 // tick
 // -------------------------------------------------------
 int Stages::tick(float dt, int* types, int max) {

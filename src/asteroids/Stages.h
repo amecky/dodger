@@ -40,6 +40,7 @@ public:
 	int getTotalCount() const {
 		return _total;
 	}
+	int getActiveTypes(int* types,int max);
 private:
 	ds::Array<Stage> _stages;
 	ds::Array<ActiveStageEntry> _activeStages;

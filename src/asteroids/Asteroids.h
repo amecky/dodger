@@ -20,6 +20,7 @@ public:
 	bool kill(ID id);
 	void handleEvent(const ds::ActionEvent& event);
 	const AsteroidInfo& getInfo(ID id) const;
+	const AsteroidInfo& getInfoByType(int type) const;
 private:	
 	void startParticles(int id, const AsteroidInfo& info, const v2& pos);
 	AsteroidDefinitions _definitions;
