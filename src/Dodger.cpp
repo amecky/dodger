@@ -162,6 +162,8 @@ void Dodger::createBorder() {
 
 void Dodger::get(const ds::HTTPRequest& request, ds::HTTPResponse* response) {
 	LOG << "requesting: " << request.path;
+	response->data.append("callback(");
 	_context->world->generateJSON(response->data);
-	response->size = 100;
+	response->data.append(");");
+	response->size = response->data.size();
 }
