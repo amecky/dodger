@@ -37,5 +37,5 @@ protected:
 private:
 	GameContext* _context;
 	ds::Color _border_color;
-	ds::GameServer* _server;
+	//ds::GameServer* _server;
 };

@@ -16,12 +16,12 @@
 ds::BaseApp *app = new Dodger();
 
 Dodger::Dodger() : ds::BaseApp() {
-	_server = new ds::GameServer('127', '0', '0', '1', 9000);
+	//_server = new ds::GameServer('127', '0', '0', '1', 9000);
 }
 
 Dodger::~Dodger() {
-	_server->close();
-	delete _server;
+	//_server->close();
+	//delete _server;
 	delete _context->settings;
 	delete _context->world;
 	delete _context->grid;
@@ -89,7 +89,7 @@ bool Dodger::loadContent() {
 
 	addShortcut("Save world", '0', 100);
 
-	_server->connect(this);
+	//_server->connect(this);
 
 	return true;
 }
@@ -104,7 +104,7 @@ void Dodger::init() {
 // -------------------------------------------------------
 void Dodger::update(float dt) {
 	_context->grid->tick(dt);
-	_server->poll();
+	//_server->poll();
 }
 
 // -------------------------------------------------------
@@ -162,8 +162,8 @@ void Dodger::createBorder() {
 
 void Dodger::get(const ds::HTTPRequest& request, ds::HTTPResponse* response) {
 	LOG << "requesting: " << request.path;
-	response->data.append("callback(");
+	//response->data.append("callback(");
 	_context->world->generateJSON(response->data);
-	response->data.append(");");
+	//response->data.append(");");
 	response->size = response->data.size();
 }
