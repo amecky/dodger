@@ -9,6 +9,8 @@
 #include <core\io\ReportWriter.h>
 #include "WarpingGrid.h"
 
+const int MAX_LP = 32;
+
 AsteroidState::AsteroidState(GameContext* context) : ds::GameState("AsteroidState"), _context(context) {
 	
 	_bullets = new Bullets(_context->world, context->settings);
@@ -27,8 +29,6 @@ AsteroidState::AsteroidState(GameContext* context) : ds::GameState("AsteroidStat
 	//_shapes.create(v2(240, 360), 1);
 	//_shapes.create(v2(940, 360), 2);
 	//_shapes.create(v2(940, 360), 3);
-
-	_squareBuffer = ds::res::find("Squares", ds::ResourceType::SQUAREBUFFER);
 }
 
 
@@ -205,6 +205,8 @@ int AsteroidState::update(float dt) {
 		
 	}
 
+	_borders.tick(dt);
+
 	return 0;
 }
 
@@ -305,11 +307,7 @@ void AsteroidState::render() {
 	//_shapes.render();
 	_hud->render();
 	sprites->end();
-	ds::SquareBuffer* squares = ds::res::getSquareBuffer(_squareBuffer);
-	squares->begin();
-	v3 p[] = { v3(200, 600, 0), v3(400, 600, 0), v3(400, 200, 0), v3(200, 200, 0) };
-	squares->draw(p, math::buildTexture(40, 0, 40, 40));	
-	squares->end();
+	_borders.render();
 }
 // -------------------------------------------------------
 // on char

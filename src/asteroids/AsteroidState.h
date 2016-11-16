@@ -10,7 +10,7 @@
 #include "..\Levels.h"
 #include "Asteroids.h"
 #include "Stages.h"
-#include "..\objects\Shapes.h"
+#include "..\objects\Borders.h"
 
 struct Player {
 	ID id;
@@ -19,6 +19,11 @@ struct Player {
 };
 
 class AsteroidState : public ds::GameState {
+
+	struct LinePoint {
+		v2 pos;
+		float timer;
+	};
 
 public:
 	AsteroidState(GameContext* context);
@@ -51,6 +56,7 @@ private:
 	Stages _stages;
 	int _activeStage;
 	//Shapes _shapes;
-	RID _squareBuffer;
+	Borders _borders;
+
 };
 
