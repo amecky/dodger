@@ -1,6 +1,6 @@
 quad_index_buffer {
-	name : "SpriteQuadBuffer"
-	size : 6144
+	name : "QuadIndexBuffer"
+	size : 8192
 }
 sampler_state {
 	name : "ClampSamplerState"
@@ -23,6 +23,11 @@ font {
 font {
 	name : "gui_font"
 	file : "gui_font.json"
+}
+square_buffer {
+	name : "Squares"
+	texture : "TextureArray"
+	size : 4096
 }
 imgui {
 	font : "gui_font"

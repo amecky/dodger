@@ -50,7 +50,7 @@ private:
 	Asteroids* _asteroids;
 	Stages _stages;
 	int _activeStage;
-	Shapes _shapes;
-	
+	//Shapes _shapes;
+	RID _squareBuffer;
 };
 

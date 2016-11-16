@@ -111,7 +111,7 @@ void Shapes::render() {
 			float pr = getRadius(shape, j);
 			float pa = getAngle(shape, j);
 			math::addRadial(p, pr, pa);
-			sprites->draw(p, math::buildTexture(0, 460, 16, 16), pa,v2(1,1),ds::Color(192,64,0,255));
+			sprites->draw(p, math::buildTexture(0, 460, 16, 16), pa,v2(1,1),ds::Color(192,32,0,255));
 		}
 	}
 }
