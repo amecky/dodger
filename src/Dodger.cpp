@@ -57,7 +57,7 @@ bool Dodger::loadContent() {
 	_context->grid->createGrid();
 
 	_context->world = new ds::World;
-	_context->world->setBoundingRect(ds::Rect(25, 20, 1230, 640));
+	_context->world->setBoundingRect(ds::Rect(25, 20, 1250, 680));
 	_context->world->useTemplates(ds::res::getWorldEntityTemplates(SID("game_objects")));
 	_context->world->ignoreCollisions(OT_FOLLOWER, OT_FOLLOWER);
 	_context->world->ignoreCollisions(OT_PLAYER, OT_BULLET);

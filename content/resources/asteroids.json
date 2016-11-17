@@ -29,7 +29,7 @@ asteroid {
     energy : 2
 	min_velocity : 200
 	max_velocity : 250
-	radius : 90
+	radius : 24
 	particles : 48
 	object_name : "SmallAsteroid"
 	rotation_velocity : 180

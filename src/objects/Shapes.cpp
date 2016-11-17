@@ -15,10 +15,10 @@ struct ShapeDefinition {
 };
 
 const ShapeDefinition DEFINITIONS[] = {
-	{ 11, 150.0f,  50.0f, 0.2f , math::buildTexture(0, 510, 100, 40), 20.0f, 8.0f},
-	{  9, 110.0f, 100.0f, 0.4f , math::buildTexture(0, 510, 100, 40), 15.0f, 6.0f},
-	{  7,  70.0f, 150.0f, 0.6f , math::buildTexture(0, 510, 100, 40), 14.0f, 4.0f},
-	{  6,  40.0f, 200.0f, 0.8f , math::buildTexture(0, 510, 100, 40), 12.0f, 4.0f}
+	{ 11, 150.0f,  80.0f, 0.3f , math::buildTexture(0, 642, 100, 60), 20.0f, 8.0f},
+	{  9, 100.0f, 150.0f, 0.6f , math::buildTexture(0, 642,  80, 60), 15.0f, 6.0f},
+	{  7,  70.0f, 200.0f, 0.8f , math::buildTexture(0, 642,  60, 60), 14.0f, 4.0f},
+	{  6,  30.0f, 250.0f, 1.0f , math::buildTexture(0, 642,  40, 60), 12.0f, 4.0f}
 };
 
 Shapes::Shapes() {
@@ -37,13 +37,13 @@ void Shapes::tick(float dt) {
 		if (shape.position.x < (shape.radius)) {
 			shape.velocity.x *= -1.0f;
 		}
-		if (shape.position.x > (1280 - shape.radius)) {
+		if (shape.position.x > (1240 - shape.radius)) {
 			shape.velocity.x *= -1.0f;
 		}
 		if (shape.position.y < (shape.radius)) {
 			shape.velocity.y *= -1.0f;
 		}
-		if (shape.position.y >(720 - shape.radius)) {
+		if (shape.position.y >(680 - shape.radius)) {
 			shape.velocity.y *= -1.0f;
 		}
 		for (int j = 0; j < shape.num; ++j) {
@@ -61,7 +61,7 @@ void Shapes::create(const v2& pos, int type) {
 	shape.num = def.pieces;
 	shape.position = pos;
 	shape.timer = 0.0f;
-	shape.velocity = v2(0, 0);// math::getRadialVelocity(math::random(0.0f, TWO_PI), def.velocity);
+	shape.velocity = math::getRadialVelocity(math::random(0.0f, TWO_PI), def.velocity);
 	shape.radius = def.radius;
 	shape.type = type;
 	for (int i = 0; i < def.pieces; ++i) {

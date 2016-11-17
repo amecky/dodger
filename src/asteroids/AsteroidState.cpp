@@ -24,11 +24,12 @@ AsteroidState::AsteroidState(GameContext* context) : ds::GameState("AsteroidStat
 	_player.id = INVALID_ID;
 	_player.angle = 0.0f;
 	_player.previous = v2(0, 0);
-
+	/*
 	_shapes.create(v2(640,360),  0);
 	_shapes.create(v2(240, 360), 1);
 	_shapes.create(v2(940, 560), 2);
 	_shapes.create(v2(940, 160), 3);
+	*/
 }
 
 
@@ -178,7 +179,14 @@ int AsteroidState::update(float dt) {
 			for (uint32_t i = 0; i < n; ++i) {
 				const ds::ActionEvent& event = _context->world->getEvent(i);
 				if (event.action == ds::AT_MOVE_BY && event.type == OT_BULLET) {
+					v3 bp = _context->world->getPosition(event.id);
+					_elasticBorder.splash(bp, -30);
 					_bullets->kill(event.id);
+				}
+				else if (event.action == ds::AT_BOUNCE && event.type != OT_BULLET) {
+					// FIXME: calculate points on outer circle
+					v3 bp = _context->world->getPosition(event.id);
+					_elasticBorder.splash(bp, -30);
 				}
 				_asteroids->handleEvent(event);
 			}
@@ -206,7 +214,7 @@ int AsteroidState::update(float dt) {
 	}
 
 	_borders.tick(dt);
-
+	_elasticBorder.tick(dt);
 	return 0;
 }
 
@@ -307,7 +315,8 @@ void AsteroidState::render() {
 	_hud->render();
 	sprites->end();
 	_shapes.render();
-	_borders.render();
+	//_borders.render();
+	_elasticBorder.render();
 }
 // -------------------------------------------------------
 // on char
