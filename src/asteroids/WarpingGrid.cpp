@@ -1,12 +1,14 @@
 #include "WarpingGrid.h"
-
-
+#include <resources\ResourceContainer.h>
 
 const float TIME_STEPSIZE2 = 0.95f * 0.95f;
+const v3 DOT_POINTS[] = { v3(-2, 2, 0), v3(2, 2, 0), v3(2, -2, 0), v3(-2, -2, 0) };
 
 WarpingGrid::WarpingGrid(GameSettings* settings) : _settings(settings) {
 	_dotTex = math::buildTexture(40, 120, 4, 4);
 	_lineTex = math::buildTexture(42, 122, 10, 2);
+	_squareBuffer = ds::res::find("Squares", ds::ResourceType::SQUAREBUFFER);
+	_useSquares = false;
 }
 
 WarpingGrid::~WarpingGrid() {
@@ -177,16 +179,41 @@ void WarpingGrid::applyForce(p2i p, const v2& f) {
 // -------------------------------------------------------
 void WarpingGrid::render() {
 	ZoneTracker z("WarpingGrid::render");
-	ds::SpriteBuffer* sprites = graphics::getSpriteBuffer();
-	for (int y = 0; y < GRID_DIM_Y; ++y) {
-		for (int x = 0; x < GRID_DIM_X; ++x) {
-			const GridPoint& gp = _grid[x][y];
-			sprites->draw(gp.pos, _dotTex,0.0f,v2(1,1), gp.color);
-			if (x > 0) {
-				sprites->drawLine(_grid[x-1][y].pos, gp.pos, _lineTex, gp.color);
+	if (_useSquares){
+		ds::SquareBuffer* squares = ds::res::getSquareBuffer(_squareBuffer);
+		squares->begin();
+		v3 p[4];
+
+		for (int y = 0; y < GRID_DIM_Y; ++y) {
+			for (int x = 0; x < GRID_DIM_X; ++x) {
+				const GridPoint& gp = _grid[x][y];
+				for (int i = 0; i < 4; ++i) {
+					p[i] = v3(gp.pos) + DOT_POINTS[i];
+				}
+				squares->draw(p, _dotTex, gp.color);
+				if (x > 0) {
+					squares->drawLine(_grid[x - 1][y].pos, gp.pos, v3(0.0f,-1.0f,0.0f), _lineTex, gp.color);
+				}
+				if (y > 0) {
+					squares->drawLine(_grid[x][y - 1].pos, gp.pos, v3(1.0f,0.0f,0.0f), _lineTex, gp.color);
+				}
 			}
-			if (y > 0) {
-				sprites->drawLine(_grid[x][y-1].pos, gp.pos, _lineTex, gp.color);
+		}
+
+		squares->end();
+	}
+	else {
+		ds::SpriteBuffer* sprites = graphics::getSpriteBuffer();
+		for (int y = 0; y < GRID_DIM_Y; ++y) {
+			for (int x = 0; x < GRID_DIM_X; ++x) {
+				const GridPoint& gp = _grid[x][y];
+				sprites->draw(gp.pos, _dotTex, 0.0f, v2(1, 1), gp.color);
+				if (x > 0) {
+					sprites->drawLine(_grid[x - 1][y].pos, gp.pos, _lineTex, gp.color);
+				}
+				if (y > 0) {
+					sprites->drawLine(_grid[x][y - 1].pos, gp.pos, _lineTex, gp.color);
+				}
 			}
 		}
 	}

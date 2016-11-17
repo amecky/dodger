@@ -25,10 +25,10 @@ AsteroidState::AsteroidState(GameContext* context) : ds::GameState("AsteroidStat
 	_player.angle = 0.0f;
 	_player.previous = v2(0, 0);
 
-	//_shapes.create(v2(640,360),  0);
-	//_shapes.create(v2(240, 360), 1);
-	//_shapes.create(v2(940, 360), 2);
-	//_shapes.create(v2(940, 360), 3);
+	_shapes.create(v2(640,360),  0);
+	_shapes.create(v2(240, 360), 1);
+	_shapes.create(v2(940, 560), 2);
+	_shapes.create(v2(940, 160), 3);
 }
 
 
@@ -153,7 +153,7 @@ void AsteroidState::movePlayer(float dt) {
 int AsteroidState::update(float dt) {
 	ZoneTracker u2("AsteroidState::update");
 	movePlayer(dt);
-	//_shapes.tick(dt);
+	_shapes.tick(dt);
 	_context->world->tick(dt);
 	{
 		ZoneTracker u2("AsteroidState::events");
@@ -303,10 +303,10 @@ bool AsteroidState::killEnemy(const ds::Collision& c, int objectType) {
 // -------------------------------------------------------
 void AsteroidState::render() {
 	ds::SpriteBuffer* sprites = graphics::getSpriteBuffer();
-	sprites->begin();	
-	//_shapes.render();
+	sprites->begin();		
 	_hud->render();
 	sprites->end();
+	_shapes.render();
 	_borders.render();
 }
 // -------------------------------------------------------
@@ -341,6 +341,9 @@ int AsteroidState::onChar(int ascii) {
 	}
 	if (ascii == '4') {
 		_asteroids->startAsteroid(3);
+	}
+	if (ascii == 't') {
+		_context->grid->toggleRendering();
 	}
 	return 0;
 }

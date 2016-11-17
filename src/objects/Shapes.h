@@ -6,6 +6,7 @@ struct ShapePoint {
 	float radius;
 	float angle;
 	float timer;
+	float thickness;
 };
 
 struct Shape {
@@ -29,7 +30,8 @@ public:
 	void render();
 private:
 	float getAngle(const Shape& s, int index);
-	float getRadius(const Shape& s, int index);
+	float getRadius(const Shape& s, int index, bool inner = true);
 	ds::Array<Shape> _shapes;
+	RID _squareBuffer;
 };
 

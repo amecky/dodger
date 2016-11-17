@@ -1,4 +1,5 @@
 #include "Shapes.h"
+#include <resources\ResourceContainer.h>
 
 struct ShapeDefinition {
 
@@ -7,18 +8,21 @@ struct ShapeDefinition {
 	int pieces;
 	float radialVelocity;
 	ds::Texture lineTexture;
+	float thickness;
+	float radiusVariance;
 
-	ShapeDefinition(int p, float r, float v, float rv, const ds::Texture& lt) : pieces(p), radius(r), velocity(v) , radialVelocity(rv) , lineTexture(lt) {}
+	ShapeDefinition(int p, float r, float v, float rv, const ds::Texture& lt, float t,float rav) : pieces(p), radius(r), velocity(v) , radialVelocity(rv) , lineTexture(lt) , thickness(t) , radiusVariance(rav) {}
 };
 
 const ShapeDefinition DEFINITIONS[] = {
-	{ 11, 150.0f,  50.0f, 0.2f , math::buildTexture(0, 510, 100, 40 )},
-	{  9, 110.0f, 100.0f, 0.4f , math::buildTexture(0, 510, 100, 40) },
-	{  7,  70.0f, 150.0f, 0.6f , math::buildTexture(0, 510, 100, 40) },
-	{  5,  40.0f, 200.0f, 0.8f , math::buildTexture(0, 510, 100, 40) }
+	{ 11, 150.0f,  50.0f, 0.2f , math::buildTexture(0, 510, 100, 40), 20.0f, 8.0f},
+	{  9, 110.0f, 100.0f, 0.4f , math::buildTexture(0, 510, 100, 40), 15.0f, 6.0f},
+	{  7,  70.0f, 150.0f, 0.6f , math::buildTexture(0, 510, 100, 40), 14.0f, 4.0f},
+	{  6,  40.0f, 200.0f, 0.8f , math::buildTexture(0, 510, 100, 40), 12.0f, 4.0f}
 };
 
 Shapes::Shapes() {
+	_squareBuffer = ds::res::find("Squares", ds::ResourceType::SQUAREBUFFER);
 }
 
 
@@ -57,7 +61,7 @@ void Shapes::create(const v2& pos, int type) {
 	shape.num = def.pieces;
 	shape.position = pos;
 	shape.timer = 0.0f;
-	shape.velocity = math::getRadialVelocity(math::random(0.0f, TWO_PI), def.velocity);
+	shape.velocity = v2(0, 0);// math::getRadialVelocity(math::random(0.0f, TWO_PI), def.velocity);
 	shape.radius = def.radius;
 	shape.type = type;
 	for (int i = 0; i < def.pieces; ++i) {
@@ -77,35 +81,52 @@ float Shapes::getAngle(const Shape& s, int index) {
 	return s.angle + s.points[idx].angle + sin(s.points[idx].timer) * DEGTORAD(4.0f);
 }
 
-float Shapes::getRadius(const Shape & s, int index) {
+float Shapes::getRadius(const Shape & s, int index, bool inner) {
 	int idx = index;
 	if (idx < 0) {
 		idx = s.num - 1;
 	}
-	return s.points[idx].radius + sin(s.points[idx].timer) * s.radius * 0.1f;
+	const ShapeDefinition& def = DEFINITIONS[s.type];
+	float r = 0.0f;
+	if (inner) {
+		r = -def.thickness;// -sin(s.points[idx].timer) * 2.0f;
+	}
+	else {
+		r = def.thickness + sin(s.points[idx].timer) * def.radiusVariance;
+	}
+	return s.points[idx].radius + r;// +sin(s.points[idx].timer) * 0.1f;
 }
 
 void Shapes::render() {
-	ds::SpriteBuffer* sprites = graphics::getSpriteBuffer();
+	ds::SquareBuffer* squares = ds::res::getSquareBuffer(_squareBuffer);
+	squares->begin();
+	v2 p[4];
+	v3 np[4];
+	//ds::SpriteBuffer* sprites = graphics::getSpriteBuffer();
 	for (uint32_t i = 0; i < _shapes.size(); ++i) {
 		const Shape& shape = _shapes[i];
 		const ShapeDefinition& def = DEFINITIONS[shape.type];
 		for (int j = 0; j < shape.num; ++j) {
-			v2 p = shape.position;
-			v2 n = shape.position;			
-			float pr = getRadius(shape, j);
+			v2 fp = shape.position;
+			v2 sp = shape.position;			
 			float pa = getAngle(shape, j);
-			float nr = getRadius(shape, j - 1);
 			float na = getAngle(shape, j - 1);
-			math::addRadial(p, pr, pa);
-			if (j == 0) {
-				math::addRadial(n, nr, na);
+			p[0] = fp;
+			p[1] = sp;
+			p[2] = sp;
+			p[3] = fp;
+
+			math::addRadial(p[0], getRadius(shape, j, false), pa);
+			math::addRadial(p[1], getRadius(shape, j - 1, false), na);
+			math::addRadial(p[2], getRadius(shape, j - 1, true), na);
+			math::addRadial(p[3], getRadius(shape, j, true), pa);
+
+			for (int k = 0; k < 4; ++k) {
+				np[k] = p[k];
 			}
-			else {
-				math::addRadial(n, nr, na);
-			}
-			sprites->drawLine(n,p, def.lineTexture,ds::Color(192,0,0,255));
+			squares->draw(np, def.lineTexture,ds::Color(192,0,0,255));
 		}
+		/*
 		for (int j = 0; j < shape.num; ++j) {
 			v2 p = shape.position;
 			float pr = getRadius(shape, j);
@@ -113,5 +134,7 @@ void Shapes::render() {
 			math::addRadial(p, pr, pa);
 			sprites->draw(p, math::buildTexture(0, 460, 16, 16), pa,v2(1,1),ds::Color(192,32,0,255));
 		}
+		*/
 	}
+	squares->end();
 }

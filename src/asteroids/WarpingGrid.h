@@ -38,6 +38,10 @@ public:
 	void applyForce(p2i p,const v2& f);
 	void applyForce(const v2& pos, float force, float radius);
 	void applyForce(const v2& pos, float force, float innerRadius, float outerRadius);
+	void toggleRendering() {
+		_useSquares = !_useSquares;
+		LOG << "useSquares: " << _useSquares;
+	}
 private:
 	void addSpring(p2i start, p2i end, float stiffness, float damping);
 	GridPoint _grid[GRID_DIM_X][GRID_DIM_Y];
@@ -45,5 +49,7 @@ private:
 	GameSettings* _settings;
 	ds::Texture _dotTex;
 	ds::Texture _lineTex;
+	RID _squareBuffer;
+	bool _useSquares;
 };
 

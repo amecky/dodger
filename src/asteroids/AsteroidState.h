@@ -11,6 +11,7 @@
 #include "Asteroids.h"
 #include "Stages.h"
 #include "..\objects\Borders.h"
+#include "..\objects\Shapes.h"
 
 struct Player {
 	ID id;
@@ -55,7 +56,7 @@ private:
 	Asteroids* _asteroids;
 	Stages _stages;
 	int _activeStage;
-	//Shapes _shapes;
+	Shapes _shapes;
 	Borders _borders;
 
 };
