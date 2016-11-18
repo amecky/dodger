@@ -30,7 +30,7 @@ void WarpingGrid::createGrid() {
 				gp.movable = false;
 			}
 			gp.velocity = v2(0.0f);
-			gp.pos = v2(20.0f + x * GRID_SIZE, 20.0f + y * GRID_SIZE);
+			gp.pos = v2(34.0f + x * GRID_SIZE, 30.0f + y * GRID_SIZE);
 			gp.old_pos = gp.pos;
 			gp.color = _settings->grid.regular;
 			gp.fading = false;

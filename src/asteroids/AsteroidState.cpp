@@ -8,6 +8,7 @@
 #include <core\math\GameMath.h>
 #include <core\io\ReportWriter.h>
 #include "WarpingGrid.h"
+#include "..\objects\ElasticBorder.h"
 
 const int MAX_LP = 32;
 
@@ -24,12 +25,7 @@ AsteroidState::AsteroidState(GameContext* context) : ds::GameState("AsteroidStat
 	_player.id = INVALID_ID;
 	_player.angle = 0.0f;
 	_player.previous = v2(0, 0);
-	/*
-	_shapes.create(v2(640,360),  0);
-	_shapes.create(v2(240, 360), 1);
-	_shapes.create(v2(940, 560), 2);
-	_shapes.create(v2(940, 160), 3);
-	*/
+
 }
 
 
@@ -154,7 +150,6 @@ void AsteroidState::movePlayer(float dt) {
 int AsteroidState::update(float dt) {
 	ZoneTracker u2("AsteroidState::update");
 	movePlayer(dt);
-	_shapes.tick(dt);
 	_context->world->tick(dt);
 	{
 		ZoneTracker u2("AsteroidState::events");
@@ -180,14 +175,9 @@ int AsteroidState::update(float dt) {
 				const ds::ActionEvent& event = _context->world->getEvent(i);
 				if (event.action == ds::AT_MOVE_BY && event.type == OT_BULLET) {
 					v3 bp = _context->world->getPosition(event.id);
-					_elasticBorder.splash(bp, -30);
+					_context->elasticBorder->splash(bp, -30);
 					_bullets->kill(event.id);
-				}
-				else if (event.action == ds::AT_BOUNCE && event.type != OT_BULLET) {
-					// FIXME: calculate points on outer circle
-					v3 bp = _context->world->getPosition(event.id);
-					_elasticBorder.splash(bp, -30);
-				}
+				}				
 				_asteroids->handleEvent(event);
 			}
 		}
@@ -213,8 +203,7 @@ int AsteroidState::update(float dt) {
 		
 	}
 
-	_borders.tick(dt);
-	_elasticBorder.tick(dt);
+	
 	return 0;
 }
 
@@ -314,9 +303,7 @@ void AsteroidState::render() {
 	sprites->begin();		
 	_hud->render();
 	sprites->end();
-	_shapes.render();
-	//_borders.render();
-	_elasticBorder.render();
+	
 }
 // -------------------------------------------------------
 // on char

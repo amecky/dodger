@@ -7,6 +7,8 @@
 
 class WarpingGrid;
 
+class ElasticBorder;
+
 struct GameContext {
 
 	GameSettings* settings;
@@ -15,5 +17,6 @@ struct GameContext {
 	ds::World* world;
 	RID additiveBlendState; //
 	WarpingGrid* grid;
+	ElasticBorder* elasticBorder;
 };
 

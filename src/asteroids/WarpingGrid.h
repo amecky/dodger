@@ -1,8 +1,8 @@
 #pragma once
 #include "..\GameContext.h"
 
-const int GRID_DIM_X = 42;
-const int GRID_DIM_Y = 23;
+const int GRID_DIM_X = 41;
+const int GRID_DIM_Y = 22;
 const float GRID_SIZE = 30.0f;
 
 struct GridPoint {

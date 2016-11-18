@@ -12,6 +12,7 @@
 #include "GameContext.h"
 #include "GameSettings.h"
 #include "asteroids\WarpingGrid.h"
+#include "objects\ElasticBorder.h"
 
 ds::BaseApp *app = new Dodger();
 
@@ -22,6 +23,7 @@ Dodger::Dodger() : ds::BaseApp() {
 Dodger::~Dodger() {
 	//_server->close();
 	//delete _server;
+	delete _context->elasticBorder;
 	delete _context->settings;
 	delete _context->world;
 	delete _context->grid;
@@ -70,6 +72,8 @@ bool Dodger::loadContent() {
 	_context->particles = ds::res::getParticleManager();
 	_context->additiveBlendState = ds::res::findBlendState("AdditiveBlendState");
 
+	_context->elasticBorder = new ElasticBorder();
+
 	ds::ParticlesTestSettings pts;
 	pts.render = false;
 	pts.blendState = _context->additiveBlendState;
@@ -104,6 +108,7 @@ void Dodger::init() {
 // -------------------------------------------------------
 void Dodger::update(float dt) {
 	_context->grid->tick(dt);
+	_context->elasticBorder->tick(dt);
 	//_server->poll();
 }
 
@@ -128,6 +133,7 @@ void Dodger::render() {
 	sprites->end();
 	graphics::selectBlendState(_context->additiveBlendState);
 	_context->particles->render();
+	_context->elasticBorder->render();
 	graphics::selectViewport(0);
 	graphics::selectBlendState(0);
 }

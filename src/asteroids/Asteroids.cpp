@@ -1,6 +1,7 @@
 #include "Asteroids.h"
 #include "WarpingGrid.h"
 #include <particles\modules\RingEmitterModule.h>
+#include "..\objects\ElasticBorder.h"
 
 const v2 CORNERS[] = { v2(40,90),v2(640,90),v2(1240,90),v2(1240,360),v2(1240,630),v2(640,630),v2(40,630),v2(40,360) };
 
@@ -77,6 +78,22 @@ void Asteroids::handleEvent(const ds::ActionEvent& event) {
 			_context->world->rotate(event.id, v3(info.rotationVelocity, 0.0f, 0.0f), -1.0f);
 			_context->world->attachCollider(event.id, ds::ShapeType::PST_CIRCLE, v2(info.radius));
 		}
+	}
+	else if (event.action == ds::AT_BOUNCE && event.type != OT_BULLET) {
+		v3 bp = _context->world->getPosition(event.id);
+		if (event.type == OT_MEDIUM_ASTEROID) {
+			_context->elasticBorder->splash(bp, 60.0f, -25);
+		}
+		else if (event.type == OT_SMALL_ASTEROID) {
+			_context->elasticBorder->splash(bp, 24.0f, -20);
+		}
+		else if (event.type == OT_BIG_ASTEROID) {
+			_context->elasticBorder->splash(bp, 60.0f, -30);
+		}
+		else if (event.type == OT_HUGE_ASTEROID) {
+			_context->elasticBorder->splash(bp, 135.0f, -35);
+		}
+
 	}
 }
 
