@@ -51,8 +51,8 @@ public:
 			_world->attachCollider(event.id, ds::PST_CIRCLE, v2(42.0f, 42.0f));
 			_world->seek(event.id, target, 150.0f);
 			_world->separate(event.id, objectType, 40.0f, 0.9f);
-			_world->scaleAxes(event.id, 0, 1.0f, 0.8f, 1.5f, -1, tweening::easeSinus);
-			_world->scaleAxes(event.id, 1, 1.0f, 1.2f, 0.75f, -1, tweening::easeSinus);
+			//_world->scaleAxes(event.id, 0, 1.0f, 0.8f, 1.5f, -1, tweening::easeSinus);
+			//_world->scaleAxes(event.id, 1, 1.0f, 1.2f, 0.75f, -1, tweening::easeSinus);
 		}
 	}
 };

@@ -67,7 +67,6 @@ bool Dodger::loadContent() {
 	_context->world->ignoreCollisions(OT_HUGE_ASTEROID, OT_BIG_ASTEROID);
 	_context->world->ignoreCollisions(OT_HUGE_ASTEROID, OT_MEDIUM_ASTEROID);
 	_context->world->ignoreCollisions(OT_HUGE_ASTEROID, OT_SMALL_ASTEROID);
-	//createBorder();
 
 	_context->particles = ds::res::getParticleManager();
 	_context->additiveBlendState = ds::res::findBlendState("AdditiveBlendState");
@@ -99,7 +98,7 @@ bool Dodger::loadContent() {
 }
 
 void Dodger::init() {
-	activate("AsteroidState");
+	activate("MainGame");
 }
 
 
@@ -137,34 +136,6 @@ void Dodger::render() {
 	graphics::selectViewport(0);
 	graphics::selectBlendState(0);
 }
-
-// -------------------------------------------------------
-// create border
-// -------------------------------------------------------
-void Dodger::createBorder() {
-	// 4 corners
-	_context->world->create(v2(40, 640), math::buildTexture(840, 0, 40, 60), OT_WALL, 0.0f, v2(1.0f, 1.0f), _border_color);
-	_context->world->create(v2(40, 40), math::buildTexture(940, 0, 40, 60), OT_WALL, 0.0f, v2(1.0f, 1.0f), _border_color);
-	_context->world->create(v2(1240, 640), math::buildTexture(840, 280, 40, 60), OT_WALL, 0.0f, v2(1.0f, 1.0f), _border_color);
-	_context->world->create(v2(1240, 40), math::buildTexture(940, 280, 40, 60), OT_WALL, 0.0f, v2(1.0f, 1.0f), _border_color);
-	
-	// left and right wall
-	for (int i = 0; i < 7; ++i) {
-		_context->world->create(v2(40, 110 + i * 80), math::buildTexture(880, 0, 40, 80), OT_WALL, 0.0f, v2(1.0f, 1.0f), _border_color);
-		_context->world->create(v2(1240, 110 + i * 80), math::buildTexture(880, 280, 40, 80), OT_WALL, 0.0f, v2(1.0f, 1.0f), _border_color);
-	}
-	
-	// bottom and top wall
-	for (int i = 0; i < 5; ++i) {
-		_context->world->create(v2(160 + i * 200, 650), math::buildTexture(840, 40, 200, 40), OT_WALL, 0.0f, v2(1.0f, 1.0f), _border_color);
-		_context->world->create(v2(160 + i * 200, 30), math::buildTexture(960, 40, 200, 40), OT_WALL, 0.0f, v2(1.0f, 1.0f), _border_color);
-	}
-	
-	// missing top and bottom pieces
-	_context->world->create(v2(1140, 650), math::buildTexture(840, 40, 160, 40), OT_WALL, 0.0f, v2(1.0f, 1.0f), _border_color);
-	_context->world->create(v2(1140, 30), math::buildTexture(960, 40, 160, 40), OT_WALL, 0.0f, v2(1.0f, 1.0f), _border_color);
-}
-
 
 void Dodger::get(const ds::HTTPRequest& request, ds::HTTPResponse* response) {
 	LOG << "requesting: " << request.path;

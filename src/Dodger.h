@@ -32,7 +32,6 @@ public:
 
 	virtual void get(const ds::HTTPRequest& request, ds::HTTPResponse* response);
 protected:
-	void createBorder();
 	void prepare(ds::Settings* settings);
 private:
 	GameContext* _context;

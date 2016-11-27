@@ -7,6 +7,7 @@
 #include "base\InputSystem.h"
 #include <core\math\GameMath.h>
 #include <core\io\ReportWriter.h>
+#include "..\asteroids\WarpingGrid.h"
 
 MainGameState::MainGameState(GameContext* context) : ds::GameState("MainGame"), _context(context) {
 	
@@ -215,6 +216,7 @@ bool MainGameState::killEnemy(const ds::Collision& c, int objectType) {
 			_context->particles->start(6, p.xy());
 			_context->world->remove(id);
 			++_kills;
+			_context->grid->applyForce(p.xy(), 0.3f, 5.0f, 40.0f);
 			ret = true;
 		}
 	}
