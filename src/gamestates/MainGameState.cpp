@@ -8,6 +8,7 @@
 #include <core\math\GameMath.h>
 #include <core\io\ReportWriter.h>
 #include "..\asteroids\WarpingGrid.h"
+#include "..\objects\ElasticBorder.h"
 
 MainGameState::MainGameState(GameContext* context) : ds::GameState("MainGame"), _context(context) {
 	
@@ -156,6 +157,8 @@ int MainGameState::update(float dt) {
 			for (uint32_t i = 0; i < n; ++i) {
 				const ds::ActionEvent& event = _context->world->getEvent(i);
 				if (event.action == ds::AT_MOVE_BY && event.type == OT_BULLET) {
+					v3 bp = _context->world->getPosition(event.id);
+					_context->elasticBorder->splash(bp, -30);
 					_bullets->kill(event.id);
 				}
 			}

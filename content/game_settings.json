@@ -25,10 +25,18 @@ wanderer {
 }
 bullets {
 	velocity : 500
-	rate : 0.4
+	rate : 0.2
 }
 grid {
 	ttl : 1.2
 	regular_color : 16,16,16,255
 	flash_color : 64,0,0,255
+}
+follower {
+	scale_ttl : 0.25,0.5
+	start_scale : 0.2,0.2
+	initial_velocity : 10
+	seek_velocity : 100
+	separation_distance : 30
+	relaxation : 0.9
 }

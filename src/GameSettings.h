@@ -38,6 +38,15 @@ struct GameSettings : public ds::DynamicGameSettings {
 		ds::Color regular;
 	} grid;
 
+	struct Follower {
+		v2 scaleTTL;
+		v2 startScale;
+		float initialVelocity;
+		float seekVelocity;
+		float separationDistance;
+		float relaxation;
+	} follower;
+
 	GameSettings() : ds::DynamicGameSettings("content\\game_settings.json") {
 		add("settings.bomb_flashing_ttl", &bombFlashingTTL, 0.8f);
 		add("settings.star_ttl", &starTTL, 3.0f);
@@ -65,6 +74,13 @@ struct GameSettings : public ds::DynamicGameSettings {
 		add("grid.ttl", &grid.ttl, 0.2f);
 		add("grid.regular_color", &grid.regular, ds::Color(32, 32, 32, 255));
 		add("grid.flash_color", &grid.flash, ds::Color(32, 32, 32, 255));
+
+		add("follower.scale_ttl", &follower.scaleTTL, v2(0.2f, 1.0f));
+		add("follower.start_scale", &follower.startScale, v2(0.2f, 0.2f));
+		add("follower.initial_velocity", &follower.initialVelocity, 10.0f);
+		add("follower.seek_velocity", &follower.seekVelocity, 50.0f);
+		add("follower.separation_distance", &follower.separationDistance, 40.0f);
+		add("follower.relaxation", &follower.relaxation);
 	}
 
 };
