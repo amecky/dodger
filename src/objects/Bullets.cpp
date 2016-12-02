@@ -10,6 +10,22 @@ Bullets::Bullets(ds::World * world, GameSettings* settings) : _world(world) , _s
 	_particles = ds::res::getParticleManager();
 }
 
+void Bullets::create(float offset) {
+	v3 wp = _world->getPosition(_player);
+	v3 r = _world->getRotation(_player);
+	v2 p = wp.xy();
+	float oa = r.x + offset;
+	math::addRadial(p, 30.0f, oa);
+	ID bullet = _world->create(p, math::buildTexture(0, 410, 22, 8), OT_BULLET, r.x, v2(1.0f), ds::Color(249, 246, 194, 255));
+	//BulletData* data = (BulletData*)_world->attach_data(bullet, sizeof(BulletData), OT_BULLET);
+	//data->previous = pos;
+	//data->sqrDist = 4.0f * 4.0f;
+	//v2 vel = math::getRadialVelocity(math::randomRange(r.x, DEGTORAD(5.0f)), _settings->bullets.velocity);
+	v2 vel = math::getRadialVelocity(r.x, _settings->bullets.velocity);
+	_world->setRotation(bullet, r.x);
+	_world->moveBy(bullet, vel, -1.0f, false);
+	_world->attachCollider(bullet, ds::PST_CIRCLE, v2(18.0f));
+}
 // ---------------------------------------------
 // tick
 // ---------------------------------------------
@@ -20,6 +36,9 @@ void Bullets::tick(float dt) {
 			_timer += dt;
 			if (_timer >= _settings->bullets.rate) {
 				_timer -= _settings->bullets.rate;
+				create(DEGTORAD(15.0f));
+				create(-DEGTORAD(15.0f));
+				/*
 				v3 wp = _world->getPosition(_player);
 				v3 r = _world->getRotation(_player);
 				v2 pos = wp.xy();
@@ -32,9 +51,11 @@ void Bullets::tick(float dt) {
 				_world->setRotation(bullet, r.x);
 				_world->moveBy(bullet, vel, -1.0f, false);
 				_world->attachCollider(bullet, ds::PST_CIRCLE, v2(18.0f));
+				*/
 			}
 		}		
 	}
+	/*
 	ZoneTracker u2("Bullets:trail");
 	ID ids[64];
 	float TTL = 0.1f;
@@ -52,6 +73,7 @@ void Bullets::tick(float dt) {
 			data->previous = p;
 		}
 	}
+	*/
 }
 
 // ---------------------------------------------

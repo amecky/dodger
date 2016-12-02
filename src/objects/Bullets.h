@@ -19,6 +19,7 @@ public:
 	void kill(ID id);
 	void killAll();
 private:
+	void create(float offset);
 	ID _player;
 	ds::World* _world;
 	bool _active;
