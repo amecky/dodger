@@ -1,0 +1,35 @@
+item {
+    ticks : 10
+    type : 1
+    num : 1
+    emitter : 1
+    delay : 0
+}
+item {
+    ticks : 30
+    type : 2
+    num : 1
+    emitter : 1
+    delay : 0
+}
+item {
+    ticks : 60
+    type : 3
+    num : 1
+    emitter : 1
+    delay : 0
+}
+item {
+    ticks : 90
+    type : 4
+    num : 1
+    emitter : 1
+    delay : 0
+}
+item {
+    ticks : 120
+    type : 5
+    num : 3
+    emitter : 1
+    delay : 0.2
+}

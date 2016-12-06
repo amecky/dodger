@@ -8,6 +8,7 @@
 #include <particles\ParticleManager.h>
 #include "..\objects\Bullets.h"
 #include "..\Levels.h"
+#include "..\Enemies.h"
 
 struct GameTimer {
 
@@ -71,6 +72,7 @@ private:
 	bool _levelRunning;
 	Levels* _levels;
 	int _level;
-	
+	Enemies _enemies;
+	EmitterQueue _queue;
 };
 

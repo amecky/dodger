@@ -21,6 +21,8 @@ MainGameState::MainGameState(GameContext* context) : ds::GameState("MainGame"), 
 	_levelRunning = false;
 	_level = 1;
 	_hud->setNumber(2, _level);
+
+	_enemies.load();
 }
 
 
@@ -48,6 +50,7 @@ void MainGameState::activate() {
 	_playerRing = _context->world->create(v2(640, 360), math::buildTexture(440, 0, 152, 152), OT_RING);
 	_bullets->stop();	
 	_hud->activate();
+	_enemies.start();
 }
 
 // -------------------------------------------------------
@@ -133,6 +136,15 @@ int MainGameState::update(float dt) {
 	const v2 wp = _context->world->getPosition(_player).xy();
 
 	_context->world->tick(dt);
+
+	_enemies.tick(_queue, dt);
+	while (!_queue.empty()) {
+		const EmitterEvent& ed = _queue.top();
+		_queue.pop();
+		LOG << "starting at " << ed.pos << " type: " << ed.type;
+		// show starting spot
+
+	}
 
 	{
 		ZoneTracker u2("MainGameState::events");

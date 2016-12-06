@@ -1,14 +1,17 @@
 #pragma once
 #include <core\math\math.h>
+#include <core\lib\collection_types.h>
 
 const ds::Rect WORLD_RECT = ds::Rect(25, 20, 1230, 640);
 
 struct EmitterData {
 	v2 pos;
 	float rotation;
-
+	int type;
+	int index;
 	EmitterData() : pos(0.0f), rotation(0.0f) {}
 };
+
 // -----------------------------------------------
 // cube emitter
 // -----------------------------------------------
@@ -17,7 +20,9 @@ class CubeEmitter {
 public:
 	virtual void prepare(int total) = 0;
 	virtual EmitterData next(int index = 0) = 0;
+	//void tick(EmitterQueue& queue, float dt);
 protected:
+	float _timer;
 	EmitterData _data;
 	uint32_t _total;
 };
@@ -72,6 +77,12 @@ private:
 	float _offset;
 };
 
+struct LineEmitterData {
+	float distance;
+	int num;
+	int type;
+
+};
 // -----------------------------------------------
 // line cube emitter
 // -----------------------------------------------
