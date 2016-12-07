@@ -70,6 +70,10 @@ asteroid_ring {
 	id : 18
 	file : "asteroid_ring"
 }
+enemy_appearance {
+	id : 19
+	file : "enemy_appearance"
+}
 groups {
 	bomb_explosion {
 		id : 1

@@ -7,11 +7,10 @@
 #include "gamestates\GameOverState.h"
 #include "gamestates\MainMenuState.h"
 #include <particles\ParticlesTestState.h>
-#include "asteroids\AsteroidState.h"
 //#include "gamestates\HighscoreState.h"
 #include "GameContext.h"
 #include "GameSettings.h"
-#include "asteroids\WarpingGrid.h"
+#include "objects\WarpingGrid.h"
 #include "objects\ElasticBorder.h"
 
 ds::BaseApp *app = new Dodger();
@@ -79,12 +78,10 @@ bool Dodger::loadContent() {
 	pts.screenSize = v2(1280, 720);
 	addGameState(new MainGameState(_context));
 	addGameState(new GameOverState(_context));
-	addGameState(new AsteroidState(_context));
 	addGameState(new ds::ParticlesTestState(pts));
 	addGameState(new MainMenuState(_context));
 	// connect game states
 	connectGameStates("MainGame", 1, "GameOver");
-	connectGameStates("AsteroidState", 1, "GameOver");
 	connectGameStates("MainGame", 2, "ParticlesTestState");
 	connectGameStates("GameOver", 1, "MainGame");
 	connectGameStates("GameOver", 2, "MainMenuState");

@@ -34,7 +34,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v120</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -224,31 +224,34 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\BallEmitter.cpp" />
-    <ClCompile Include="src\Bombs.cpp" />
-    <ClCompile Include="src\Cubes.cpp" />
+    <ClCompile Include="src\Enemies.cpp" />
     <ClCompile Include="src\gamestates\GameOverState.cpp" />
-    <ClCompile Include="src\gamestates\HighscoreState.cpp" />
     <ClCompile Include="src\gamestates\MainGameState.cpp" />
     <ClCompile Include="src\Dodger.cpp" />
     <ClCompile Include="src\gamestates\MainMenuState.cpp" />
-    <ClCompile Include="src\utils\Numbers.cpp" />
+    <ClCompile Include="src\objects\Borders.cpp" />
+    <ClCompile Include="src\objects\Bullets.cpp" />
+    <ClCompile Include="src\objects\ElasticBorder.cpp" />
+    <ClCompile Include="src\objects\InfectedGrid.cpp" />
+    <ClCompile Include="src\objects\WarpingGrid.cpp" />
+    <ClCompile Include="src\Timeline.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
-    <ClInclude Include="src\BallEmitter.h" />
-    <ClInclude Include="src\Bombs.h" />
     <ClInclude Include="src\Constants.h" />
-    <ClInclude Include="src\Cubes.h" />
-    <ClInclude Include="src\EventBuffer.h" />
+    <ClInclude Include="src\Enemies.h" />
     <ClInclude Include="src\GameContext.h" />
     <ClInclude Include="src\GameSettings.h" />
     <ClInclude Include="src\gamestates\GameOverState.h" />
-    <ClInclude Include="src\gamestates\HighscoreState.h" />
     <ClInclude Include="src\gamestates\MainGameState.h" />
     <ClInclude Include="src\Dodger.h" />
     <ClInclude Include="src\gamestates\MainMenuState.h" />
-    <ClInclude Include="src\utils\Numbers.h" />
+    <ClInclude Include="src\objects\Borders.h" />
+    <ClInclude Include="src\objects\Bullets.h" />
+    <ClInclude Include="src\objects\ElasticBorder.h" />
+    <ClInclude Include="src\objects\InfectedGrid.h" />
+    <ClInclude Include="src\objects\WarpingGrid.h" />
+    <ClInclude Include="src\Timeline.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="content\dialogs\credits.json" />
@@ -264,16 +267,17 @@
     <None Include="content\particles\bomb_debris.json" />
     <None Include="content\particles\bomb_explosion.json" />
     <None Include="content\particles\bomb_ring_explosion.json" />
-    <None Include="content\particles\enemy_start_dots.json" />
-    <None Include="content\particles\explosion.json" />
-    <None Include="content\particles\huge_cube_explosion.json" />
+    <None Include="content\particles\cube_appearance.json" />
+    <None Include="content\particles\enemy_appearance.json" />
     <None Include="content\particles\particlesystems.json" />
     <None Include="content\particles\player_explosion.json" />
     <None Include="content\particles\player_trail.json" />
-    <None Include="content\resources\gui.json" />
-    <None Include="content\resources\hud.json" />
+    <None Include="content\resources.json" />
+    <None Include="content\resources\asteroids.json" />
+    <None Include="content\resources\asteroid_levels.json" />
+    <None Include="content\resources\game_objects.json" />
+    <None Include="content\resources\levels.json" />
     <None Include="content\resources\sprite_templates.json" />
-    <None Include="content\resources\xscale.json" />
     <None Include="Dodger.manifest" />
     <None Include="README.md" />
     <None Include="TODO.md" />

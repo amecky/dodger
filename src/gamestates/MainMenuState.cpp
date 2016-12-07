@@ -1,7 +1,7 @@
 #include "MainMenuState.h"
 #include <core\log\Log.h>
 #include <core\base\EventStream.h>
-#include "..\asteroids\WarpingGrid.h"
+#include "..\objects\WarpingGrid.h"
 #include <base\InputSystem.h>
 
 const float SELECTION_MENU_TRANSITION = 0.4f;

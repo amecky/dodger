@@ -1,41 +1,18 @@
 #pragma once
-#include <core\lib\collection_types.h>
+#include "Timeline.h"
+#include "GameContext.h"
 
-struct EmitterEvent {
-	v2 pos;
-	int type;
-};
-
-typedef ds::Stack<EmitterEvent> EmitterQueue;
-
-enum TimelineEntryState {
-	TLES_WAITING,
-	TLES_ACTIVE,
-	TLES_DONE
-};
-
-struct TimelineEntry {
-	int ticks;
-	int type;
-	int num;
-	int emitter;
-	float delay;
-	TimelineEntryState state;
-	float timer;
-	int emitted;
-};
 
 class Enemies {
 
 public:
-	Enemies();
+	Enemies(GameContext* context);
 	~Enemies();
 	void start();
-	void load();
-	void tick(EmitterQueue& queue,float dt);
+	void tick(float dt);
 private:
-	v2 getPosition(const TimelineEntry& entry);
-	int _ticks;
-	ds::Array<TimelineEntry> _entries;
+	GameContext* _ctx;
+	Timeline _timeline;
+	EmitterQueue _queue;
 };
 

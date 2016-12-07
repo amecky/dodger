@@ -7,27 +7,24 @@
 #include "base\InputSystem.h"
 #include <core\math\GameMath.h>
 #include <core\io\ReportWriter.h>
-#include "..\asteroids\WarpingGrid.h"
+#include "..\objects\WarpingGrid.h"
 #include "..\objects\ElasticBorder.h"
 
 MainGameState::MainGameState(GameContext* context) : ds::GameState("MainGame"), _context(context) {
 	
 	_bullets = new Bullets(_context->world, context->settings);
 
-	_levels = new Levels(_context->world, context->settings);
-	_levels->load();
-
 	_hud = ds::res::getGUIDialog("HUD");
 	_levelRunning = false;
 	_level = 1;
 	_hud->setNumber(2, _level);
 
-	_enemies.load();
+	_enemies = new Enemies(context);
 }
 
 
 MainGameState::~MainGameState() {
-	delete _levels;
+	delete _enemies;
 	delete _bullets;
 }
 
@@ -50,7 +47,7 @@ void MainGameState::activate() {
 	_playerRing = _context->world->create(v2(640, 360), math::buildTexture(440, 0, 152, 152), OT_RING);
 	_bullets->stop();	
 	_hud->activate();
-	_enemies.start();
+	_enemies->start();
 }
 
 // -------------------------------------------------------
@@ -80,7 +77,6 @@ int MainGameState::onButtonDown(int button, int x, int y) {
 void MainGameState::killPlayer() {
 	v2 wp = _context->world->getPosition(_player).xy();
 	_bullets->killAll();
-	_levels->killAll();
 	_context->particles->start(1, wp);
 	_context->world->remove(_player);
 	_context->world->remove(_playerRing);
@@ -137,14 +133,7 @@ int MainGameState::update(float dt) {
 
 	_context->world->tick(dt);
 
-	_enemies.tick(_queue, dt);
-	while (!_queue.empty()) {
-		const EmitterEvent& ed = _queue.top();
-		_queue.pop();
-		LOG << "starting at " << ed.pos << " type: " << ed.type;
-		// show starting spot
-
-	}
+	_enemies->tick(dt);
 
 	{
 		ZoneTracker u2("MainGameState::events");
@@ -179,13 +168,12 @@ int MainGameState::update(float dt) {
 	_bullets->tick(dt);
 
 	_hud->tick(dt);
-
-	_levels->tick(_player, dt);
-
+	/*
 	if (_levelRunning && _levels->isActive() && (_kills == _levels->getNumberToKill())) {
 		LOG << "ALL KILLED - NEXT LEVEL!!!";
 		_levelRunning = false;
 	}
+	*/
 	return 0;
 }
 
@@ -223,6 +211,7 @@ bool MainGameState::killEnemy(const ds::Collision& c, int objectType) {
 	bool ret = false;
 	ID id = c.getIDByType(objectType);
 	if (_context->world->contains(id)) {
+		/*
 		CubeData* data = (CubeData*)_context->world->get_data(id);
 		--data->energy;
 		if (data->energy <= 0) {
@@ -234,6 +223,7 @@ bool MainGameState::killEnemy(const ds::Collision& c, int objectType) {
 			_context->grid->applyForce(p.xy(), 0.3f, 5.0f, 40.0f);
 			ret = true;
 		}
+		*/
 	}
 	if (c.containsType(OT_BULLET)) {
 		_bullets->kill(c.getIDByType(OT_BULLET));
@@ -278,16 +268,6 @@ int MainGameState::onChar(int ascii) {
 			//_context->particles->start(1, v2(x, y));
 			_context->particles->start(5, v2(x, y));
 			_context->particles->start(6, v2(x, y));
-		}
-	}
-	if (ascii == '1') {
-		if (!_levelRunning) {
-			_levels->start(_level);
-			_levelRunning = true;
-			_kills = 0;
-		}
-		else {
-			LOG << "There is already a level in progress";
 		}
 	}
 	return 0;
