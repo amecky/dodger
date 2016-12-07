@@ -65,7 +65,7 @@ void Timeline::tick(EmitterQueue& queue, float dt) {
 v2 Timeline::getPosition(const TimelineEntry& entry) {
 	if (entry.emitter == 1) {
 		int sx = math::random(1, 40);
-		int sy = math::random(1, 21);
+		int sy = math::random(1, 20);
 		return v2(49 + sx * 30, 45 + sy * 30);
 	}
 	return v2(640, 360);
@@ -82,7 +82,7 @@ void Timeline::load() {
 		for (int i = 0; i < num; ++i) {
 			TimelineEntry entry;
 			reader.get_int(items[i], "ticks", &entry.ticks);
-			reader.get_int(items[i], "type", &entry.type);
+			reader.get(items[i], "type", &entry.type);
 			reader.get_int(items[i], "num", &entry.num);
 			reader.get_int(items[i], "emitter", &entry.emitter);
 			reader.get(items[i], "delay", &entry.delay);

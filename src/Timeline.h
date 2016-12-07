@@ -1,9 +1,10 @@
 #pragma once
 #include <core\lib\collection_types.h>
+#include <core\string\StaticHash.h>
 
 struct EmitterEvent {
 	v2 pos;
-	int type;
+	StaticHash type;
 };
 
 typedef ds::Stack<EmitterEvent> EmitterQueue;
@@ -16,7 +17,7 @@ enum TimelineEntryState {
 
 struct TimelineEntry {
 	int ticks;
-	int type;
+	StaticHash type;
 	int num;
 	int emitter;
 	float delay;
