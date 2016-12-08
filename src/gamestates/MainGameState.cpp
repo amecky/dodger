@@ -133,7 +133,7 @@ int MainGameState::update(float dt) {
 
 	_context->world->tick(dt);
 
-	_enemies->tick(dt);
+	_enemies->tick(_player, dt);
 
 	{
 		ZoneTracker u2("MainGameState::events");
@@ -211,6 +211,15 @@ bool MainGameState::killEnemy(const ds::Collision& c, int objectType) {
 	bool ret = false;
 	ID id = c.getIDByType(objectType);
 	if (_context->world->contains(id)) {
+		if (_enemies->kill(id)) {
+			v3 p = _context->world->getPosition(id);
+			_context->particles->start(5, p.xy());
+			_context->particles->start(6, p.xy());
+			_context->world->remove(id);
+			++_kills;
+			_context->grid->applyForce(p.xy(), 0.3f, 5.0f, 40.0f);
+			ret = true;
+		}
 		/*
 		CubeData* data = (CubeData*)_context->world->get_data(id);
 		--data->energy;

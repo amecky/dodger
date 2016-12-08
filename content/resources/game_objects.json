@@ -12,7 +12,7 @@ template {
 	position : 100,200,0
 	scale : 1,1,1
 	rotation : 0,0,0
-	texture : 120,600,40,40
+	texture : 80,460,36,36
 	color : 192,0,0,255
 	type : 4
 }
