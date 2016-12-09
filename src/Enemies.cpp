@@ -7,6 +7,8 @@
 Enemies::Enemies(GameContext* context) : _ctx(context) {
 	_timeline.load();
 	_behaviorMap[SID("Follower")] = new FollowerBehavior(_ctx->world, _ctx->settings);
+	_behaviorMap[SID("Wanderer")] = new WandererBehavior(_ctx->world, _ctx->settings);
+	_behaviorMap[SID("Spotter")] = new SpotterBehavior(_ctx->world, _ctx->settings);
 }
 
 Enemies::~Enemies() {

@@ -225,6 +225,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Enemies.cpp" />
+    <ClCompile Include="src\EnemyBehavior.cpp" />
     <ClCompile Include="src\gamestates\GameOverState.cpp" />
     <ClCompile Include="src\gamestates\MainGameState.cpp" />
     <ClCompile Include="src\Dodger.cpp" />
@@ -234,12 +235,14 @@
     <ClCompile Include="src\objects\ElasticBorder.cpp" />
     <ClCompile Include="src\objects\InfectedGrid.cpp" />
     <ClCompile Include="src\objects\WarpingGrid.cpp" />
+    <ClCompile Include="src\PointEmitter.cpp" />
     <ClCompile Include="src\Timeline.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
     <ClInclude Include="src\Constants.h" />
     <ClInclude Include="src\Enemies.h" />
+    <ClInclude Include="src\EnemyBehavior.h" />
     <ClInclude Include="src\GameContext.h" />
     <ClInclude Include="src\GameSettings.h" />
     <ClInclude Include="src\gamestates\GameOverState.h" />
@@ -251,6 +254,7 @@
     <ClInclude Include="src\objects\ElasticBorder.h" />
     <ClInclude Include="src\objects\InfectedGrid.h" />
     <ClInclude Include="src\objects\WarpingGrid.h" />
+    <ClInclude Include="src\PointEmitter.h" />
     <ClInclude Include="src\Timeline.h" />
   </ItemGroup>
   <ItemGroup>

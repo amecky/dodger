@@ -1,6 +1,7 @@
 #pragma once
 #include <core\lib\collection_types.h>
 #include <core\string\StaticHash.h>
+#include "PointEmitter.h"
 
 struct EmitterEvent {
 	v2 pos;
@@ -19,11 +20,12 @@ struct TimelineEntry {
 	int ticks;
 	StaticHash type;
 	int num;
-	int emitter;
+	PointEmitter* emitter;
 	float delay;
 	TimelineEntryState state;
 	float timer;
 	int emitted;
+	p2i grid;
 };
 
 class Timeline {
@@ -35,7 +37,6 @@ public:
 	void load();
 	void tick(EmitterQueue& queue,float dt);
 private:
-	v2 getPosition(const TimelineEntry& entry);
 	int _ticks;
 	ds::Array<TimelineEntry> _entries;
 };

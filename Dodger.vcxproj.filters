@@ -28,6 +28,8 @@
     <ClCompile Include="src\objects\WarpingGrid.cpp">
       <Filter>objects</Filter>
     </ClCompile>
+    <ClCompile Include="src\EnemyBehavior.cpp" />
+    <ClCompile Include="src\PointEmitter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -61,6 +63,8 @@
     <ClInclude Include="src\objects\WarpingGrid.h">
       <Filter>objects</Filter>
     </ClInclude>
+    <ClInclude Include="src\EnemyBehavior.h" />
+    <ClInclude Include="src\PointEmitter.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Dodger.manifest" />
