@@ -37,4 +37,6 @@ private:
 	GameContext* _context;
 	ds::Color _border_color;
 	//ds::GameServer* _server;
+	ID _startUp;
+	ds::V3Path _scale_path;
 };

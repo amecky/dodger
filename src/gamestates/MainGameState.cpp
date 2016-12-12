@@ -40,11 +40,13 @@ void MainGameState::init() {
 // -------------------------------------------------------
 void MainGameState::activate() {
 	_player = _context->world->create(v2(640, 360), math::buildTexture(40, 0, 40, 40), OT_PLAYER);
+	_context->world->attachName(_player, "Player");
 	_context->world->attachCollider(_player, ds::PST_CIRCLE, v2(40.f, 0.0));
 	_playerAngle = 0.0f;
 	_cursor = _context->world->create(v2(700, 384), math::buildTexture(40, 160, 20, 20), 100);
 	_playerPrevious = v2(640, 360);
 	_playerRing = _context->world->create(v2(640, 360), math::buildTexture(440, 0, 152, 152), OT_RING);
+	_context->world->attachName(_playerRing, "Ring");
 	_bullets->stop();	
 	_hud->activate();
 	_enemies->start();

@@ -12,6 +12,9 @@
 #include "GameSettings.h"
 #include "objects\WarpingGrid.h"
 #include "objects\ElasticBorder.h"
+#include <core\world\actions\ScaleByPathAction.h>
+#include <core\world\actions\MoveByAction.h>
+#include <core\world\actions\LookAtAction.h>
 
 ds::BaseApp *app = new Dodger();
 
@@ -46,6 +49,11 @@ void Dodger::prepare(ds::Settings* settings) {
 // -------------------------------------------------------
 bool Dodger::loadContent() {
 
+	_scale_path.add(0.0f, v3(0.1f, 0.1f, 0.0f));
+	_scale_path.add(0.5f, v3(1.2f, 1.2f, 0.0f));
+	_scale_path.add(0.75f, v3(0.75f, 0.75f, 0.0f));
+	_scale_path.add(1.0f, v3(1.0f, 1.0f, 0.0f));
+
 	RID material = ds::res::find("SpriteMaterial", ds::ResourceType::MATERIAL);	
 	ds::Material* m = ds::res::getMaterial(material);
 	m->texture = ds::res::find("TextureArray", ds::ResourceType::TEXTURE);
@@ -66,6 +74,30 @@ bool Dodger::loadContent() {
 	_context->world->ignoreCollisions(OT_HUGE_ASTEROID, OT_BIG_ASTEROID);
 	_context->world->ignoreCollisions(OT_HUGE_ASTEROID, OT_MEDIUM_ASTEROID);
 	_context->world->ignoreCollisions(OT_HUGE_ASTEROID, OT_SMALL_ASTEROID);
+
+	ID startUp = _context->world->createBehavior("start_up");
+	_context->world->addSettings(startUp, new ds::ScaleByPathActionSettings(&_scale_path, 1.0f,0.2f));
+	_context->world->addSettings(startUp, new ds::LookAtActionSettings(SID("Player"), 0.0f));
+
+	ID bullets = _context->world->createBehavior("bullets");
+	_context->world->addSettings(bullets, new ds::MoveByActionSettings(_context->settings->bullets.velocity, -1.0f, false));
+
+	ID t1 = _context->world->createBehavior("test1");
+	_context->world->addSettings(t1, new ds::MoveByActionSettings(_context->settings->bullets.velocity, 1.0f, true));
+
+	// spotter
+	ID spotterLook = _context->world->createBehavior("spotter_look");
+	_context->world->addSettings(spotterLook, new ds::LookAtActionSettings(SID("Player"), 1.0f));
+	ID spotterMove = _context->world->createBehavior("spotter_move");
+	_context->world->addSettings(spotterMove, new ds::MoveByActionSettings(150.0f,5.0f,true));
+	_context->world->connectBehaviors(SID("start_up"), SID("spotter_look"), ds::AT_SCALE_BY_PATH, 9);
+	_context->world->connectBehaviors(SID("spotter_look"), SID("spotter_move"), ds::AT_LOOK_AT, 9);
+	_context->world->connectBehaviors(SID("spotter_move"), SID("spotter_look"), ds::AT_MOVE_BY, 9);
+
+
+	_context->world->connectBehaviors(startUp, t1, ds::AT_SCALE_BY_PATH, 4);
+
+	
 
 	_context->particles = ds::res::getParticleManager();
 	_context->additiveBlendState = ds::res::findBlendState("AdditiveBlendState");

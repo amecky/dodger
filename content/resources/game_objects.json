@@ -8,6 +8,15 @@ template {
 	type : 100
 }
 template {
+	name : "Bullet"
+	position : 100,200,0
+	scale : 1,1,1
+	rotation : 0,0,0
+	color : 249,246,194,255
+	texture : 0,410,22,8
+	type : 10
+}
+template {
 	name : "Follower"
 	position : 100,200,0
 	scale : 1,1,1

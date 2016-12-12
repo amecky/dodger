@@ -18,19 +18,12 @@ class BaseBehavior : public EnemyBehavior {
 
 public:
 	BaseBehavior(ds::World* world, GameSettings* settings) : EnemyBehavior(world, settings) {
-		_scale_path.add(0.0f, v3(0.1f, 0.1f, 0.0f));
-		_scale_path.add(0.5f, v3(1.2f, 1.2f, 0.0f));
-		_scale_path.add(0.75f, v3(0.75f, 0.75f, 0.0f));
-		_scale_path.add(1.0f, v3(1.0f, 1.0f, 0.0f));
 	}
 	virtual ~BaseBehavior() {}
 	virtual void create(ID id, ID target) {
-		float ttl = math::random(0.5f, 0.8f);
-		_world->scaleByPath(id, &_scale_path, ttl);
+		_world->startBehavior(SID("start_up"), id);
 	}
 	virtual void tick(const ds::ActionEvent& event, ID target, int objectType) {}
-protected:
-	ds::V3Path _scale_path;
 };
 
 // -----------------------------------------------------
@@ -41,8 +34,12 @@ class FollowerBehavior : public BaseBehavior {
 public:
 	FollowerBehavior(ds::World* world, GameSettings* settings) : BaseBehavior(world, settings) {}
 	virtual ~FollowerBehavior() {}
-	virtual void create(ID id, ID target);
-	virtual void tick(const ds::ActionEvent& event, ID target, int objectType);
+	virtual void create(ID id, ID target) {
+		_world->startBehavior(SID("start_up"), id);
+	}
+	virtual void tick(const ds::ActionEvent& event, ID target, int objectType) {
+
+	}
 };
 
 class SpotterBehavior : public BaseBehavior {
@@ -51,6 +48,7 @@ public:
 	SpotterBehavior(ds::World* world, GameSettings* settings) : BaseBehavior(world, settings) {}
 	virtual ~SpotterBehavior() {}
 	virtual void tick(const ds::ActionEvent& event, ID target, int objectType) {
+		/*
 		if (event.action == ds::AT_SCALE_BY_PATH) {
 			_world->lookAt(event.id, target, 1.0f);
 			_world->attachCollider(event.id, ds::PST_CIRCLE, v2(48.0f, 48.0f));
@@ -64,6 +62,7 @@ public:
 		else if (event.action == ds::AT_MOVE_BY) {
 			_world->lookAt(event.id, target, 1.0f);
 		}
+		*/
 	}
 };
 
