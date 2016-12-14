@@ -15,6 +15,8 @@
 #include <core\world\actions\ScaleByPathAction.h>
 #include <core\world\actions\MoveByAction.h>
 #include <core\world\actions\LookAtAction.h>
+#include <core\world\actions\WiggleAction.h>
+#include <core\world\actions\AlignToForceAction.h>
 
 ds::BaseApp *app = new Dodger();
 
@@ -89,13 +91,15 @@ bool Dodger::loadContent() {
 	ID spotterLook = _context->world->createBehavior("spotter_look");
 	_context->world->addSettings(spotterLook, new ds::LookAtActionSettings(SID("Player"), 1.0f));
 	ID spotterMove = _context->world->createBehavior("spotter_move");
-	_context->world->addSettings(spotterMove, new ds::MoveByActionSettings(150.0f,5.0f,true));
-	_context->world->connectBehaviors(SID("start_up"), SID("spotter_look"), ds::AT_SCALE_BY_PATH, 9);
-	_context->world->connectBehaviors(SID("spotter_look"), SID("spotter_move"), ds::AT_LOOK_AT, 9);
-	_context->world->connectBehaviors(SID("spotter_move"), SID("spotter_look"), ds::AT_MOVE_BY, 9);
+	_context->world->addSettings(spotterMove, new ds::MoveByActionSettings(150.0f, 5.0f,true));
+	_context->world->addSettings(spotterMove, new ds::WiggleActionSettings(50.0f, 8.0f, 5.0f));
+	_context->world->addSettings(spotterMove, new ds::AlignToForceActionSettings(5.0f));
+	_context->world->connectBehaviors(SID("start_up"), ds::AT_SCALE_BY_PATH, SID("spotter_look"), 9);
+	_context->world->connectBehaviors(SID("spotter_look"), ds::AT_LOOK_AT, SID("spotter_move"), 9);
+	_context->world->connectBehaviors(SID("spotter_move"), ds::AT_MOVE_BY, SID("spotter_look"), 9);
 
 
-	_context->world->connectBehaviors(startUp, t1, ds::AT_SCALE_BY_PATH, 4);
+	_context->world->connectBehaviors(SID("start_up"), ds::AT_SCALE_BY_PATH, SID("test1"), 4);
 
 	
 

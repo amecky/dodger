@@ -45,7 +45,7 @@ void Enemies::processPendingEnemies(ID target,float dt) {
 	ds::Array<PendingEnemy>::iterator it = _pendings.begin();
 	while (it != _pendings.end()) {
 		it->timer += dt;
-		if (it->timer >= 0.8f) {
+		if (it->timer >= 0.0f) {
 			ID id = _ctx->world->create(it->pos, it->type);
 			Enemy e;
 			e.behavior = _behaviorMap[it->type];
