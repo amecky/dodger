@@ -80,6 +80,7 @@ public:
 		return DEGTORAD(angle);
 	}
 	virtual void tick(const ds::ActionEvent& event, ID target, int objectType) {
+		/*
 		if (event.action == ds::AT_SCALE_BY_PATH) {
 			float ttl = math::random(_settings->wanderer.minRotationTTL, _settings->wanderer.maxRotationTTL);
 			_world->rotateBy(event.id, getRotationAngle(), ttl);
@@ -98,5 +99,6 @@ public:
 			_world->rotateBy(event.id, getRotationAngle(), ttl);
 			_world->scale(event.id, v3(0.9f, 0.9f, 0.9f), v3(1.0f, 1.0f, 1.0f), 0.2f);
 		}
+		*/
 	}
 };

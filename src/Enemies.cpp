@@ -48,11 +48,12 @@ void Enemies::processPendingEnemies(ID target,float dt) {
 		if (it->timer >= 0.0f) {
 			ID id = _ctx->world->create(it->pos, it->type);
 			Enemy e;
-			e.behavior = _behaviorMap[it->type];
+			//e.behavior = _behaviorMap[it->type];
 			e.id = id;
 			e.energy = 2;
-			e.behavior->create(id, target);
+			//e.behavior->create(id, target);
 			_enemies.push_back(e);
+			_ctx->world->startBehavior(SID("start_up"), id);
 			it = _pendings.remove(it);
 		}
 		else {
@@ -84,9 +85,9 @@ void Enemies::handleEvents(ID target) {
 			if (_ctx->world->contains(event.id)) {
 				int type = _ctx->world->getType(event.id);
 				int idx = findEnemy(event.id);
-				if (idx != -1) {
-					_enemies[idx].behavior->tick(event, target, 4);
-				}
+				//if (idx != -1) {
+					//_enemies[idx].behavior->tick(event, target, 4);
+				//}
 			}
 		}
 	}

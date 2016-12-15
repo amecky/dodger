@@ -1,0 +1,83 @@
+behavior {
+    name : "bullets"
+    ttl : -1.0
+    ttl_variance : 0.0
+    trigger : "event/timer"
+    move_by {
+        ttl : 1.0
+        ttl_variance : 0.0
+        velocity : 0,0,0
+		radial_velocity : 150
+		bounce : false        
+    }
+}
+behavior {
+    name : "start_up"
+    ttl : 0.0
+    ttl_variance : 0.0
+    trigger : "timer"
+    scale_by_path {
+        path : 0.0,1.0,1.0,1.0,0.5,1.0,1.0,1.0        
+    }
+}
+behavior {
+    name : "attach_collider"
+    ttl : 0.0
+    ttl_variance : 0.0
+    trigger : "timer"
+    attach_collider {
+        shape : "circle"        
+    }
+}
+behavior {
+    name : "spotter_move"
+    ttl : 0.0
+    ttl_variance : 0.0
+    trigger : "timer"
+    move_by {
+        ttl : 1.0
+        ttl_variance : 0.0
+        velocity : 0,0,0
+		radial_velocity : 150
+		bounce : false        
+    }
+    wiggle {
+        amplitude : 50
+        frequency : 8
+    }
+    align_to_force {
+    }
+}
+behavior {
+    name : "spotter_look"
+    ttl : 0.0
+    ttl_variance : 0.0
+    trigger : "timer"
+    look_at {
+        target : "Player"
+    }
+}
+connection {
+    from : "startup"
+    event : "scale_by_path"
+    to : "attach_collider"
+    object_type : 9
+}     
+connection {
+    from : "attach_collider"
+    event : "none"
+    to : "spotter_look"
+    object_type : 9
+}     
+connection {
+    from : "spotter_look"
+    event : "move_by"
+    to : "spotter_move"
+    object_type : 9
+}    
+connection {
+    from : "spotter_move"
+    event : "move_by"
+    to : "spotter_look"
+    object_type : 9
+}    

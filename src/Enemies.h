@@ -18,7 +18,7 @@ struct PendingEnemy {
 // -------------------------------------------------------
 struct Enemy {
 	ID id;
-	EnemyBehavior* behavior;
+	//EnemyBehavior* behavior;
 	int energy;
 };
 
