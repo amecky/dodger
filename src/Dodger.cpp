@@ -80,84 +80,13 @@ bool Dodger::loadContent() {
 	_context->world->ignoreCollisions(OT_HUGE_ASTEROID, OT_MEDIUM_ASTEROID);
 	_context->world->ignoreCollisions(OT_HUGE_ASTEROID, OT_SMALL_ASTEROID);
 
-	ID startUp = _context->world->createBehavior("start_up");
-	_context->world->addSettings(startUp, new ds::ScaleByPathActionSettings(&_scale_path, 1.0f,0.2f));
-	_context->world->addSettings(startUp, new ds::LookAtActionSettings(SID("Player"), 0.0f));
+	behaviors::createBasicBehaviors(_context->world, &_scale_path);
 
-	ID attach = _context->world->createBehavior("attach_collider");
-	_context->world->addSettings(attach, new ds::CollisionActionSettings(ds::PST_CIRCLE));
+	behaviors::createBulletBehavior(_context->world, _context->settings->bullets.velocity);
 
-	ID bullets = _context->world->createBehavior("bullets");
-	_context->world->addSettings(bullets, new ds::MoveByActionSettings(_context->settings->bullets.velocity, -1.0f, false));
+	behaviors::createSpotterBehavior(_context->world);
 
-	ID t1 = _context->world->createBehavior("test1");
-	_context->world->addSettings(t1, new ds::MoveByActionSettings(_context->settings->bullets.velocity, 1.0f, true));
-
-	//
-	// spotter
-	//
-	ID spotterLook = _context->world->createBehavior("spotter_look");
-	_context->world->addSettings(spotterLook, new ds::LookAtActionSettings(SID("Player"), 1.0f));
-	ID spotterMove = _context->world->createBehavior("spotter_move");
-	ds::SettingsDefinition DEFS[] = {
-		{ spotterMove, new ds::MoveByActionSettings(150.0f, 5.0f, true) },
-		{ spotterMove, new ds::WiggleActionSettings(50.0f, 8.0f, 5.0f) },
-		{ spotterMove, new ds::AlignToForceActionSettings(5.0f) }
-	};
-	_context->world->addSettings(DEFS, 3);
-	ds::ConnectionDefinition cd[] = {
-		{ SID("start_up"), ds::AT_SCALE_BY_PATH, SID("attach_collider") },
-		{ SID("attach_collider"), ds::AT_COLLIDER_ATTACHED, SID("spotter_look") },
-		{ SID("spotter_look"), ds::AT_LOOK_AT, SID("spotter_move") },
-		{ SID("spotter_move"), ds::AT_MOVE_BY, SID("spotter_look") }
-	};
-	_context->world->connectBehaviors(cd, 4, OT_SPOTTER);
-
-	//
-	// wanderer
-	//
-	ID wandererStart = _context->world->createBehavior("wanderer_start");
-	_context->world->addSettings(wandererStart, new ds::CollisionActionSettings(ds::PST_CIRCLE));
-	_context->world->addSettings(wandererStart, new ds::RotateBySettings(DEGTORAD(180.0f),2.0f));
-
-	ID wandererMove = _context->world->createBehavior("wanderer_move");
-	_context->world->addSettings(wandererMove, new ds::MoveByActionSettings(100.0f, 5.0f, true));
-	_context->world->addSettings(wandererMove, new ds::ScaleSettings(v3(1.0f), v3(0.8f), 0.4f));
-
-	ID wandererRotate = _context->world->createBehavior("wanderer_rotate");
-	_context->world->addSettings(wandererRotate, new ds::RotateBySettings(DEGTORAD(180.0f), 2.0f));
-	_context->world->addSettings(wandererRotate, new ds::ScaleSettings(v3(0.8f), v3(1.0f), 0.4f));
-	/*
-	if (event.action == ds::AT_SCALE_BY_PATH) {
-	float ttl = math::random(_settings->wanderer.minRotationTTL, _settings->wanderer.maxRotationTTL);
-	_world->rotateBy(event.id, getRotationAngle(), ttl);
-	_world->attachCollider(event.id, ds::PST_CIRCLE, v2(44.0f, 44.0f));
-	}
-	else if (event.action == ds::AT_ROTATE_BY) {
-	v3 rot = _world->getRotation(event.id);
-	float vel = math::random(_settings->wanderer.minVelocity, _settings->wanderer.maxVelocity);
-	v3 v = math::getRadialVelocity(rot.x, vel);
-	float ttl = math::random(_settings->wanderer.minMoveTTL, _settings->wanderer.maxMoveTTL);
-	_world->moveBy(event.id, v, ttl);
-	_world->scale(event.id, v3(1.0f, 1.0f, 1.0f), v3(0.9f, 0.9f, 0.9f), 0.2f);
-	}
-	else if (event.action == ds::AT_MOVE_BY) {
-	float ttl = math::random(_settings->wanderer.minRotationTTL, _settings->wanderer.maxRotationTTL);
-	_world->rotateBy(event.id, getRotationAngle(), ttl);
-	_world->scale(event.id, v3(0.9f, 0.9f, 0.9f), v3(1.0f, 1.0f, 1.0f), 0.2f);
-	}
-	*/
-	ds::ConnectionDefinition wandererConnections[] = {
-		{ SID("start_up"), ds::AT_SCALE_BY_PATH, SID("wanderer_start") },
-		{ SID("wanderer_start"), ds::AT_ROTATE_BY, SID("wanderer_move") },
-		{ SID("wanderer_move"), ds::AT_MOVE_BY, SID("wanderer_rotate") },
-		{ SID("wanderer_rotate"), ds::AT_ROTATE_BY, SID("wanderer_move") }
-	};
-	_context->world->connectBehaviors(wandererConnections, 4, OT_WANDERER);
-
-	_context->world->connectBehaviors(SID("start_up"), ds::AT_SCALE_BY_PATH, SID("test1"), 4);
-
-	
+	behaviors::createWanderer(_context->world);
 
 	_context->particles = ds::res::getParticleManager();
 	_context->additiveBlendState = ds::res::findBlendState("AdditiveBlendState");
