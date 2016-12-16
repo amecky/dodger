@@ -11,6 +11,7 @@ struct PendingEnemy {
 	StaticHash type;
 	v2 pos;
 	float timer;
+	StaticHash behavior;
 };
 
 // -------------------------------------------------------
@@ -18,7 +19,6 @@ struct PendingEnemy {
 // -------------------------------------------------------
 struct Enemy {
 	ID id;
-	//EnemyBehavior* behavior;
 	int energy;
 };
 
@@ -36,13 +36,11 @@ public:
 private:
 	void processPendingEnemies(ID target, float dt);
 	void processQueue(float dt);
-	void handleEvents(ID target);
 	int findEnemy(ID id);
 	GameContext* _ctx;
 	Timeline _timeline;
 	EmitterQueue _queue;
 	ds::Array<PendingEnemy> _pendings;
-	std::map<StaticHash, EnemyBehavior*> _behaviorMap;
 	ds::Array<Enemy> _enemies;
 };
 

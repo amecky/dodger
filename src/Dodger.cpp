@@ -74,19 +74,16 @@ bool Dodger::loadContent() {
 	_context->world->setBoundingRect(ds::Rect(25, 20, 1250, 680));
 	_context->world->useTemplates(ds::res::getWorldEntityTemplates(SID("game_objects")));
 	_context->world->ignoreCollisions(OT_FOLLOWER, OT_FOLLOWER);
+	_context->world->ignoreCollisions(OT_WIGGLE_FOLLOWER, OT_WIGGLE_FOLLOWER);
 	_context->world->ignoreCollisions(OT_PLAYER, OT_BULLET);
 	_context->world->ignoreCollisions(OT_BULLET, OT_BULLET);
-	_context->world->ignoreCollisions(OT_HUGE_ASTEROID, OT_BIG_ASTEROID);
-	_context->world->ignoreCollisions(OT_HUGE_ASTEROID, OT_MEDIUM_ASTEROID);
-	_context->world->ignoreCollisions(OT_HUGE_ASTEROID, OT_SMALL_ASTEROID);
 
 	behaviors::createBasicBehaviors(_context->world, &_scale_path);
-
 	behaviors::createBulletBehavior(_context->world, _context->settings->bullets.velocity);
-
 	behaviors::createSpotterBehavior(_context->world);
-
 	behaviors::createWanderer(_context->world);
+	behaviors::createFollowerBehavior(_context->world, &_scale_path, _context->settings);
+	behaviors::createWiggleFollowerBehavior(_context->world, &_scale_path, _context->settings);
 
 	_context->particles = ds::res::getParticleManager();
 	_context->additiveBlendState = ds::res::findBlendState("AdditiveBlendState");

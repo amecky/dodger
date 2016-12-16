@@ -37,6 +37,7 @@ void Timeline::tick(EmitterQueue& queue, float dt) {
 				EmitterEvent ed;
 				ed.pos = entry.emitter->next(entry.emitted);
 				ed.type = entry.type;
+				ed.behavior = entry.behavior;
 				queue.push(ed);
 				++entry.emitted;
 				if (entry.emitted == entry.num) {
@@ -50,6 +51,7 @@ void Timeline::tick(EmitterQueue& queue, float dt) {
 				EmitterEvent ed;
 				ed.pos = entry.emitter->next(0);
 				ed.type = entry.type;
+				ed.behavior = entry.behavior;
 				queue.push(ed);
 				if (entry.num == 1) {					
 					entry.state = TLES_DONE;
@@ -84,7 +86,8 @@ void Timeline::load() {
 				case 3: entry.emitter = new HorizontalLineEmitter(entry.num, entry.grid); break;
 				default: entry.emitter = new RandomPointEmitter(entry.num, entry.grid);
 			}
-			reader.get(items[i], "delay", &entry.delay);			
+			reader.get(items[i], "delay", &entry.delay);		
+			reader.get(items[i], "behavior", &entry.behavior);
 			entry.state = TLES_WAITING;
 			entry.timer = 0.0f;
 			entry.emitted = 0;

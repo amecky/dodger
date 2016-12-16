@@ -1,14 +1,14 @@
-item { ticks : 10  type : "Follower" num : 4 emitter : 2  grid: 2,2 delay : 0 } 
-item { ticks : 120 type : "Wanderer" num : 1 emitter : 1  grid: 2,2 delay : 0 }
-item { ticks : 240 type : "Spotter"  num : 1 emitter : 1  grid: 2,2 delay : 0 }
-item { ticks : 300 type : "Wanderer" num : 1 emitter : 1  grid: 2,2 delay : 0 }
-item { ticks : 360 type : "Follower" num : 3 emitter : 2  grid: 2,18 delay : 0.2 }
-item { ticks : 420 type : "Follower" num : 4 emitter : 3  grid: 2,2 delay : 0.2 }
-item { ticks : 480 type : "Spotter"  num : 6 emitter : 2  grid: 2,16 delay : 0.2 }
-item { ticks : 540 type : "Follower" num : 1 emitter : 1  grid: 2,2 delay : 0.2 }
-item { ticks : 580 type : "Spotter"  num : 1 emitter : 1  grid: 2,2 delay : 0.2 }
-item { ticks : 600 type : "Wanderer" num : 1 emitter : 1  grid: 2,2 delay : 0.2 }
-item { ticks : 620 type : "Follower" num : 1 emitter : 1  grid: 2,2 delay : 0.2 }
+item { ticks : 10  type : "WiggleFollower" num : 4 emitter : 2  grid: 2,2  delay : 0    behavior : "wiggle_follower_start_up" } 
+item { ticks : 120 type : "Wanderer" num : 1 emitter : 1  grid: 2,2  delay : 0    behavior : "start_up"  }
+item { ticks : 240 type : "Spotter"  num : 1 emitter : 1  grid: 2,2  delay : 0    behavior : "start_up"  }
+item { ticks : 300 type : "Wanderer" num : 1 emitter : 1  grid: 2,2  delay : 0    behavior : "start_up"  }
+item { ticks : 360 type : "Follower" num : 3 emitter : 2  grid: 2,18 delay : 0.2  behavior : "follower_start_up"  }
+item { ticks : 420 type : "WiggleFollower" num : 4 emitter : 3  grid: 2,2  delay : 0.2  behavior : "wiggle_follower_start_up"  }
+item { ticks : 480 type : "Spotter"  num : 6 emitter : 2  grid: 2,16 delay : 0.2  behavior : "start_up"  }
+item { ticks : 540 type : "Follower" num : 1 emitter : 1  grid: 2,2  delay : 0.2  behavior : "follower_start_up"  }
+item { ticks : 580 type : "Spotter"  num : 1 emitter : 1  grid: 2,2  delay : 0.2  behavior : "start_up"  }
+item { ticks : 600 type : "Wanderer" num : 1 emitter : 1  grid: 2,2  delay : 0.2  behavior : "start_up"  }
+item { ticks : 620 type : "Follower" num : 1 emitter : 1  grid: 2,2  delay : 0.2  behavior : "follower_start_up"  }
 
 
 

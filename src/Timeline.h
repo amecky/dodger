@@ -6,6 +6,7 @@
 struct EmitterEvent {
 	v2 pos;
 	StaticHash type;
+	StaticHash behavior;
 };
 
 typedef ds::Stack<EmitterEvent> EmitterQueue;
@@ -26,6 +27,7 @@ struct TimelineEntry {
 	float timer;
 	int emitted;
 	p2i grid;
+	StaticHash behavior;
 };
 
 class Timeline {

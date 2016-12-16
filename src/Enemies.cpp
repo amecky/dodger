@@ -6,9 +6,6 @@
 // -------------------------------------------------------
 Enemies::Enemies(GameContext* context) : _ctx(context) {
 	_timeline.load();
-	_behaviorMap[SID("Follower")] = new FollowerBehavior(_ctx->world, _ctx->settings);
-	_behaviorMap[SID("Wanderer")] = new WandererBehavior(_ctx->world, _ctx->settings);
-	_behaviorMap[SID("Spotter")] = new SpotterBehavior(_ctx->world, _ctx->settings);
 }
 
 Enemies::~Enemies() {
@@ -34,6 +31,7 @@ void Enemies::processQueue(float dt) {
 		pe.timer = 0.0f;
 		pe.pos = ed.pos;
 		pe.type = ed.type;
+		pe.behavior = ed.behavior;
 		_pendings.push_back(pe);
 	}
 }
@@ -48,12 +46,10 @@ void Enemies::processPendingEnemies(ID target,float dt) {
 		if (it->timer >= 0.0f) {
 			ID id = _ctx->world->create(it->pos, it->type);
 			Enemy e;
-			//e.behavior = _behaviorMap[it->type];
 			e.id = id;
 			e.energy = 2;
-			//e.behavior->create(id, target);
 			_enemies.push_back(e);
-			_ctx->world->startBehavior(SID("start_up"), id);
+			_ctx->world->startBehavior(it->behavior, id);
 			it = _pendings.remove(it);
 		}
 		else {
@@ -71,26 +67,6 @@ void Enemies::tick(ID target, float dt) {
 
 	processPendingEnemies(target, dt);
 	
-	handleEvents(target);
-}
-
-// -------------------------------------------------------
-// handle events
-// -------------------------------------------------------
-void Enemies::handleEvents(ID target) {
-	if (_ctx->world->hasEvents()) {
-		uint32_t n = _ctx->world->numEvents();
-		for (uint32_t i = 0; i < n; ++i) {
-			const ds::ActionEvent& event = _ctx->world->getEvent(i);
-			if (_ctx->world->contains(event.id)) {
-				int type = _ctx->world->getType(event.id);
-				int idx = findEnemy(event.id);
-				//if (idx != -1) {
-					//_enemies[idx].behavior->tick(event, target, 4);
-				//}
-			}
-		}
-	}
 }
 
 // -------------------------------------------------------

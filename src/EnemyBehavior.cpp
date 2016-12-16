@@ -8,16 +8,20 @@
 #include <core\world\actions\CollisionAction.h>
 #include <core\world\actions\RotateByAction.h>
 #include <core\world\actions\ScalingAction.h>
+#include <core\world\actions\SeparateAction.h>
+#include <core\world\actions\SeekAction.h>
 
 namespace behaviors {
 
 	// -----------------------------------------------------------
 	// basic beahvior
 	// -----------------------------------------------------------
-	void createBasicBehaviors(ds::World* world, ds::V3Path *path) {
-		ID startUp = world->createBehavior("start_up");
-		world->addSettings(startUp, new ds::ScaleByPathActionSettings(path, 1.0f, 0.2f));
-		world->addSettings(startUp, new ds::LookAtActionSettings(SID("Player"), 0.0f));
+	void createBasicBehaviors(ds::World* world, ds::V3Path *path) {		
+		ds::ActionDefinition startups[] = {
+			{ new ds::ScaleByPathActionSettings(path, 1.0f, 0.2f) },
+			{ new ds::LookAtSettings(SID("Player"), 0.0f) }
+		};
+		world->createBehavior("start_up", startups, 2);
 
 		ID attach = world->createBehavior("attach_collider");
 		world->addSettings(attach, new ds::CollisionActionSettings(ds::PST_CIRCLE));
@@ -69,12 +73,12 @@ namespace behaviors {
 	// -----------------------------------------------------------
 	void createSpotterBehavior(ds::World* world) {
 		ID spotterLook = world->createBehavior("spotter_look");
-		world->addSettings(spotterLook, new ds::LookAtActionSettings(SID("Player"), 1.0f));
+		world->addSettings(spotterLook, new ds::LookAtSettings(SID("Player"), 1.0f));
 
 		ds::ActionDefinition sm[] = {
 			{ new ds::MoveBySettings(150.0f, 5.0f, true) },
 			{ new ds::WiggleSettings(50.0f, 8.0f, 5.0f) },
-			{ new ds::AlignToForceActionSettings(5.0f) }
+			{ new ds::AlignToForceSettings(5.0f) }
 		};
 		world->createBehavior("spotter_move", sm, 3);
 
@@ -85,6 +89,55 @@ namespace behaviors {
 			{ SID("spotter_move"), ds::AT_MOVE_BY, SID("spotter_look") }
 		};
 		world->connectBehaviors(cd, 4, OT_SPOTTER);
+	}
+
+	// -----------------------------------------------------------
+	// follower behavior
+	// -----------------------------------------------------------
+	void createFollowerBehavior(ds::World* world, ds::V3Path *path, GameSettings* settings) {
+		ds::ActionDefinition startups[] = {
+			{ new ds::ScaleByPathActionSettings(path, 1.0f, 0.2f) },
+			{ new ds::LookAtSettings(SID("Player"), 0.0f) },
+			{ new ds::MoveBySettings(settings->follower.initialVelocity,0.2f) }
+		};
+		world->createBehavior("follower_start_up", startups, 3);
+
+		ds::ActionDefinition follow[] = {
+			{ new ds::SeparateSettings(OT_FOLLOWER, settings->follower.separationDistance, settings->follower.relaxation) },
+			{ new ds::SeekSettings(SID("Player"), settings->follower.seekVelocity) },
+		};
+		world->createBehavior("follower_follow", follow, 2);
+
+		ds::ConnectionDefinition cd[] = {
+			{ SID("follower_start_up"), ds::AT_SCALE_BY_PATH, SID("attach_collider") },
+			{ SID("attach_collider"), ds::AT_COLLIDER_ATTACHED, SID("follower_follow") }
+		};
+		world->connectBehaviors(cd, 2, OT_FOLLOWER);
+	}
+
+	// -----------------------------------------------------------
+	// follower behavior
+	// -----------------------------------------------------------
+	void createWiggleFollowerBehavior(ds::World* world, ds::V3Path *path, GameSettings* settings) {
+		ds::ActionDefinition startups[] = {
+			{ new ds::ScaleByPathActionSettings(path, 1.0f, 0.2f) },
+			{ new ds::LookAtSettings(SID("Player"), 0.0f) },
+			{ new ds::MoveBySettings(20.0f, 0.2f) }
+		};
+		world->createBehavior("wiggle_follower_start_up", startups, 3);
+
+		ds::ActionDefinition follow[] = {
+			{ new ds::SeparateSettings(OT_WIGGLE_FOLLOWER, settings->follower.separationDistance, settings->follower.relaxation) },
+			{ new ds::SeekSettings(SID("Player"), settings->follower.seekVelocity) },
+			{ new ds::WiggleSettings(50.0f, 8.0f, 5.0f) },
+		};
+		world->createBehavior("wiggle_follower_follow", follow, 3);
+
+		ds::ConnectionDefinition cd[] = {
+			{ SID("wiggle_follower_start_up"), ds::AT_SCALE_BY_PATH, SID("attach_collider") },
+			{ SID("attach_collider"), ds::AT_COLLIDER_ATTACHED, SID("wiggle_follower_follow") }
+		};
+		world->connectBehaviors(cd, 2, OT_WIGGLE_FOLLOWER);
 	}
 }
 

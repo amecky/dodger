@@ -14,10 +14,19 @@ template {
 	rotation : 0,0,0
 	color : 249,246,194,255
 	texture : 0,410,22,8
-	type : 10
+	type : 8
 }
 template {
 	name : "Follower"
+	position : 100,200,0
+	scale : 1,1,1
+	rotation : 0,0,0
+	texture : 80,460,36,36
+	color : 255,0,0,255
+	type : 3
+}
+template {
+	name : "WiggleFollower"
 	position : 100,200,0
 	scale : 1,1,1
 	rotation : 0,0,0
@@ -32,7 +41,7 @@ template {
 	rotation : 0,0,0
 	texture : 190,460,48,48
 	color : 0,255,0,255
-	type : 8
+	type : 6
 }
 template {
 	name : "Spotter"
@@ -41,7 +50,7 @@ template {
 	rotation : 0,0,0
 	texture : 300,460,50,50
 	color : 0,0,255,255
-	type : 9
+	type : 7
 }
 template {
 	name : "HugeAsteroid"
