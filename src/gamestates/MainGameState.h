@@ -8,7 +8,7 @@
 #include <particles\ParticleManager.h>
 #include "..\objects\Bullets.h"
 #include "..\Enemies.h"
-
+/*
 struct GameTimer {
 
 	float timer;
@@ -35,6 +35,21 @@ struct GameTimer {
 		timer = 0.0f;
 		total_seconds = 0;
 	}
+};
+*/
+struct TimelineTestEntry {
+	StaticHash type;
+	int num;
+	PointEmitter* emitter;
+	float delay;
+	TimelineEntryState state;
+	float timer;
+	int emitted;
+	p2i grid;
+	StaticHash behavior;
+
+	TimelineTestEntry() : num(1), delay(0.0f), emitted(0), grid(2, 2) {}
+
 };
 
 class MainGameState : public ds::GameState {
@@ -71,5 +86,8 @@ private:
 	bool _levelRunning;
 	int _level;
 	Enemies* _enemies;
+	v2 _dialogPos;
+	int _dialogState;
+	TimelineTestEntry _testEntry;
 };
 

@@ -20,6 +20,9 @@ MainGameState::MainGameState(GameContext* context) : ds::GameState("MainGame"), 
 	_hud->setNumber(2, _level);
 
 	_enemies = new Enemies(context);
+
+	_dialogState = 1;
+	_dialogPos = v2(10, 710);
 }
 
 
@@ -250,6 +253,15 @@ void MainGameState::render() {
 	sprites->begin();
 	_hud->render();
 	sprites->end();
+
+	gui::start(1, &_dialogPos);
+	gui::begin("Item", &_dialogState);
+	gui::InputInt("Num", &_testEntry.num);
+	gui::InputFloat("Delay", &_testEntry.delay);
+	if (gui::Button("Start")) {
+		LOG << "clicked";
+	}
+	gui::end();
 }
 // -------------------------------------------------------
 // on char

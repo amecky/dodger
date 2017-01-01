@@ -1,5 +1,6 @@
 #include "Player.h"
-#include <sprites\SpriteBatch.h>
+#include <core\math\GameMath.h>
+#include <base\InputSystem.h>
 
 Player::Player(GameContext* ctx) : _context(ctx) , _dying(false) {
 }
@@ -8,50 +9,62 @@ Player::Player(GameContext* ctx) : _context(ctx) , _dying(false) {
 Player::~Player() {
 }
 
+void Player::activate() {
+	_player = _context->world->create(v2(640, 360), math::buildTexture(40, 0, 40, 40), OT_PLAYER);
+	_context->world->attachName(_player, "Player");
+	_context->world->attachCollider(_player, ds::PST_CIRCLE, v2(40.f, 0.0));
+	_playerAngle = 0.0f;
+	_cursor = _context->world->create(v2(700, 384), math::buildTexture(40, 160, 20, 20), 100);
+	_playerPrevious = v2(640, 360);
+	_playerRing = _context->world->create(v2(640, 360), math::buildTexture(440, 0, 152, 152), OT_RING);
+	_context->world->attachName(_playerRing, "Ring");
+}
+
 // -------------------------------------------------------
 // move player
 // -------------------------------------------------------
 void Player::move(float dt) {
-	_cursor_pos = ds::renderer::getMousePosition();
-	_context->debugPanel.show("Cursor", _cursor_pos);
-	v2 wp;
-	float dx = _context->world_pos.x - 1280.0f / 2.0f;
-	if (dx < 0.0f) {
-		dx = 0.0f;
+	ZoneTracker u2("MainGameState::movePlayer");
+	v2 vel = v2(0.0f);
+	if (ds::input::getKeyState('A')) {
+		vel.x -= 1.0f;
 	}
-	if (dx > 320.0f) {
-		dx = 320.0f;
+	if (ds::input::getKeyState('D')) {
+		vel.x += 1.0f;
 	}
-	wp.x = _cursor_pos.x + dx;
-
-	float dy = _context->world_pos.y - 720.0f / 2.0f;
-	if (dy < 0.0f) {
-		dy = 0.0f;
+	if (ds::input::getKeyState('W')) {
+		vel.y += 1.0f;
 	}
-	if (dy > 180.0f) {
-		dy = 180.0f;
+	if (ds::input::getKeyState('S')) {
+		vel.y -= 1.0f;
 	}
-	wp.y = _cursor_pos.y + dy;
-	_context->debugPanel.show("WP", wp);
-
-	ds::math::followRelative(wp, _context->playerPosition, &_context->playerAngle, 5.0f, 1.1f * dt);
-	ds::vector::clamp(_context->playerPosition, v2(60, 60), v2(1540, 840));
-	_context->world_pos = _context->playerPosition;
-	ds::renderer::setViewportPosition(_context->viewport_id, _context->world_pos);
+	v2 cp = ds::input::getMousePosition();
+	_context->world->setPosition(_cursor, cp);
+	v2 wp = _context->world->getPosition(_player).xy();
+	v2 pos = wp;
+	float angle = 0.0f;
+	ds::math::followRelative(cp, wp, &_playerAngle, 5.0f, 1.1f * dt);
+	_context->world->setRotation(_player, _playerAngle);
+	pos += vel * 250.0f * dt;
+	if (ds::math::isInside(pos, ds::Rect(0, 0, 1600, 900))) {
+		_context->world->setPosition(_player, pos);
+		_context->world->setPosition(_playerRing, pos);
+		float distSqr = sqr_distance(pos, _playerPrevious);
+		float dmin = 10.0f;
+		if (distSqr > (dmin * dmin)) {
+			_context->particles->start(10, _playerPrevious);
+			_playerPrevious = pos;
+		}
+	}
 }
 
-void Player::render() {
-	ds::renderer::selectViewport(_context->viewport_id);
-	if (!_dying) {
-		ds::sprites::draw(_context->world_pos, ds::math::buildTexture(40, 0, 40, 42), _context->playerAngle);
-		ds::sprites::draw(_context->world_pos, ds::math::buildTexture(440, 0, 152, 152));
-	}
-	ds::renderer::selectViewport(0);
-	ds::sprites::draw(_cursor_pos, ds::math::buildTexture(40, 160, 20, 20));
+void Player::kill() {
+	v2 wp = _context->world->getPosition(_player).xy();
+	//_bullets->killAll();
+	_context->particles->start(1, wp);
+	_context->world->remove(_player);
+	_context->world->remove(_playerRing);
+	_context->world->remove(_cursor);
+	//_levelRunning = false;
 }
 
-void Player::reset() {
-	_context->playerPosition = v2(800, 450);
-	_context->playerAngle = 0.0f;
-	_cursor_pos = v2(640, 360);
-}

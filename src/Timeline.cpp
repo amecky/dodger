@@ -88,7 +88,7 @@ void Timeline::load() {
 			}
 			reader.get(items[i], "delay", &entry.delay);		
 			reader.get(items[i], "behavior", &entry.behavior);
-			entry.state = TLES_WAITING;
+			entry.state = TLES_DONE;
 			entry.timer = 0.0f;
 			entry.emitted = 0;
 			_entries.push_back(entry);
