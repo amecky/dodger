@@ -7,6 +7,7 @@
 #include "gamestates\GameOverState.h"
 #include "gamestates\MainMenuState.h"
 #include <particles\ParticlesTestState.h>
+#include "gamestates\FourierTestState.h"
 //#include "gamestates\HighscoreState.h"
 #include "GameContext.h"
 #include "GameSettings.h"
@@ -98,6 +99,7 @@ bool Dodger::loadContent() {
 	addGameState(new GameOverState(_context));
 	addGameState(new ds::ParticlesTestState(pts));
 	addGameState(new MainMenuState(_context));
+	addGameState(new FourierTestState(_context));
 	// connect game states
 	connectGameStates("MainGame", 1, "GameOver");
 	connectGameStates("MainGame", 2, "ParticlesTestState");
@@ -113,7 +115,7 @@ bool Dodger::loadContent() {
 }
 
 void Dodger::init() {
-	activate("MainGame");
+	pushState("FourierTestState");
 }
 
 
