@@ -31,6 +31,7 @@ Dodger::Dodger() : ds::BaseApp() {
 Dodger::~Dodger() {
 	//_server->close();
 	//delete _server;
+	delete _process;
 	delete _context->elasticBorder;
 	delete _context->settings;
 	delete _context->world;
@@ -83,7 +84,7 @@ bool Dodger::loadContent() {
 	behaviors::createBulletBehavior(_context->world, _context->settings->bullets.velocity);
 	behaviors::createSpotterBehavior(_context->world);
 	behaviors::createWanderer(_context->world);
-	behaviors::createFollowerBehavior(_context->world, &_scale_path, _context->settings);
+	//behaviors::createFollowerBehavior(_context->world, &_scale_path, _context->settings);
 	behaviors::createWiggleFollowerBehavior(_context->world, &_scale_path, _context->settings);
 
 	_context->particles = ds::res::getParticleManager();
@@ -111,6 +112,12 @@ bool Dodger::loadContent() {
 
 	//_server->connect(this);
 
+	ds::GrayFadePostProcessDescriptor desc;
+	desc.source = ds::res::find("RT1", ds::ResourceType::RENDERTARGET);
+	desc.target = INVALID_RID;
+	desc.ttl = 1.0f;
+	_process = new ds::GrayFadePostProcess(desc);
+
 	return true;
 }
 
@@ -125,6 +132,7 @@ void Dodger::init() {
 void Dodger::update(float dt) {
 	_context->grid->tick(dt);
 	_context->elasticBorder->tick(dt);
+	_process->tick(dt);
 	//_server->poll();
 }
 
@@ -133,6 +141,11 @@ void Dodger::update(float dt) {
 // -------------------------------------------------------
 void Dodger::render() {
 	_context->grid->render();
+
+
+	_process->begin();
+
+
 	ds::SpriteBuffer* sprites = graphics::getSpriteBuffer();
 	ds::ChannelArray* array = _context->world->getChannelArray();
 	v3* positions = (v3*)array->get_ptr(ds::WEC_POSITION);
@@ -152,6 +165,8 @@ void Dodger::render() {
 	_context->elasticBorder->render();
 	graphics::selectViewport(0);
 	graphics::selectBlendState(0);
+
+	_process->render();
 }
 
 void Dodger::get(const ds::HTTPRequest& request, ds::HTTPResponse* response) {
@@ -160,4 +175,15 @@ void Dodger::get(const ds::HTTPRequest& request, ds::HTTPResponse* response) {
 	_context->world->generateJSON(response->data);
 	//response->data.append(");");
 	response->size = response->data.size();
+}
+
+void Dodger::OnChar(uint8_t ascii) {
+	if (ascii == '9') {
+		if (_process->isActive()) {
+			_process->deactivate();
+		}
+		else {
+			_process->activate();
+		}
+	}
 }

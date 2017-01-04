@@ -56,3 +56,9 @@ dialog {
     file : "MainMenu" 
     font : "nullshock"
 }
+render_target {
+	name : "RT1"
+	width : 1280
+	height : 720
+	clear_color : 0,0,0,0
+}

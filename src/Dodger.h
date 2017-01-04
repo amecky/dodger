@@ -9,7 +9,7 @@
 #include <core\net\GameServer.h>
 #include "base\BaseApp.h"
 #include <renderer\render_types.h>
-
+#include <postprocess\GrayFadePostProcess.h>
 
 struct GameContext;
 
@@ -29,7 +29,7 @@ public:
 	void init();
 	void update(float dt);
 	void render();
-
+	void OnChar(uint8_t ascii);
 	virtual void get(const ds::HTTPRequest& request, ds::HTTPResponse* response);
 protected:
 	void prepare(ds::Settings* settings);
@@ -39,4 +39,5 @@ private:
 	//ds::GameServer* _server;
 	ID _startUp;
 	ds::V3Path _scale_path;
+	ds::GrayFadePostProcess* _process;
 };

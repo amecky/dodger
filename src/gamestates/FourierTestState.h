@@ -48,7 +48,6 @@ private:
 	v2 _dialogPos;
 	int _dialogState;
 
-	ID _enemy;
 	float _timer;
 	float _values[5];
 	int _num;

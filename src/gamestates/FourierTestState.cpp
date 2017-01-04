@@ -53,7 +53,6 @@ void FourierTestState::activate() {
 	_bullets->stop();	
 	_hud->activate();
 
-	_enemy = _context->world->create(v2(1200, 360), SID("Follower"));
 	_timer = 0.0f;
 }
 
@@ -142,7 +141,7 @@ int FourierTestState::update(float dt) {
 		it->timer += dt * _speed;
 
 		//float y = 4.0f * sin(_timer) / PI + 4.0f * sin(3.0f * _timer) / (3.0f * PI);
-		float y = 4.0f / PI * sin(it->timer) + 4.0f / (3.0f * PI) * sin(3.0f * it->timer) + 4.0f / (5.0f * PI) * sin(5.0f * it->timer);
+		//float y = 4.0f / PI * sin(it->timer) + 4.0f / (3.0f * PI) * sin(3.0f * it->timer) + 4.0f / (5.0f * PI) * sin(5.0f * it->timer);
 
 		float v = 0.0f;
 		for (int i = 0; i < _num; ++i) {
@@ -150,38 +149,22 @@ int FourierTestState::update(float dt) {
 			v += _values[i] / PI * sin(f * it->timer);
 		}
 		v3 p = _context->world->getPosition(it->id);
-		p.y = it->y + v * 100.0f;
-		p.x -= _xvel * dt;
-		if (p.x < 10.0f) {
+		v2 n = p.xy();
+		n.y = it->y + v * 100.0f;
+		n.x -= _xvel * dt;
+		if (n.x < 10.0f) {
 			_context->world->remove(it->id);
 			it = _objects.remove(it);
 		}
 		else {
 			//LOG << "p: " << p;
-			_context->world->setPosition(it->id, p.xy());
+			float angle = math::getAngle(p.xy(),n);
+			_context->world->setPosition(it->id, n);
+			_context->world->setRotation(it->id, angle);
 			++it;
 		}
 	}
-	/*
-	_timer += dt * _speed;
-
-	//float y = 4.0f * sin(_timer) / PI + 4.0f * sin(3.0f * _timer) / (3.0f * PI);
-	float y = 4.0f / PI * sin(_timer) + 4.0f / (3.0f * PI) * sin( 3.0f * _timer) + 4.0f / (5.0f * PI) * sin(5.0f * _timer);
-
-	float v = 0.0f;
-	for (int i = 0; i < _num; ++i) {
-		float f = static_cast<float>(i) * 2.0f + 1.0f;
-		v += _values[i] / PI * sin(f * _timer);
-	}
-	v3 p = _context->world->getPosition(_enemy);
-	p.y = 360 + v * 100.0f;
-	p.x -= _xvel * dt;
-	if (p.x < 40.0f) {
-		p.x = 1200.0f;
-	}
-	//LOG << "p: " << p;
-	_context->world->setPosition(_enemy, p.xy());
-	*/
+	
 	_context->world->tick(dt);
 
 	{
@@ -260,6 +243,16 @@ bool FourierTestState::killEnemy(const ds::Collision& c, int objectType) {
 	bool ret = false;
 	ID id = c.getIDByType(objectType);
 	if (_context->world->contains(id)) {
+		Objects::iterator it = _objects.begin();
+		while (it != _objects.end()) {
+			if ( id == it->id) {
+				_context->world->remove(it->id);
+				it = _objects.remove(it);
+			}
+			else {
+				++it;
+			}
+		}
 	}
 	if (c.containsType(OT_BULLET)) {
 		_bullets->kill(c.getIDByType(OT_BULLET));
@@ -291,6 +284,7 @@ void FourierTestState::render() {
 		o.timer = math::random(0.0f, TWO_PI);
 		o.y = math::random(200.0f, 520.0f);
 		o.id = _context->world->create(v2(1280.0f, o.y), SID("Follower"));
+		_context->world->attachCollider(o.id, ds::PST_CIRCLE);
 		_objects.push_back(o);
 	}
 	gui::end();
