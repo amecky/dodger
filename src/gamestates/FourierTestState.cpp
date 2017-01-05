@@ -18,12 +18,8 @@ FourierTestState::FourierTestState(GameContext* context) : ds::GameState("Fourie
 	_dialogState = 1;
 	_dialogPos = v2(10, 710);
 
-	for (int i = 0; i < 5; ++i) {
-		_values[i] = 1.0f;
-	}
-	_num = 3;
-	_xvel = 160.0f; // 8 sec to fly from the right to the left
-	_speed = 1.0f;
+	_pathIndex = 0;
+	_pathContainer.load();
 }
 
 
@@ -52,8 +48,6 @@ void FourierTestState::activate() {
 	_context->world->attachName(_playerRing, "Ring");
 	_bullets->stop();	
 	_hud->activate();
-
-	_timer = 0.0f;
 }
 
 // -------------------------------------------------------
@@ -136,22 +130,25 @@ int FourierTestState::update(float dt) {
 
 	const v2 wp = _context->world->getPosition(_player).xy();
 
+	const FourierPath& path = _pathContainer.get(_pathIndex);
 	Objects::iterator it = _objects.begin();
 	while (it != _objects.end()) {
-		it->timer += dt * _speed;
+		it->timer += dt;
+
+		float t = it->timer / path.ttl * TWO_PI;
 
 		//float y = 4.0f * sin(_timer) / PI + 4.0f * sin(3.0f * _timer) / (3.0f * PI);
 		//float y = 4.0f / PI * sin(it->timer) + 4.0f / (3.0f * PI) * sin(3.0f * it->timer) + 4.0f / (5.0f * PI) * sin(5.0f * it->timer);
 
 		float v = 0.0f;
-		for (int i = 0; i < _num; ++i) {
+		for (int i = 0; i < path.num; ++i) {
 			float f = static_cast<float>(i) * 2.0f + 1.0f;
-			v += _values[i] / PI * sin(f * it->timer);
+			v += path.values[i] / PI * sin(f * t);
 		}
 		v3 p = _context->world->getPosition(it->id);
 		v2 n = p.xy();
-		n.y = it->y + v * it->amplitude;
-		n.x -= _xvel * dt;
+		n.y = it->y + v * path.height;// it->amplitude;
+		n.x -= path.speed * dt;
 		if (n.x < 10.0f) {
 			_context->world->remove(it->id);
 			it = _objects.remove(it);
@@ -164,7 +161,9 @@ int FourierTestState::update(float dt) {
 			++it;
 		}
 	}
+
 	
+
 	_context->world->tick(dt);
 
 	{
@@ -219,8 +218,8 @@ bool FourierTestState::handleCollisions(float dt) {
 		for (uint32_t i = 0; i < n; ++i) {
 			const ds::Collision& c = _context->world->getCollision(i);
 			if (c.isBetween(OT_PLAYER, OT_FOLLOWER)) {
-				killEnemy(c, OT_FOLLOWER);				
-				return true;
+				//killEnemy(c, OT_FOLLOWER);				
+				//return true;
 			}
 			else if (c.isBetween(OT_BULLET, OT_FOLLOWER)) {
 				killEnemy(c, OT_FOLLOWER);				
@@ -266,23 +265,46 @@ bool FourierTestState::killEnemy(const ds::Collision& c, int objectType) {
 void FourierTestState::render() {
 	ds::SpriteBuffer* sprites = graphics::getSpriteBuffer();
 	sprites->begin();
+	v2 pos;
+	FourierPath& path = _pathContainer.get(_pathIndex);
+	for (int i = 0; i < 128; ++i) {
+		pos.x = 1280 - i * 10;
+		float t = static_cast<float>(i) / 128.0f * path.intervall * TWO_PI;
+		float v = 0.0f;
+		for (int i = 0; i < path.num; ++i) {
+			if (path.values[i] > 0.0f) {
+				float f = static_cast<float>(i) * 2.0f + 1.0f;
+				v += path.values[i] / PI * sin(f * t);
+				//v += path.values[i] * sin(f * t);
+			}
+		}
+		pos.y = 360.0f + path.height * v;
+		sprites->draw(pos, math::buildTexture(60, 120, 8, 8));
+	}
 	_hud->render();
 	sprites->end();
 
 	gui::start(1, &_dialogPos);
 	gui::begin("Item", &_dialogState);
-	gui::InputInt("Num", &_num);
-	gui::InputFloat("1.", &_values[0]);
-	gui::InputFloat("2.", &_values[1]);
-	gui::InputFloat("3.", &_values[2]);
-	gui::InputFloat("4.", &_values[3]);
-	gui::InputFloat("5.", &_values[4]);
-	gui::InputFloat("XV", &_xvel);
-	gui::InputFloat("SPD", &_speed);
+	gui::InputInt("Idx", &_pathIndex);
+	gui::InputInt("Num", &path.num);
+	gui::InputFloat("1.", &path.values[0]);
+	gui::InputFloat("2.", &path.values[1]);
+	gui::InputFloat("3.", &path.values[2]);
+	gui::InputFloat("4.", &path.values[3]);
+	gui::InputFloat("5.", &path.values[4]);
+	gui::InputFloat("6.", &path.values[5]);
+	gui::InputFloat("7.", &path.values[6]);
+	gui::InputFloat("8.", &path.values[7]);
+	gui::InputFloat("SPD", &path.speed);
+	gui::InputFloat("Height", &path.height);
+	gui::InputFloat("Intervall", &path.intervall);
 	if (gui::Button("Start")) {
 		FObject o;
-		o.timer = math::random(0.0f, TWO_PI);
-		o.y = math::random(200.0f, 520.0f);
+		o.timer = 0.0f;// math::random(0.0f, TWO_PI);
+		float oymin = 100.0f + abs(path.min) * path.height;
+		float oymax = 620.0f - path.max * path.height;
+		o.y = math::random(oymin, oymax);
 		o.amplitude = math::random(70.0f, 110.0f);
 		o.id = _context->world->create(v2(1280.0f, o.y), SID("Follower"));
 		_context->world->attachCollider(o.id, ds::PST_CIRCLE);

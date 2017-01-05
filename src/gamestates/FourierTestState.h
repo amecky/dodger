@@ -8,6 +8,7 @@
 #include <particles\ParticleManager.h>
 #include "..\objects\Bullets.h"
 #include "..\Enemies.h"
+#include "..\objects\FourierPathContainer.h"
 
 class FourierTestState : public ds::GameState {
 
@@ -49,11 +50,9 @@ private:
 	v2 _dialogPos;
 	int _dialogState;
 
-	float _timer;
-	float _values[5];
-	int _num;
-	float _xvel;
-	float _speed;
 	Objects _objects;
+
+	FourierPathContainer _pathContainer;
+	int _pathIndex;
 };
 
