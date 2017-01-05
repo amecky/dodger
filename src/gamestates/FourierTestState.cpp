@@ -22,7 +22,7 @@ FourierTestState::FourierTestState(GameContext* context) : ds::GameState("Fourie
 		_values[i] = 1.0f;
 	}
 	_num = 3;
-	_xvel = 100.0f;
+	_xvel = 160.0f; // 8 sec to fly from the right to the left
 	_speed = 1.0f;
 }
 
@@ -150,7 +150,7 @@ int FourierTestState::update(float dt) {
 		}
 		v3 p = _context->world->getPosition(it->id);
 		v2 n = p.xy();
-		n.y = it->y + v * 100.0f;
+		n.y = it->y + v * it->amplitude;
 		n.x -= _xvel * dt;
 		if (n.x < 10.0f) {
 			_context->world->remove(it->id);
@@ -283,6 +283,7 @@ void FourierTestState::render() {
 		FObject o;
 		o.timer = math::random(0.0f, TWO_PI);
 		o.y = math::random(200.0f, 520.0f);
+		o.amplitude = math::random(70.0f, 110.0f);
 		o.id = _context->world->create(v2(1280.0f, o.y), SID("Follower"));
 		_context->world->attachCollider(o.id, ds::PST_CIRCLE);
 		_objects.push_back(o);

@@ -15,6 +15,7 @@ class FourierTestState : public ds::GameState {
 		ID id;
 		float timer;
 		float y;
+		float amplitude;
 	};
 
 	typedef ds::Array<FObject> Objects;

@@ -142,9 +142,8 @@ void Dodger::update(float dt) {
 void Dodger::render() {
 	_context->grid->render();
 
-
+	// grayfade
 	_process->begin();
-
 
 	ds::SpriteBuffer* sprites = graphics::getSpriteBuffer();
 	ds::ChannelArray* array = _context->world->getChannelArray();
