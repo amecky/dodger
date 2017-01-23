@@ -28,6 +28,9 @@ public:
 	FourierPath& get(int index) {
 		return _pathList[index];
 	}
+	int num() const {
+		return _pathList.size();
+	}
 private:
 	FourierPathList _pathList;
 };

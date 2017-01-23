@@ -37,7 +37,7 @@ private:
 	void movePlayer(float dt);
 	bool handleCollisions(float dt);
 	bool killEnemy(const ds::Collision& c, int objectType);
-
+	void emittEnemy(float ypos);
 	GameContext* _context;
 	ID _player;
 	ID _playerRing;
@@ -52,6 +52,10 @@ private:
 
 	Objects _objects;
 	bool _drawDebug;
+
+	bool _emitting;
+	float _emitterTimer;
+	int _emitted;
 
 	FourierPathContainer _pathContainer;
 	int _pathIndex;

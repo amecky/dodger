@@ -22,6 +22,10 @@ FourierTestState::FourierTestState(GameContext* context) : ds::GameState("Fourie
 	_pathContainer.load();
 
 	_drawDebug = true;
+
+	_emitting = false;
+	_emitterTimer = 0.0f;
+	_emitted = 0;
 }
 
 
@@ -199,6 +203,20 @@ int FourierTestState::update(float dt) {
 		_levelRunning = false;
 	}
 	*/
+
+	if (_emitting) {
+		_emitterTimer += dt;
+		if (_emitterTimer > 0.3f) {
+			float oymin = 100.0f + abs(path.min) * path.height;
+			float oymax = 620.0f - path.max * path.height;
+			emittEnemy(math::random(oymin, oymax));
+			_emitterTimer = 0.0f;
+			++_emitted;
+			if (_emitted > 50) {
+				_emitting = false;
+			}
+		}
+	}
 	return 0;
 }
 
@@ -281,8 +299,8 @@ void FourierTestState::render() {
 
 	gui::start(1, &_dialogPos);
 	gui::begin("Item", &_dialogState);
-	gui::InputInt("Idx", &_pathIndex);
-	gui::InputInt("Num", &path.num);
+	gui::InputInt("Idx", &_pathIndex,0,_pathContainer.num()-1,1);
+	gui::InputInt("Num", &path.num,0,7,1);
 	gui::InputFloat("1.", &path.values[0]);
 	gui::InputFloat("2.", &path.values[1]);
 	gui::InputFloat("3.", &path.values[2]);
@@ -295,29 +313,27 @@ void FourierTestState::render() {
 	gui::InputFloat("Height", &path.height);
 	gui::InputFloat("Intervall", &path.intervall);
 	if (gui::Button("Start")) {
-		FObject o;
-		o.timer = 0.0f;// math::random(0.0f, TWO_PI);
-		float oymin = 100.0f + abs(path.min) * path.height;
-		float oymax = 620.0f - path.max * path.height;
-		o.y = math::random(oymin, oymax);
-		o.amplitude = math::random(70.0f, 110.0f);
-		o.id = _context->world->create(v2(1280.0f, o.y), SID("Follower"));
-		_context->world->attachCollider(o.id, ds::PST_CIRCLE);
-		_objects.push_back(o);
+		_emitting = true;
+		_emitterTimer = 0.0f;
+		_emitted = 0;
 	}
 	if (gui::Button("Start One")) {
-		FObject o;
-		o.timer = 0.0f;
-		o.y = 360.0f;
-		o.amplitude = math::random(70.0f, 110.0f);
-		o.id = _context->world->create(v2(1280.0f, o.y), SID("Follower"));
-		_context->world->attachCollider(o.id, ds::PST_CIRCLE);
-		_objects.push_back(o);
+		emittEnemy(360.0f);
 	}
 	if (gui::Button("Toggle debug")) {
 		_drawDebug = !_drawDebug;
 	}
 	gui::end();
+}
+
+void FourierTestState::emittEnemy(float ypos) {
+	FObject o;
+	o.timer = 0.0f;
+	o.y = ypos;
+	o.amplitude = math::random(70.0f, 110.0f);
+	o.id = _context->world->create(v2(1280.0f, o.y), SID("Follower"));
+	_context->world->attachCollider(o.id, ds::PST_CIRCLE);
+	_objects.push_back(o);
 }
 // -------------------------------------------------------
 // on char
