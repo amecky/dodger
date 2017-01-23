@@ -37,6 +37,7 @@ bool FourierPathContainer::loadData(const ds::JSONReader& loader) {
 				path.min = v;
 			}
 		}
+		LOG << "path " << i << " total: " << path.totalTime << " ttl: " << path.ttl << " min: " << path.min << " max: " << path.max;
 		_pathList.push_back(path);
 	}
 	return true;

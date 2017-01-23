@@ -20,6 +20,8 @@ FourierTestState::FourierTestState(GameContext* context) : ds::GameState("Fourie
 
 	_pathIndex = 0;
 	_pathContainer.load();
+
+	_drawDebug = true;
 }
 
 
@@ -134,12 +136,7 @@ int FourierTestState::update(float dt) {
 	Objects::iterator it = _objects.begin();
 	while (it != _objects.end()) {
 		it->timer += dt;
-
-		float t = it->timer / path.ttl * TWO_PI;
-
-		//float y = 4.0f * sin(_timer) / PI + 4.0f * sin(3.0f * _timer) / (3.0f * PI);
-		//float y = 4.0f / PI * sin(it->timer) + 4.0f / (3.0f * PI) * sin(3.0f * it->timer) + 4.0f / (5.0f * PI) * sin(5.0f * it->timer);
-
+		float t = it->timer / path.totalTime * TWO_PI * path.intervall;
 		float v = 0.0f;
 		for (int i = 0; i < path.num; ++i) {
 			float f = static_cast<float>(i) * 2.0f + 1.0f;
@@ -147,22 +144,19 @@ int FourierTestState::update(float dt) {
 		}
 		v3 p = _context->world->getPosition(it->id);
 		v2 n = p.xy();
-		n.y = it->y + v * path.height;// it->amplitude;
+		n.y = it->y + v * path.height;
 		n.x -= path.speed * dt;
 		if (n.x < 10.0f) {
 			_context->world->remove(it->id);
 			it = _objects.remove(it);
 		}
 		else {
-			//LOG << "p: " << p;
 			float angle = math::getAngle(p.xy(),n);
 			_context->world->setPosition(it->id, n);
 			_context->world->setRotation(it->id, angle);
 			++it;
 		}
 	}
-
-	
 
 	_context->world->tick(dt);
 
@@ -263,23 +257,24 @@ bool FourierTestState::killEnemy(const ds::Collision& c, int objectType) {
 // render
 // -------------------------------------------------------
 void FourierTestState::render() {
+	FourierPath& path = _pathContainer.get(_pathIndex);
 	ds::SpriteBuffer* sprites = graphics::getSpriteBuffer();
 	sprites->begin();
-	v2 pos;
-	FourierPath& path = _pathContainer.get(_pathIndex);
-	for (int i = 0; i < 128; ++i) {
-		pos.x = 1280 - i * 10;
-		float t = static_cast<float>(i) / 128.0f * path.intervall * TWO_PI;
-		float v = 0.0f;
-		for (int i = 0; i < path.num; ++i) {
-			if (path.values[i] > 0.0f) {
-				float f = static_cast<float>(i) * 2.0f + 1.0f;
-				v += path.values[i] / PI * sin(f * t);
-				//v += path.values[i] * sin(f * t);
+	if (_drawDebug) {
+		v2 pos;		
+		for (int i = 0; i < 128; ++i) {
+			pos.x = 1280 - i * 10;
+			float t = static_cast<float>(i) / 128.0f * path.intervall * TWO_PI;
+			float v = 0.0f;
+			for (int i = 0; i < path.num; ++i) {
+				if (path.values[i] > 0.0f) {
+					float f = static_cast<float>(i) * 2.0f + 1.0f;
+					v += path.values[i] / PI * sin(f * t);
+				}
 			}
+			pos.y = 360.0f + path.height * v;
+			sprites->draw(pos, math::buildTexture(60, 120, 8, 8));
 		}
-		pos.y = 360.0f + path.height * v;
-		sprites->draw(pos, math::buildTexture(60, 120, 8, 8));
 	}
 	_hud->render();
 	sprites->end();
@@ -309,6 +304,18 @@ void FourierTestState::render() {
 		o.id = _context->world->create(v2(1280.0f, o.y), SID("Follower"));
 		_context->world->attachCollider(o.id, ds::PST_CIRCLE);
 		_objects.push_back(o);
+	}
+	if (gui::Button("Start One")) {
+		FObject o;
+		o.timer = 0.0f;
+		o.y = 360.0f;
+		o.amplitude = math::random(70.0f, 110.0f);
+		o.id = _context->world->create(v2(1280.0f, o.y), SID("Follower"));
+		_context->world->attachCollider(o.id, ds::PST_CIRCLE);
+		_objects.push_back(o);
+	}
+	if (gui::Button("Toggle debug")) {
+		_drawDebug = !_drawDebug;
 	}
 	gui::end();
 }

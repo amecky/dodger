@@ -51,6 +51,7 @@ private:
 	int _dialogState;
 
 	Objects _objects;
+	bool _drawDebug;
 
 	FourierPathContainer _pathContainer;
 	int _pathIndex;
