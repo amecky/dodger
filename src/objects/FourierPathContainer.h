@@ -1,19 +1,8 @@
 #pragma once
 #include <core\io\DataFile.h>
+#include <core\math\FourierPath.h>
 
-struct FourierPath {
-	int num;
-	float values[8];
-	float height;
-	float intervall;
-	float speed;
-	float totalTime;
-	float ttl;
-	float min;
-	float max;
-};
-
-typedef ds::Array<FourierPath> FourierPathList;
+typedef ds::Array<ds::Path*> PathList;
 
 class FourierPathContainer : public ds::JSONAssetFile {
 
@@ -22,16 +11,20 @@ public:
 	~FourierPathContainer() {}
 	bool loadData(const ds::JSONReader& loader);
 	bool reloadData(const ds::JSONReader& loader);
-	const FourierPath& get(int index) const {
+	const ds::Path* get(int index) const {
 		return _pathList[index];
 	}
-	FourierPath& get(int index) {
+	ds::Path* get(int index) {
 		return _pathList[index];
 	}
 	int num() const {
 		return _pathList.size();
 	}
+	float getTTL(int index) const {
+		return _ttls[index];
+	}
 private:
-	FourierPathList _pathList;
+	PathList _pathList;
+	ds::Array<float> _ttls;
 };
 

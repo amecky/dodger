@@ -136,27 +136,33 @@ int FourierTestState::update(float dt) {
 
 	const v2 wp = _context->world->getPosition(_player).xy();
 
-	const FourierPath& path = _pathContainer.get(_pathIndex);
+	const ds::Path* path = _pathContainer.get(_pathIndex);
 	Objects::iterator it = _objects.begin();
 	while (it != _objects.end()) {
 		it->timer += dt;
-		float t = it->timer / path.totalTime * TWO_PI * path.intervall;
+		float t = it->timer / _pathContainer.getTTL(_pathIndex);// *TWO_PI * path.intervall;
+		v2 pp;
+		path->approx(t, &pp);
+		v3 p = _context->world->getPosition(it->id);
+		pp.y = it->y + pp.y;
+		/*
 		float v = 0.0f;
 		for (int i = 0; i < path.num; ++i) {
 			float f = static_cast<float>(i) * 2.0f + 1.0f;
 			v += path.values[i] / PI * sin(f * t);
 		}
-		v3 p = _context->world->getPosition(it->id);
+		
 		v2 n = p.xy();
 		n.y = it->y + v * path.height;
-		n.x -= path.speed * dt;
-		if (n.x < 10.0f) {
+		n.x -= path.speed * dt * (1.0f + sin(t) * 0.2f);
+		*/
+		if (pp.x < 10.0f) {
 			_context->world->remove(it->id);
 			it = _objects.remove(it);
 		}
 		else {
-			float angle = math::getAngle(p.xy(),n);
-			_context->world->setPosition(it->id, n);
+			float angle = math::getAngle(p.xy(),pp);
+			_context->world->setPosition(it->id, pp);
 			_context->world->setRotation(it->id, angle);
 			++it;
 		}
@@ -207,12 +213,12 @@ int FourierTestState::update(float dt) {
 	if (_emitting) {
 		_emitterTimer += dt;
 		if (_emitterTimer > 0.3f) {
-			float oymin = 100.0f + abs(path.min) * path.height;
-			float oymax = 620.0f - path.max * path.height;
-			emittEnemy(math::random(oymin, oymax));
+			//float oymin = 100.0f + abs(path.min);
+			//float oymax = 620.0f - path.max;
+			emittEnemy(360.0f);// math::random(oymin, oymax));
 			_emitterTimer = 0.0f;
 			++_emitted;
-			if (_emitted > 50) {
+			if (_emitted >= 10) {
 				_emitting = false;
 			}
 		}
@@ -275,22 +281,15 @@ bool FourierTestState::killEnemy(const ds::Collision& c, int objectType) {
 // render
 // -------------------------------------------------------
 void FourierTestState::render() {
-	FourierPath& path = _pathContainer.get(_pathIndex);
+	ds::Path* path = _pathContainer.get(_pathIndex);
 	ds::SpriteBuffer* sprites = graphics::getSpriteBuffer();
 	sprites->begin();
 	if (_drawDebug) {
 		v2 pos;		
 		for (int i = 0; i < 128; ++i) {
-			pos.x = 1280 - i * 10;
-			float t = static_cast<float>(i) / 128.0f * path.intervall * TWO_PI;
-			float v = 0.0f;
-			for (int i = 0; i < path.num; ++i) {
-				if (path.values[i] > 0.0f) {
-					float f = static_cast<float>(i) * 2.0f + 1.0f;
-					v += path.values[i] / PI * sin(f * t);
-				}
-			}
-			pos.y = 360.0f + path.height * v;
+			float t = static_cast<float>(i) / 128.0f;
+			path->approx(t, &pos);
+			pos.y = 360.0f + pos.y;
 			sprites->draw(pos, math::buildTexture(60, 120, 8, 8));
 		}
 	}
@@ -300,6 +299,7 @@ void FourierTestState::render() {
 	gui::start(1, &_dialogPos);
 	gui::begin("Item", &_dialogState);
 	gui::InputInt("Idx", &_pathIndex,0,_pathContainer.num()-1,1);
+	/*
 	gui::InputInt("Num", &path.num,0,7,1);
 	gui::InputFloat("1.", &path.values[0]);
 	gui::InputFloat("2.", &path.values[1]);
@@ -309,15 +309,22 @@ void FourierTestState::render() {
 	gui::InputFloat("6.", &path.values[5]);
 	gui::InputFloat("7.", &path.values[6]);
 	gui::InputFloat("8.", &path.values[7]);
-	gui::InputFloat("SPD", &path.speed);
+	gui::InputFloat("TTL", &path.ttl);
+	gui::InputFloat("Offset", &path.offset);
 	gui::InputFloat("Height", &path.height);
-	gui::InputFloat("Intervall", &path.intervall);
+	gui::InputFloat("Frequency", &path.frequency);
+	*/
+	if (gui::Button("Build")) {
+		path->build();
+	}
 	if (gui::Button("Start")) {
+		path->build();
 		_emitting = true;
 		_emitterTimer = 0.0f;
 		_emitted = 0;
 	}
 	if (gui::Button("Start One")) {
+		path->build();
 		emittEnemy(360.0f);
 	}
 	if (gui::Button("Toggle debug")) {
