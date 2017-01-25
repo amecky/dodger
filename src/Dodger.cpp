@@ -21,6 +21,7 @@
 #include <core\world\actions\CollisionAction.h>
 #include <core\world\actions\RotateByAction.h>
 #include <core\world\actions\ScalingAction.h>
+#include "objects\Stages.h"
 
 ds::BaseApp *app = new Dodger();
 
@@ -72,8 +73,10 @@ bool Dodger::loadContent() {
 	_context->grid = new WarpingGrid(_context->settings);
 	_context->grid->createGrid();
 
+	// create game objects
 	ds::game::add_game_object(new SimplePlayer(_context));
 	ds::game::add_game_object(new Bullets(_context));
+	ds::game::add_game_object(new Stages(_context));
 
 	_context->world = new ds::World;
 	_context->world->setBoundingRect(ds::Rect(25, 20, 1250, 680));

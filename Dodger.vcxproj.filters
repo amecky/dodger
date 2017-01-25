@@ -42,6 +42,9 @@
     <ClCompile Include="src\objects\SimplePlayer.cpp">
       <Filter>objects</Filter>
     </ClCompile>
+    <ClCompile Include="src\objects\Stages.cpp">
+      <Filter>objects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -87,6 +90,9 @@
       <Filter>objects</Filter>
     </ClInclude>
     <ClInclude Include="src\objects\SimplePlayer.h">
+      <Filter>objects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\objects\Stages.h">
       <Filter>objects</Filter>
     </ClInclude>
   </ItemGroup>

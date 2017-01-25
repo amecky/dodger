@@ -10,17 +10,9 @@
 #include "..\Enemies.h"
 #include "..\objects\FourierPathContainer.h"
 #include "..\objects\SimplePlayer.h"
+#include "..\objects\Stages.h"
 
 class FourierTestState : public ds::GameState {
-
-	struct FObject {
-		ID id;
-		float timer;
-		float y;
-		float amplitude;
-	};
-
-	typedef ds::Array<FObject> Objects;
 
 public:
 	FourierTestState(GameContext* context);
@@ -35,23 +27,15 @@ private:
 	void killPlayer();
 	bool handleCollisions(float dt);
 	bool killEnemy(const ds::Collision& c, int objectType);
-	void emittEnemy(float ypos);
 	GameContext* _context;
 	ds::GUIDialog* _hud;
 	Bullets* _bullets;
+	Stages* _stages;
 	v2 _cursor_pos;
 	v2 _dialogPos;
 	int _dialogState;
 
-	Objects _objects;
 	bool _drawDebug;
-
-	bool _emitting;
-	float _emitterTimer;
-	int _emitted;
-
-	FourierPathContainer _pathContainer;
-	int _pathIndex;
-	bool _running;
+	RID _font;
 };
 

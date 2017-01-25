@@ -45,7 +45,7 @@ void Bullets::tick(float dt) {
 	if (ds::events::containsType(ds::events::SE_BUTTON_ONE_DOWN)) {
 		start();
 	}
-	if (ds::events::containsType(ds::events::SE_BUTTON_ONE_UP) && _active) {
+	if (ds::events::containsType(ds::events::SE_BUTTON_ONE_UP) && _shooting) {
 		stop();
 	}
 }

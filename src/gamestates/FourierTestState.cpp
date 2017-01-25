@@ -12,21 +12,15 @@
 
 FourierTestState::FourierTestState(GameContext* context) : ds::GameState("FourierTestState"), _context(context) {
 	
+	_font = ds::res::find("nullshock", ds::ResourceType::BITMAPFONT);
 	_bullets = (Bullets*)ds::game::get_game_object(SID("Bullets"));
+	_stages = (Stages*)ds::game::get_game_object(SID("Stages"));
 	_hud = ds::res::getGUIDialog("HUD");
 	_hud->setNumber(2, 0);
 	_dialogState = 1;
 	_dialogPos = v2(10, 760);
 
-	_pathIndex = 0;
-	_pathContainer.load();
-
 	_drawDebug = true;
-
-	_emitting = false;
-	_emitterTimer = 0.0f;
-	_emitted = 0;
-
 }
 
 
@@ -44,9 +38,9 @@ void FourierTestState::init() {
 // activate
 // -------------------------------------------------------
 void FourierTestState::activate() {
-	//_context->player->activate();
 	ds::game::activate_game_object(SID("Player"));
 	ds::game::activate_game_object(SID("Bullets"));
+	//ds::game::activate_game_object(SID("Stages"));
 	_bullets->stop();	
 	_hud->activate();
 }
@@ -61,9 +55,9 @@ void FourierTestState::deactivate() {
 
 void FourierTestState::killPlayer() {
 	_bullets->killAll();
-	//_context->player->deactivate();
 	ds::game::deactivate_game_object(SID("Player"));
 	ds::game::deactivate_game_object(SID("Bullets"));
+	ds::game::deactivate_game_object(SID("Stages"));
 }
 
 // -------------------------------------------------------
@@ -71,29 +65,6 @@ void FourierTestState::killPlayer() {
 // -------------------------------------------------------
 int FourierTestState::update(float dt) {
 	ZoneTracker u2("MainGameState::update");
-
-	//_context->player->tick(dt);
-
-	const ds::Path* path = _pathContainer.get(_pathIndex);
-	Objects::iterator it = _objects.begin();
-	while (it != _objects.end()) {
-		it->timer += dt;
-		float t = it->timer / _pathContainer.getTTL(_pathIndex);
-		v2 pp;
-		path->approx(t, &pp);
-		v3 p = _context->world->getPosition(it->id);
-		pp.y = it->y + pp.y;
-		if (pp.x < 10.0f) {
-			_context->world->remove(it->id);
-			it = _objects.remove(it);
-		}
-		else {
-			float angle = math::getAngle(p.xy(),pp);
-			_context->world->setPosition(it->id, pp);
-			_context->world->setRotation(it->id, angle);
-			++it;
-		}
-	}
 
 	_context->world->tick(dt);
 
@@ -127,27 +98,9 @@ int FourierTestState::update(float dt) {
 			}
 		}
 	}
-	//_bullets->tick(dt);
 
 	_hud->tick(dt);
-	/*
-	if (_levelRunning && _levels->isActive() && (_kills == _levels->getNumberToKill())) {
-		LOG << "ALL KILLED - NEXT LEVEL!!!";
-		_levelRunning = false;
-	}
-	*/
-
-	if (_emitting) {
-		_emitterTimer += dt;
-		if (_emitterTimer > 0.3f) {
-			emittEnemy(384.0f);
-			_emitterTimer = 0.0f;
-			++_emitted;
-			if (_emitted >= 10) {
-				_emitting = false;
-			}
-		}
-	}
+	
 	return 0;
 }
 
@@ -183,21 +136,7 @@ bool FourierTestState::handleCollisions(float dt) {
 // -------------------------------------------------------
 bool FourierTestState::killEnemy(const ds::Collision& c, int objectType) {
 	bool ret = false;
-	ID id = c.getIDByType(objectType);
-	if (_context->world->contains(id)) {
-		Objects::iterator it = _objects.begin();
-		while (it != _objects.end()) {
-			if ( id == it->id) {
-				v3 p = _context->world->getPosition(id);
-				_context->grid->applyForce(p.xy(), 0.3f, 5.0f, 40.0f);
-				_context->world->remove(it->id);
-				it = _objects.remove(it);
-			}
-			else {
-				++it;
-			}
-		}
-	}
+	_stages->killEnemy(c, objectType);	
 	if (c.containsType(OT_BULLET)) {
 		_bullets->kill(c.getIDByType(OT_BULLET));
 	}
@@ -208,9 +147,10 @@ bool FourierTestState::killEnemy(const ds::Collision& c, int objectType) {
 // render
 // -------------------------------------------------------
 void FourierTestState::render() {
-	ds::Path* path = _pathContainer.get(_pathIndex);
+	//ds::Path* path = _pathContainer.get(_pathIndex);
 	ds::SpriteBuffer* sprites = graphics::getSpriteBuffer();
 	sprites->begin();
+	/*
 	if (_drawDebug) {
 		v2 pos;		
 		for (int i = 0; i < 128; ++i) {
@@ -220,9 +160,16 @@ void FourierTestState::render() {
 			sprites->draw(pos, math::buildTexture(60, 120, 8, 8));
 		}
 	}
+	*/
+	v2 d = sprites->getTextSize(_font, "Stage 1");
+	int dx = (1024 - d.x) / 2;
+	sprites->drawText(_font, dx, 388, "Stage 1", 4, 1.0f, 1.0f, ds::Color(192, 0, 0, 255));
+	d = sprites->getTextSize(_font, "Open space");
+	dx = (1024 - d.x) / 2;
+	sprites->drawText(_font, dx, 348, "Open space", 4, 1.0f, 1.0f, ds::Color(192, 0, 0, 255));
 	_hud->render();
 	sprites->end();
-
+	/*
 	gui::start(1, &_dialogPos);
 	gui::begin("Item", &_dialogState);
 	gui::InputInt("Idx", &_pathIndex,0,_pathContainer.num()-1,1);
@@ -240,7 +187,6 @@ void FourierTestState::render() {
 	gui::InputFloat("Offset", &path.offset);
 	gui::InputFloat("Height", &path.height);
 	gui::InputFloat("Frequency", &path.frequency);
-	*/
 	if (gui::Button("Build")) {
 		path->build();
 	}
@@ -258,17 +204,10 @@ void FourierTestState::render() {
 		_drawDebug = !_drawDebug;
 	}
 	gui::end();
+	*/
 }
 
-void FourierTestState::emittEnemy(float ypos) {
-	FObject o;
-	o.timer = 0.0f;
-	o.y = ypos;
-	o.amplitude = math::random(70.0f, 110.0f);
-	o.id = _context->world->create(v2(1280.0f, o.y), SID("Follower"));
-	_context->world->attachCollider(o.id, ds::PST_CIRCLE);
-	_objects.push_back(o);
-}
+
 // -------------------------------------------------------
 // on char
 // -------------------------------------------------------
