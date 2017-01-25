@@ -1,29 +1,27 @@
 #pragma once
-#include <core\world\World.h>
-#include <particles\ParticleManager.h>
 #include "..\GameSettings.h"
+#include "..\GameContext.h"
+#include <core\base\GameObject.h>
 
 struct BulletData {
 	v3 previous;
 	float sqrDist;
 };
 
-class Bullets {
+class Bullets : public ds::GameObject {
 
 public:
-	Bullets(ds::World* world, GameSettings* settings);
+	Bullets(GameContext* context);
 	~Bullets() {}
 	void tick(float dt);
-	void start(ID player);
+	void start();
 	void stop();
 	void kill(ID id);
 	void killAll();
 private:
 	void create(float offset);
-	ID _player;
-	ds::World* _world;
-	bool _active;
+	GameContext* _context;
+	SimplePlayer* _player;
+	bool _shooting;
 	float _timer;
-	ds::ParticleManager* _particles;
-	GameSettings* _settings;
 };

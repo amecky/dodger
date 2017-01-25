@@ -9,6 +9,8 @@ class WarpingGrid;
 
 class ElasticBorder;
 
+class SimplePlayer;
+
 struct GameContext {
 
 	GameSettings* settings;

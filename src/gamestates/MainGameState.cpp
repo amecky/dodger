@@ -12,7 +12,7 @@
 
 MainGameState::MainGameState(GameContext* context) : ds::GameState("MainGame"), _context(context) {
 	
-	_bullets = new Bullets(_context->world, context->settings);
+	_bullets = new Bullets(_context);
 
 	_hud = ds::res::getGUIDialog("HUD");
 	_levelRunning = false;
@@ -61,22 +61,6 @@ void MainGameState::activate() {
 void MainGameState::deactivate() {
 	killPlayer();
 	_hud->deactivate();
-}
-
-// -------------------------------------------------------
-// on button up
-// -------------------------------------------------------
-int MainGameState::onButtonUp(int button, int x, int y) {
-	_bullets->stop();
-	return 0;
-}
-
-// -------------------------------------------------------
-// on button up
-// -------------------------------------------------------
-int MainGameState::onButtonDown(int button, int x, int y) {
-	_bullets->start(_player);
-	return 0;
 }
 
 void MainGameState::killPlayer() {

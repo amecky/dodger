@@ -43,8 +43,8 @@ Dodger::~Dodger() {
 // prepare
 // -------------------------------------------------------
 void Dodger::prepare(ds::Settings* settings) {
-	settings->screenWidth = 1280;
-	settings->screenHeight = 720;
+	settings->screenWidth = 1024;
+	settings->screenHeight = 768;
 	settings->clearColor = ds::Color(0, 0, 0, 255);
 	settings->fullScreen = false;
 	settings->reportingDirectory = "reports";
@@ -72,6 +72,9 @@ bool Dodger::loadContent() {
 	_context->grid = new WarpingGrid(_context->settings);
 	_context->grid->createGrid();
 
+	ds::game::add_game_object(new SimplePlayer(_context));
+	ds::game::add_game_object(new Bullets(_context));
+
 	_context->world = new ds::World;
 	_context->world->setBoundingRect(ds::Rect(25, 20, 1250, 680));
 	_context->world->useTemplates(ds::res::getWorldEntityTemplates(SID("game_objects")));
@@ -95,7 +98,7 @@ bool Dodger::loadContent() {
 	ds::ParticlesTestSettings pts;
 	pts.render = false;
 	pts.blendState = _context->additiveBlendState;
-	pts.screenSize = v2(1280, 720);
+	pts.screenSize = v2(1024, 768);
 	addGameState(new MainGameState(_context));
 	addGameState(new GameOverState(_context));
 	addGameState(new ds::ParticlesTestState(pts));
@@ -131,7 +134,7 @@ void Dodger::init() {
 // -------------------------------------------------------
 void Dodger::update(float dt) {
 	_context->grid->tick(dt);
-	_context->elasticBorder->tick(dt);
+	//_context->elasticBorder->tick(dt);
 	_process->tick(dt);
 	//_server->poll();
 }
@@ -161,7 +164,7 @@ void Dodger::render() {
 	sprites->end();
 	graphics::selectBlendState(_context->additiveBlendState);
 	_context->particles->render();
-	_context->elasticBorder->render();
+	//_context->elasticBorder->render();
 	graphics::selectViewport(0);
 	graphics::selectBlendState(0);
 

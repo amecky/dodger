@@ -36,6 +36,12 @@
     <ClCompile Include="src\objects\FourierPathContainer.cpp">
       <Filter>objects</Filter>
     </ClCompile>
+    <ClCompile Include="src\objects\Player.cpp">
+      <Filter>objects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\objects\SimplePlayer.cpp">
+      <Filter>objects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -75,6 +81,12 @@
       <Filter>gamestates</Filter>
     </ClInclude>
     <ClInclude Include="src\objects\FourierPathContainer.h">
+      <Filter>objects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\objects\Player.h">
+      <Filter>objects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\objects\SimplePlayer.h">
       <Filter>objects</Filter>
     </ClInclude>
   </ItemGroup>

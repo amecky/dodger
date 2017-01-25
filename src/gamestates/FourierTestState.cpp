@@ -12,11 +12,11 @@
 
 FourierTestState::FourierTestState(GameContext* context) : ds::GameState("FourierTestState"), _context(context) {
 	
-	_bullets = new Bullets(_context->world, context->settings);
+	_bullets = (Bullets*)ds::game::get_game_object(SID("Bullets"));
 	_hud = ds::res::getGUIDialog("HUD");
 	_hud->setNumber(2, 0);
 	_dialogState = 1;
-	_dialogPos = v2(10, 710);
+	_dialogPos = v2(10, 760);
 
 	_pathIndex = 0;
 	_pathContainer.load();
@@ -26,11 +26,11 @@ FourierTestState::FourierTestState(GameContext* context) : ds::GameState("Fourie
 	_emitting = false;
 	_emitterTimer = 0.0f;
 	_emitted = 0;
+
 }
 
 
 FourierTestState::~FourierTestState() {
-	delete _bullets;
 }
 
 // -------------------------------------------------------
@@ -44,14 +44,9 @@ void FourierTestState::init() {
 // activate
 // -------------------------------------------------------
 void FourierTestState::activate() {
-	_player = _context->world->create(v2(640, 360), math::buildTexture(40, 0, 40, 40), OT_PLAYER);
-	_context->world->attachName(_player, "Player");
-	_context->world->attachCollider(_player, ds::PST_CIRCLE, v2(40.f, 0.0));
-	_playerAngle = 0.0f;
-	_cursor = _context->world->create(v2(700, 384), math::buildTexture(40, 160, 20, 20), 100);
-	_playerPrevious = v2(640, 360);
-	_playerRing = _context->world->create(v2(640, 360), math::buildTexture(440, 0, 152, 152), OT_RING);
-	_context->world->attachName(_playerRing, "Ring");
+	//_context->player->activate();
+	ds::game::activate_game_object(SID("Player"));
+	ds::game::activate_game_object(SID("Bullets"));
 	_bullets->stop();	
 	_hud->activate();
 }
@@ -64,67 +59,11 @@ void FourierTestState::deactivate() {
 	_hud->deactivate();
 }
 
-// -------------------------------------------------------
-// on button up
-// -------------------------------------------------------
-int FourierTestState::onButtonUp(int button, int x, int y) {
-	_bullets->stop();
-	return 0;
-}
-
-// -------------------------------------------------------
-// on button up
-// -------------------------------------------------------
-int FourierTestState::onButtonDown(int button, int x, int y) {
-	_bullets->start(_player);
-	return 0;
-}
-
 void FourierTestState::killPlayer() {
-	v2 wp = _context->world->getPosition(_player).xy();
 	_bullets->killAll();
-	_context->particles->start(1, wp);
-	_context->world->remove(_player);
-	_context->world->remove(_playerRing);
-	_context->world->remove(_cursor);
-}
-
-// -------------------------------------------------------
-// move player
-// -------------------------------------------------------
-void FourierTestState::movePlayer(float dt) {
-	ZoneTracker u2("MainGameState::movePlayer");
-	v2 vel = v2(0.0f);
-	if (ds::input::getKeyState('A')) {
-		vel.x -= 1.0f;
-	}
-	if (ds::input::getKeyState('D')) {
-		vel.x += 1.0f;
-	}
-	if (ds::input::getKeyState('W')) {
-		vel.y += 1.0f;
-	}
-	if (ds::input::getKeyState('S')) {
-		vel.y -= 1.0f;
-	}
-	v2 cp = ds::input::getMousePosition();	
-	_context->world->setPosition(_cursor, cp);
-	v2 wp = _context->world->getPosition(_player).xy();
-	v2 pos = wp;
-	float angle = 0.0f;
-	ds::math::followRelative(cp, wp, &_playerAngle, 5.0f, 1.1f * dt);
-	_context->world->setRotation(_player, _playerAngle);
-	pos += vel * 250.0f * dt;
-	if (ds::math::isInside(pos, ds::Rect(0, 0, 1600, 900))) {			
-		_context->world->setPosition(_player, pos);
-		_context->world->setPosition(_playerRing, pos);
-		float distSqr = sqr_distance(pos, _playerPrevious);
-		float dmin = 10.0f;
-		if (distSqr > (dmin * dmin)) {
-			_context->particles->start(10, _playerPrevious);
-			_playerPrevious = pos;
-		}
-	}
+	//_context->player->deactivate();
+	ds::game::deactivate_game_object(SID("Player"));
+	ds::game::deactivate_game_object(SID("Bullets"));
 }
 
 // -------------------------------------------------------
@@ -132,30 +71,18 @@ void FourierTestState::movePlayer(float dt) {
 // -------------------------------------------------------
 int FourierTestState::update(float dt) {
 	ZoneTracker u2("MainGameState::update");
-	movePlayer(dt);
 
-	const v2 wp = _context->world->getPosition(_player).xy();
+	//_context->player->tick(dt);
 
 	const ds::Path* path = _pathContainer.get(_pathIndex);
 	Objects::iterator it = _objects.begin();
 	while (it != _objects.end()) {
 		it->timer += dt;
-		float t = it->timer / _pathContainer.getTTL(_pathIndex);// *TWO_PI * path.intervall;
+		float t = it->timer / _pathContainer.getTTL(_pathIndex);
 		v2 pp;
 		path->approx(t, &pp);
 		v3 p = _context->world->getPosition(it->id);
 		pp.y = it->y + pp.y;
-		/*
-		float v = 0.0f;
-		for (int i = 0; i < path.num; ++i) {
-			float f = static_cast<float>(i) * 2.0f + 1.0f;
-			v += path.values[i] / PI * sin(f * t);
-		}
-		
-		v2 n = p.xy();
-		n.y = it->y + v * path.height;
-		n.x -= path.speed * dt * (1.0f + sin(t) * 0.2f);
-		*/
 		if (pp.x < 10.0f) {
 			_context->world->remove(it->id);
 			it = _objects.remove(it);
@@ -200,7 +127,7 @@ int FourierTestState::update(float dt) {
 			}
 		}
 	}
-	_bullets->tick(dt);
+	//_bullets->tick(dt);
 
 	_hud->tick(dt);
 	/*
@@ -213,9 +140,7 @@ int FourierTestState::update(float dt) {
 	if (_emitting) {
 		_emitterTimer += dt;
 		if (_emitterTimer > 0.3f) {
-			//float oymin = 100.0f + abs(path.min);
-			//float oymax = 620.0f - path.max;
-			emittEnemy(360.0f);// math::random(oymin, oymax));
+			emittEnemy(384.0f);
 			_emitterTimer = 0.0f;
 			++_emitted;
 			if (_emitted >= 10) {
@@ -263,6 +188,8 @@ bool FourierTestState::killEnemy(const ds::Collision& c, int objectType) {
 		Objects::iterator it = _objects.begin();
 		while (it != _objects.end()) {
 			if ( id == it->id) {
+				v3 p = _context->world->getPosition(id);
+				_context->grid->applyForce(p.xy(), 0.3f, 5.0f, 40.0f);
 				_context->world->remove(it->id);
 				it = _objects.remove(it);
 			}

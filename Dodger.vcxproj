@@ -236,6 +236,8 @@
     <ClCompile Include="src\objects\ElasticBorder.cpp" />
     <ClCompile Include="src\objects\FourierPathContainer.cpp" />
     <ClCompile Include="src\objects\InfectedGrid.cpp" />
+    <ClCompile Include="src\objects\Player.cpp" />
+    <ClCompile Include="src\objects\SimplePlayer.cpp" />
     <ClCompile Include="src\objects\WarpingGrid.cpp" />
     <ClCompile Include="src\PointEmitter.cpp" />
     <ClCompile Include="src\Timeline.cpp" />
@@ -257,6 +259,8 @@
     <ClInclude Include="src\objects\ElasticBorder.h" />
     <ClInclude Include="src\objects\FourierPathContainer.h" />
     <ClInclude Include="src\objects\InfectedGrid.h" />
+    <ClInclude Include="src\objects\Player.h" />
+    <ClInclude Include="src\objects\SimplePlayer.h" />
     <ClInclude Include="src\objects\WarpingGrid.h" />
     <ClInclude Include="src\PointEmitter.h" />
     <ClInclude Include="src\Timeline.h" />

@@ -1,42 +1,52 @@
 #include "Bullets.h"
+#include <core\base\Assert.h>
 #include <core\math\math.h>
 #include "..\Constants.h"
 #include <resources\ResourceContainer.h>
 #include <particles\modules\PointEmitterModule.h>
+#include <core\base\EventStream.h>
+#include "SimplePlayer.h"
 // ---------------------------------------
 // Bullets
 // ---------------------------------------
-Bullets::Bullets(ds::World * world, GameSettings* settings) : _world(world) , _settings(settings), _active(false) , _timer(0.0f) {
-	_particles = ds::res::getParticleManager();
+Bullets::Bullets(GameContext* context) : ds::GameObject("Bullets") , _context(context), _shooting(false) , _timer(0.0f) {
+	_player = (SimplePlayer*)ds::game::get_game_object(SID("Player"));
+	XASSERT(_player != 0, "We need to have a Player");
 }
 
 // ---------------------------------------------
 // create
 // ---------------------------------------------
 void Bullets::create(float offset) {
-	v3 wp = _world->getPosition(_player);
-	v3 r = _world->getRotation(_player);
+	v3 wp = _context->world->getPosition(_player->getID());
+	v3 r = _context->world->getRotation(_player->getID());
 	v2 p = wp.xy();
 	float oa = r.x + offset;
 	math::addRadial(p, 30.0f, oa);
-	ID bullet = _world->create(p, SID("Bullet"));// math::buildTexture(0, 410, 22, 8), OT_BULLET, r.x, v2(1.0f), ds::Color(249, 246, 194, 255));
-	_world->setRotation(bullet, r.x);
-	_world->startBehavior(SID("bullets"), bullet);
-	_world->attachCollider(bullet, ds::PST_CIRCLE, v2(18.0f));
+	ID bullet = _context->world->create(p, SID("Bullet"));
+	_context->world->setRotation(bullet, r.x);
+	_context->world->startBehavior(SID("bullets"), bullet);
+	_context->world->attachCollider(bullet, ds::PST_CIRCLE, v2(18.0f));
 }
 
 // ---------------------------------------------
 // tick
 // ---------------------------------------------
 void Bullets::tick(float dt) {
-	if (_active) {
+	if (_shooting) {
 		ZoneTracker u1("Bullets:emitt");
 		_timer += dt;
-		if (_timer >= _settings->bullets.rate) {
-			_timer -= _settings->bullets.rate;
+		if (_timer >= _context->settings->bullets.rate) {
+			_timer -= _context->settings->bullets.rate;
 			create(DEGTORAD(15.0f));
 			create(-DEGTORAD(15.0f));
 		}		
+	}
+	if (ds::events::containsType(ds::events::SE_BUTTON_ONE_DOWN)) {
+		start();
+	}
+	if (ds::events::containsType(ds::events::SE_BUTTON_ONE_UP) && _active) {
+		stop();
 	}
 }
 
@@ -44,18 +54,16 @@ void Bullets::tick(float dt) {
 // kill all
 // ---------------------------------------------
 void Bullets::killAll() {
-	_world->removeByType(OT_BULLET);
-	_active = false;
-	_player = INVALID_ID;
+	_context->world->removeByType(OT_BULLET);
+	_shooting = false;
 }
 
 // ---------------------------------------------
 // start
 // ---------------------------------------------
-void Bullets::start(ID player) {
-	if (!_active) {
-		_active = true;
-		_player = player;
+void Bullets::start() {
+	if (!_shooting) {
+		_shooting = true;
 		_timer = 0.0f;
 	}
 }
@@ -64,7 +72,7 @@ void Bullets::start(ID player) {
 // stop
 // ---------------------------------------------
 void Bullets::stop() {
-	_active = false;
+	_shooting = false;
 	_timer = 0.0f;
 }
 
@@ -72,9 +80,9 @@ void Bullets::stop() {
 // kill
 // ---------------------------------------------
 void Bullets::kill(ID id) {
-	if (_world->contains(id)) {
-		v3 pos = _world->getPosition(id);
-		_particles->start(8, pos.xy());
-		_world->remove(id);
+	if (_context->world->contains(id)) {
+		v3 pos = _context->world->getPosition(id);
+		_context->particles->start(8, pos.xy());
+		_context->world->remove(id);
 	}
 }

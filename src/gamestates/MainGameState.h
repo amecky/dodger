@@ -63,8 +63,6 @@ public:
 	void activate();
 	void deactivate();
 	int onChar(int ascii);
-	int onButtonUp(int button, int x, int y);
-	int onButtonDown(int button, int x, int y);
 private:
 	void killPlayer();
 	void movePlayer(float dt);
