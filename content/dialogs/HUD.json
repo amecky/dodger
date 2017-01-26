@@ -1,6 +1,6 @@
 numbers { 
     id : 1 
-    pos : 100,690 
+    pos : 100,720 
     color : 255,255,255,255 
     centered : false 
     scale : 1,1
@@ -9,7 +9,7 @@ numbers {
 }
 numbers { 
     id : 2 
-    pos : 1100,690 
+    pos : 900,720 
     color : 255,255,255,255 
     centered : false 
     scale : 1,1
